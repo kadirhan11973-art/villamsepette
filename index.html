@@ -3,39 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kadirhan Çıga</title>
+    <title>Kadirhan Cika | tatilimsepeti.com</title>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            height: 100vh;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fff6ee; /* Hafif turuncumsu arka fon */
+            color: #333333;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        /* Üst Turuncu Bar */
+        .top-bar {
+            background: linear-gradient(135deg, #ff7a00, #e65100);
+            color: #ffffff;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(230, 81, 0, 0.2);
+        }
+
+        .top-bar h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .top-bar .subtitle {
+            font-size: 1.1rem;
+            font-weight: 500;
+            opacity: 0.95;
+        }
+
+        /* Ana İçerik Alanı */
+        .main-container {
+            flex: 1;
+            display: flex;
             justify-content: center;
             align-items: center;
+            padding: 40px 20px;
+        }
+
+        .card {
             background-color: #ffffff;
-            font-family: Arial, sans-serif;
-            color: #111111;
+            border-radius: 16px;
+            padding: 35px 30px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 122, 0, 0.08);
+            border: 1px solid rgba(255, 122, 0, 0.15);
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+
+        .card h2 {
+            color: #d84315;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
-        a {
-            font-size: 1.5rem;
-            color: #333333;
+
+        /* İletişim ve WhatsApp Alanı */
+        .contact-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: #f4fbf7;
+            border: 2px solid #25d366;
+            padding: 14px 24px;
+            border-radius: 50px;
             text-decoration: none;
-            font-weight: bold;
+            color: #075e54;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.15);
         }
-        a:hover {
-            color: #000000;
+
+        .contact-box:hover {
+            transform: translateY(-2px);
+            background-color: #e8f7ee;
+            box-shadow: 0 6px 18px rgba(37, 211, 102, 0.25);
+        }
+
+        .whatsapp-icon {
+            width: 32px;
+            height: 32px;
+            fill: #25d366;
+            flex-shrink: 0;
+        }
+
+        .phone-text {
+            letter-spacing: 0.5px;
+        }
+
+        .note {
+            margin-top: 18px;
+            font-size: 0.9rem;
+            color: #777777;
         }
     </style>
 </head>
 <body>
 
-    <h1>Kadirhan cıka</h1>
-    <a href="tel:05332016490">0533 201 64 90</a>
+    <!-- Üst Turuncu Bar -->
+    <header class="top-bar">
+        <h1>Kadirhan Cika</h1>
+        <div class="subtitle">tatilimsepeti.com</div>
+    </header>
+
+    <!-- Alt İletişim Alanı -->
+    <main class="main-container">
+        <div class="card">
+            <h2>İletişim Bilgileri</h2>
+            
+            <a href="https://wa.me/905332016490" target="_blank" class="contact-box" title="WhatsApp ile İletişime Geçin">
+                <!-- WhatsApp SVG Logosu -->
+                <svg class="whatsapp-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 0c-8.837 0-16 7.163-16 16 0 2.825 0.737 5.607 2.137 8.048l-2.137 7.952 8.135-2.133c2.355 1.285 5.023 1.961 7.865 1.961 8.837 0 16-7.163 16-16s-7.163-16-16-16zM16 29.333c-2.482 0-4.912-0.667-7.042-1.929l-0.505-0.3-5.232 1.371 1.395-5.187-0.329-0.525c-1.385-2.203-2.119-4.755-2.119-7.363 0-7.352 5.981-13.333 13.333-13.333s13.333 5.981 13.333 13.333c0 7.352-5.981 13.333-13.333 13.333zM22.376 19.387c-0.349-0.175-2.066-1.019-2.386-1.135s-0.553-0.175-0.785 0.175c-0.233 0.349-0.902 1.135-1.106 1.368s-0.407 0.262-0.756 0.087c-0.349-0.175-1.474-0.543-2.808-1.733-1.039-0.926-1.741-2.070-1.945-2.419s-0.022-0.538 0.153-0.712c0.157-0.156 0.349-0.407 0.524-0.611s0.233-0.349 0.349-0.582c0.116-0.233 0.058-0.437-0.029-0.611s-0.785-1.892-1.076-2.589c-0.283-0.679-0.57-0.587-0.785-0.598s-0.437-0.013-0.669-0.013c-0.233 0-0.611 0.087-0.931 0.437s-1.222 1.194-1.222 2.912c0 1.718 1.251 3.376 1.426 3.609s2.461 3.758 5.962 5.271c0.832 0.359 1.482 0.574 1.989 0.735 0.836 0.266 1.597 0.228 2.199 0.138 0.671-0.1 2.066-0.844 2.357-1.659s0.291-1.513 0.204-1.659c-0.087-0.146-0.32-0.233-0.669-0.407z"></path>
+                </svg>
+                <span class="phone-text">0533 201 64 90</span>
+            </a>
+
+            <p class="note">WhatsApp üzerinden ulaşmak için tıklayın.</p>
+        </div>
+    </main>
 
 </body>
 </html>
