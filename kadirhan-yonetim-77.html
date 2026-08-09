@@ -44,7 +44,7 @@
     .filter-bar select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-weight: bold; }
 
     .table-responsive { overflow-x: auto; }
-    .res-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 600px; }
+    .res-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 650px; }
     .res-table th, .res-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
     .res-table th { background: #0f172a; color: white; }
     
@@ -55,8 +55,9 @@
 
     .btn-action { padding: 5px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; font-weight: bold; color: white; margin-right: 2px; }
     .btn-approve { background: var(--success); }
-    .btn-reject { background: var(--danger); }
+    .btn-reject { background: #f97316; } /* Turuncu Reddet */
     .btn-hold { background: var(--warning); color: #0f172a; }
+    .btn-delete-row { background: var(--danger); } /* Kırmızı Sil */
 
     .villa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
     .villa-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; }
@@ -206,7 +207,7 @@
         <select id="monthSelect" onchange="resetSelection(); renderCalendar();" style="padding:4px; font-weight:bold;">
           <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
           <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
-          <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
+          <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylul</option>
           <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
         </select>
       </div>
@@ -319,6 +320,7 @@
             <button class="btn-action btn-approve" onclick="updateStatus(${r.id}, 'Onaylandı')">Onayla</button>
             <button class="btn-action btn-reject" onclick="updateStatus(${r.id}, 'Reddedildi')">Reddet</button>
             <button class="btn-action btn-hold" onclick="updateStatus(${r.id}, 'Beklemede')">Beklet</button>
+            <button class="btn-action btn-delete-row" onclick="deleteReservation(${r.id})">🗑️ Sil</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -329,6 +331,18 @@
       const { error } = await _supabase.from('reservations').update({ status: newStatus }).eq('id', id);
       if (error) {
         alert("Güncellenirken hata oluştu: " + error.message);
+      } else {
+        await loadReservations();
+      }
+    }
+
+    // REZERVASYON TALEBİNİ VERİTABANINDAN SİLME
+    async function deleteReservation(id) {
+      if (!confirm("Bu rezervasyon talebini kalıcı olarak silmek istediğinize emin misiniz?")) return;
+      
+      const { error } = await _supabase.from('reservations').delete().eq('id', id);
+      if (error) {
+        alert("Silinirken hata oluştu: " + error.message);
       } else {
         await loadReservations();
       }
