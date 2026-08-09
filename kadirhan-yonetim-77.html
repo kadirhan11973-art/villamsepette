@@ -39,7 +39,7 @@
     .btn-danger { background: var(--danger); }
     .btn-danger:hover { background: #dc2626; }
 
-    /* Filtre Barı & Tablo */
+    /* TABLO */
     .filter-bar { display: flex; align-items: center; gap: 10px; background: #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .filter-bar select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-weight: bold; }
 
@@ -55,9 +55,9 @@
 
     .btn-action { padding: 5px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.75rem; font-weight: bold; color: white; margin-right: 2px; }
     .btn-approve { background: var(--success); }
-    .btn-reject { background: #f97316; } /* Turuncu Reddet */
+    .btn-reject { background: #f97316; }
     .btn-hold { background: var(--warning); color: #0f172a; }
-    .btn-delete-row { background: var(--danger); } /* Kırmızı Sil */
+    .btn-delete-row { background: var(--danger); }
 
     .villa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
     .villa-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; }
@@ -66,7 +66,7 @@
     .card-info { padding: 12px; text-align: center; cursor: pointer; }
     .delete-villa-btn { position: absolute; top: 8px; right: 8px; background: rgba(239, 68, 68, 0.9); color: white; border: none; padding: 4px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; z-index: 10; font-size: 0.75rem; }
 
-    /* Modal & Slider */
+    /* MODAL */
     .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
     .modal.active { display: flex; }
     .modal-content { background: white; border-radius: 16px; max-width: 750px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; padding: 20px; }
@@ -142,9 +142,9 @@
       </div>
     </div>
 
-    <!-- ⚙️ SİTE BAŞLIĞI AYARLAMA KARTI -->
+    <!-- ⚙️ SİTE BAŞLIĞI, LOGO VE REKLAM GÖRSELLERİ -->
     <div class="form-card">
-      <h2>⚙️ Ön Yüz Başlık ve Slogan Ayarı</h2>
+      <h2>⚙️ Ön Yüz Başlık, Sekme Logosu ve Tanıtım Görselleri</h2>
       <div class="form-group">
         <label>Ana Başlık:</label>
         <input type="text" id="siteTitleInput" placeholder="Örn: Lüks Villa Portföyü">
@@ -153,7 +153,28 @@
         <label>Alt Slogan / Açıklama:</label>
         <input type="text" id="siteSubTitleInput" placeholder="Örn: Tarihlerinizi seçerek müsait villaları arayın...">
       </div>
-      <button class="btn" onclick="saveSiteHeader()">Başlık Bilgilerini Kaydet</button>
+      <div class="form-group">
+        <label>Sekme Logosu (Favicon Görseli):</label>
+        <input type="file" id="faviconFile" accept="image/*">
+        <small style="color: #64748b; font-size: 0.8rem; display: block; margin-top: 4px;">Tavsiye Edilen Piksel Boyutu: <strong>64 x 64 px</strong> (veya 32x32 px Kare)</small>
+      </div>
+      
+      <!-- YENİ EKLENEN REKLAM/TANITIM GÖRSELİ YÜKLEME ALANLARI -->
+      <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border);">
+        <h4 style="margin-bottom: 8px; color: #0f172a;">🖼️ Arama Takvimi Üstü Tanıtım Görselleri</h4>
+        <div class="form-group">
+          <label>Tanıtım Görseli 1:</label>
+          <input type="file" id="banner1File" accept="image/*">
+          <small style="color: #2563eb; font-weight: bold; font-size: 0.8rem; display: block; margin-top: 4px;">Tavsiye Edilen Piksel Boyutu: 600 x 400 px (3:2 Oranında)</small>
+        </div>
+        <div class="form-group">
+          <label>Tanıtım Görseli 2:</label>
+          <input type="file" id="banner2File" accept="image/*">
+          <small style="color: #2563eb; font-weight: bold; font-size: 0.8rem; display: block; margin-top: 4px;">Tavsiye Edilen Piksel Boyutu: 600 x 400 px (3:2 Oranında)</small>
+        </div>
+      </div>
+
+      <button class="btn" style="margin-top: 15px;" onclick="saveSiteHeader()">Tüm Ayarları ve Görselleri Kaydet</button>
       <span id="headerStatus" style="margin-left: 10px; font-weight: bold;"></span>
     </div>
 
@@ -172,6 +193,7 @@
         <div class="form-group">
           <label>Fotoğraflar Seç:</label>
           <input type="file" id="vImages" accept="image/*" multiple required>
+          <small style="color: #64748b; font-size: 0.8rem; display: block; margin-top: 4px;">Tavsiye Edilen Piksel Boyutu: <strong>1200 x 900 px</strong> (4:3 Oranında)</small>
         </div>
         <button type="submit" class="btn" id="saveBtn">Villayı Kaydet</button>
       </form>
@@ -207,7 +229,7 @@
         <select id="monthSelect" onchange="resetSelection(); renderCalendar();" style="padding:4px; font-weight:bold;">
           <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
           <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
-          <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylul</option>
+          <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
           <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
         </select>
       </div>
@@ -241,6 +263,10 @@
     let rangeStartDay = null;
     let rangeEndDay = null;
 
+    let currentFaviconUrl = "";
+    let currentBanner1Url = "";
+    let currentBanner2Url = "";
+
     async function init() {
       await loadSiteHeader();
       await loadVillas();
@@ -252,18 +278,81 @@
       if (data) {
         document.getElementById('siteTitleInput').value = data.title || '';
         document.getElementById('siteSubTitleInput').value = data.subtitle || '';
+        currentFaviconUrl = data.favicon || '';
+        currentBanner1Url = data.banner1 || '';
+        currentBanner2Url = data.banner2 || '';
       }
     }
 
     async function saveSiteHeader() {
       const title = document.getElementById('siteTitleInput').value;
       const subtitle = document.getElementById('siteSubTitleInput').value;
+      const faviconInput = document.getElementById('faviconFile');
+      const b1Input = document.getElementById('banner1File');
+      const b2Input = document.getElementById('banner2File');
       const status = document.getElementById('headerStatus');
 
-      const { error } = await _supabase.from('site_settings').upsert([{ id: 1, title, subtitle }]);
-      status.innerText = error ? 'Hata oluştu!' : 'Başarıyla kaydedildi!';
-      status.style.color = error ? 'red' : 'green';
-      setTimeout(() => status.innerText = '', 3000);
+      let faviconUrl = currentFaviconUrl;
+      let banner1Url = currentBanner1Url;
+      let banner2Url = currentBanner2Url;
+
+      status.innerText = "Yükleniyor...";
+      status.style.color = "orange";
+
+      try {
+        if (faviconInput.files.length > 0) {
+          const file = faviconInput.files[0];
+          const fileName = 'fav_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+          const { error } = await _supabase.storage.from('villa-photos').upload(fileName, file);
+          if (!error) {
+            const { data } = _supabase.storage.from('villa-photos').getPublicUrl(fileName);
+            faviconUrl = data.publicUrl;
+          }
+        }
+
+        if (b1Input.files.length > 0) {
+          const file = b1Input.files[0];
+          const fileName = 'b1_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+          const { error } = await _supabase.storage.from('villa-photos').upload(fileName, file);
+          if (!error) {
+            const { data } = _supabase.storage.from('villa-photos').getPublicUrl(fileName);
+            banner1Url = data.publicUrl;
+          }
+        }
+
+        if (b2Input.files.length > 0) {
+          const file = b2Input.files[0];
+          const fileName = 'b2_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+          const { error } = await _supabase.storage.from('villa-photos').upload(fileName, file);
+          if (!error) {
+            const { data } = _supabase.storage.from('villa-photos').getPublicUrl(fileName);
+            banner2Url = data.publicUrl;
+          }
+        }
+
+        const { error } = await _supabase.from('site_settings').upsert([{ 
+          id: 1, 
+          title, 
+          subtitle, 
+          favicon: faviconUrl,
+          banner1: banner1Url,
+          banner2: banner2Url
+        }]);
+
+        if (error) throw error;
+
+        currentFaviconUrl = faviconUrl;
+        currentBanner1Url = banner1Url;
+        currentBanner2Url = banner2Url;
+
+        status.innerText = 'Başarıyla kaydedildi!';
+        status.style.color = 'green';
+      } catch (err) {
+        status.innerText = 'Hata: ' + err.message;
+        status.style.color = 'red';
+      } finally {
+        setTimeout(() => status.innerText = '', 3000);
+      }
     }
 
     async function loadVillas() {
@@ -336,16 +425,10 @@
       }
     }
 
-    // REZERVASYON TALEBİNİ VERİTABANINDAN SİLME
     async function deleteReservation(id) {
       if (!confirm("Bu rezervasyon talebini kalıcı olarak silmek istediğinize emin misiniz?")) return;
-      
       const { error } = await _supabase.from('reservations').delete().eq('id', id);
-      if (error) {
-        alert("Silinirken hata oluştu: " + error.message);
-      } else {
-        await loadReservations();
-      }
+      if (!error) loadReservations();
     }
 
     function renderVillaGrid() {
