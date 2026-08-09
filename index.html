@@ -12,6 +12,10 @@
       --card-bg: #ffffff;
       --text: #1e293b;
       --border: #e2e8f0;
+      --booked-color: #fee2e2;
+      --available-color: #dcfce7;
+      --booked-border: #fca5a5;
+      --available-border: #86efac;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -61,14 +65,45 @@
     .month-select { padding: 6px 12px; font-size: 1rem; border-radius: 6px; border: 1px solid var(--border); background: #f8fafc; font-weight: bold; color: var(--primary); }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .day-header { font-weight: bold; font-size: 0.8rem; color: #64748b; padding-bottom: 4px; }
-    .day-cell { border: 1px solid var(--border); border-radius: 6px; padding: 6px 2px; background: #f1f5f9; display: flex; flex-direction: column; justify-content: center; min-height: 50px; }
+    
+    /* Takvim Hücre Stilleri */
+    .day-cell { 
+      border: 1px solid var(--border); 
+      border-radius: 6px; 
+      padding: 6px 2px; 
+      background: #f1f5f9; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      min-height: 54px; 
+      position: relative;
+      overflow: hidden;
+    }
     .day-cell.empty { background: transparent; border: none; }
-    .day-cell.available { background: #dcfce7; border-color: #86efac; }
-    .day-cell.booked { background: #fee2e2; border-color: #fca5a5; opacity: 0.8; }
+    .day-cell.available { background: var(--available-color); border-color: var(--available-border); }
+    .day-cell.booked { background: var(--booked-color); border-color: var(--booked-border); }
     .day-cell.past { background: #e2e8f0; border-color: #cbd5e1; color: #94a3b8; opacity: 0.6; }
-    .day-num { font-weight: bold; font-size: 0.8rem; }
-    .day-price { font-size: 0.7rem; color: #15803d; margin-top: 2px; font-weight: 600; }
-    .booked .day-price { color: #991b1b; text-decoration: line-through; }
+
+    /* Çapraz Bölünmüş Günler (Çıkış/Giriş) */
+    .day-cell.split-checkout-checkin {
+      background: linear-gradient(135deg, var(--booked-color) 0%, var(--booked-color) 49%, #cbd5e1 50%, var(--available-color) 51%, var(--available-color) 100%) !important;
+      border-color: #94a3b8;
+    }
+    .day-cell.split-checkout-only {
+      background: linear-gradient(135deg, var(--booked-color) 0%, var(--booked-color) 49%, #cbd5e1 50%, #ffffff 51%, #ffffff 100%) !important;
+    }
+    .day-cell.split-checkin-only {
+      background: linear-gradient(135deg, #ffffff 0%, #ffffff 49%, #cbd5e1 50%, var(--booked-color) 51%, var(--booked-color) 100%) !important;
+    }
+
+    .day-num { font-weight: bold; font-size: 0.8rem; z-index: 2; text-align: left; padding-left: 2px; }
+    .day-price { font-size: 0.68rem; color: #15803d; margin-top: 2px; font-weight: 600; z-index: 2; text-align: right; padding-right: 2px; }
+    .booked .day-price { color: #991b1b; }
+
+    /* Lejant (Takvim Altı Bilgilendirme) */
+    .calendar-legend { display: flex; gap: 12px; margin-top: 12px; font-size: 0.75rem; color: #64748b; flex-wrap: wrap; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+    .legend-box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -128,6 +163,12 @@
       </div>
 
       <div class="calendar-grid" id="calendarGrid"></div>
+
+      <div class="calendar-legend">
+        <div class="legend-item"><div class="legend-box" style="background: var(--available-color);"></div> Müsait</div>
+        <div class="legend-item"><div class="legend-box" style="background: var(--booked-color);"></div> Dolu</div>
+        <div class="legend-item"><div class="legend-box" style="background: linear-gradient(135deg, var(--booked-color) 50%, var(--available-color) 50%);"></div> Aynı Gün Çıkış / Giriş (Çapraz)</div>
+      </div>
     </div>
   </div>
 
@@ -190,6 +231,15 @@
       });
     }
 
+    // Bir günün müsaitlik durumunu sorgulayan yardımcı fonksiyon
+    function isDayAvailable(villa, month, day) {
+      const monthData = villa.prices ? villa.prices[month] : null;
+      if (monthData && monthData.customDays && monthData.customDays[day] !== undefined) {
+        return monthData.customDays[day].available !== false;
+      }
+      return true; // Varsayılan olarak müsait
+    }
+
     function filterVillas() {
       const checkInVal = document.getElementById('checkIn').value;
       const checkOutVal = document.getElementById('checkOut').value;
@@ -209,15 +259,13 @@
 
       const availableVillas = villas.filter(v => {
         let cur = new Date(start);
+        // Çıkış günü hariç (öğleden sonra çıkacağı için) konaklanacak günlerin kontrolü
         while (cur < end) {
           const m = cur.getMonth();
           const d = cur.getDate();
 
-          const monthData = v.prices ? v.prices[m] : null;
-          if (monthData && monthData.customDays && monthData.customDays[d]) {
-            if (monthData.customDays[d].available === false) {
-              return false;
-            }
+          if (!isDayAvailable(v, m, d)) {
+            return false;
           }
           cur.setDate(cur.getDate() + 1);
         }
@@ -268,7 +316,6 @@
       updateSlider();
     }
 
-    // Lightbox İşlemleri
     function openLightbox() {
       if (!activeVilla.images || !activeVilla.images.length) return;
       document.getElementById('lightbox').classList.add('active');
@@ -278,7 +325,6 @@
       document.getElementById('lightbox').classList.remove('active');
     }
 
-    // Klavyedeki yön tuşları ile fotoğrafları ve tam ekranı kontrol etme
     document.addEventListener('keydown', function(e) {
       const isLightboxActive = document.getElementById('lightbox').classList.contains('active');
       if (isLightboxActive) {
@@ -320,17 +366,41 @@
 
       for (let day = 1; day <= totalDays; day++) {
         let isPast = (selectedMonthIndex < currentMonth) || (selectedMonthIndex === currentMonth && day < currentDay);
+        
         const customInfo = monthPrices.customDays ? monthPrices.customDays[day] : null;
         const price = customInfo ? customInfo.price : (monthPrices.defaultPrice || "Fiyat Yok");
-        const available = customInfo ? customInfo.available : true;
+        const available = isDayAvailable(activeVilla, selectedMonthIndex, day);
+
+        // Önceki ve sonraki günlerin durumunu analiz et
+        const prevDayAvailable = day > 1 ? isDayAvailable(activeVilla, selectedMonthIndex, day - 1) : true;
+        const nextDayAvailable = day < totalDays ? isDayAvailable(activeVilla, selectedMonthIndex, day + 1) : true;
 
         const cell = document.createElement('div');
+        
         if (isPast) {
           cell.className = 'day-cell past';
           cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">Geçti</span>`;
         } else {
-          cell.className = `day-cell ${available ? 'available' : 'booked'}`;
-          cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${available ? price : 'Dolu'}</span>`;
+          // Çapraz Gün Kontrolleri (Split-day logic)
+          // 1. Önceki gün dolu, bugün boşsa -> Sabah Çıkış, Öğleden sonra Boş
+          const isCheckoutDay = !prevDayAvailable && available;
+          // 2. Bugün boş, sonraki gün doluysa -> Sabah Boş, Öğleden sonra Giriş
+          const isCheckinDay = available && !nextDayAvailable;
+
+          if (isCheckoutDay && isCheckinDay) {
+            // Hem çıkış hem giriş aynı güne sıkışıyorsa
+            cell.className = 'day-cell split-checkout-checkin';
+            cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${price}</span>`;
+          } else if (isCheckoutDay) {
+            cell.className = 'day-cell split-checkout-only';
+            cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${price}</span>`;
+          } else if (!available) {
+            cell.className = 'day-cell booked';
+            cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">Dolu</span>`;
+          } else {
+            cell.className = 'day-cell available';
+            cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${price}</span>`;
+          }
         }
         calGrid.appendChild(cell);
       }
