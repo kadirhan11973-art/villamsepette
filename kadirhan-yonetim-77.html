@@ -151,6 +151,10 @@
     .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
     .modal.active { display: flex; }
     .modal-content { background: white; border-radius: 16px; max-width: 760px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; padding: 24px; }
+    
+    /* MANUEL REZERVASYON İÇİN BÜYÜTÜLMÜŞ MODAL */
+    .modal-content.large-modal { max-width: 1100px; }
+
     .close-btn { position: absolute; top: 12px; right: 15px; font-size: 26px; cursor: pointer; border: none; background: none; z-index: 20; }
 
     .slider { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
@@ -166,6 +170,14 @@
 
     .edit-box { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
     .edit-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+
+    /* YENİ EKLENEN ÇİFT TAKVİM STİLLERİ */
+    .double-calendar-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    @media (max-width: 768px) {
+      .double-calendar-container { grid-template-columns: 1fr; }
+    }
+    .cal-nav-btn { background: #f1f5f9; border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--primary); transition: all 0.2s; }
+    .cal-nav-btn:hover { background: var(--primary); color: white; }
   </style>
 </head>
 <body>
@@ -370,36 +382,53 @@
     </div>
   </div>
 
-  <!-- 📝 MANUEL MÜŞTERİ KAYIT MODALI -->
+  <!-- 📝 MANUEL MÜŞTERİ KAYIT MODALI (YENİLENMİŞ ÇİFT TAKVİMLİ MODAL) -->
   <div class="modal" id="manualBookingModal">
-    <div class="modal-content">
+    <div class="modal-content large-modal">
       <button class="close-btn" onclick="closeManualBookingModal()">&times;</button>
       <h2 style="margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Yeni Müşteri Kaydı Ekle</h2>
       
-      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 300px; background:#f8fafc; border:1px solid var(--border); padding:15px; border-radius:10px;">
-          <div class="form-group">
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        
+        <!-- SOL ÇİFT TAKVİM ALANI -->
+        <div style="flex: 1.6; min-width: 320px; background:#f8fafc; border:1px solid var(--border); padding:15px; border-radius:10px;">
+          
+          <div class="form-group" style="margin-bottom: 15px;">
             <label>Villa Seçin:</label>
             <select id="mVillaSelect" onchange="renderModalCalendar()"></select>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label style="margin:0;">📅 Ay & Müsaitlik Seçin:</label>
-            <select id="mMonthSelect" onchange="renderModalCalendar()" style="width:auto; padding:5px; font-size:0.85rem; font-weight:bold; color:var(--primary);">
-              <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
-              <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
-              <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
-              <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
-            </select>
+          <!-- YENİ 2 AY YAN YANA GEZİNTİ BAŞLIĞI VE OKLAR -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:white; padding:8px 12px; border-radius:8px; border:1px solid var(--border);">
+            <button class="cal-nav-btn" onclick="changeModalMonth(-1)">◄ Önceki Ay</button>
+            <span id="mDoubleCalendarTitle" style="font-weight:bold; color:var(--primary); font-size:0.95rem;">Ağustos - Eylül</span>
+            <button class="cal-nav-btn" onclick="changeModalMonth(1)">Sonraki Ay ►</button>
           </div>
 
-          <div class="calendar-grid" id="modalCalendarGrid"></div>
+          <!-- 2 ADET YAN YANA TAKVİM İÇEREN GRID -->
+          <div class="double-calendar-container">
+            
+            <!-- 1. AY TAKVİMİ -->
+            <div style="background:white; padding:10px; border-radius:8px; border:1px solid var(--border);">
+              <h4 id="mFirstMonthTitle" style="text-align:center; font-size:0.85rem; margin-bottom:8px; color:#0f172a; border-bottom:1px solid var(--border); padding-bottom:4px;">1. Ay</h4>
+              <div class="calendar-grid" id="modalCalendarGrid1"></div>
+            </div>
 
-          <div style="font-size:0.8rem; font-weight:bold; color:var(--primary); margin-top:10px; text-align:center; background:white; padding:6px; border-radius:6px; border:1px solid var(--border);" id="modalSelectedDatesText">
+            <!-- 2. AY TAKVİMİ -->
+            <div style="background:white; padding:10px; border-radius:8px; border:1px solid var(--border);">
+              <h4 id="mSecondMonthTitle" style="text-align:center; font-size:0.85rem; margin-bottom:8px; color:#0f172a; border-bottom:1px solid var(--border); padding-bottom:4px;">2. Ay</h4>
+              <div class="calendar-grid" id="modalCalendarGrid2"></div>
+            </div>
+
+          </div>
+
+          <div style="font-size:0.8rem; font-weight:bold; color:var(--primary); margin-top:12px; text-align:center; background:white; padding:8px; border-radius:6px; border:1px solid var(--border);" id="modalSelectedDatesText">
             Takvimden boş (yeşil) günlere tıklayarak giriş ve çıkış gününü seçin.
           </div>
+
         </div>
 
+        <!-- SAĞ MÜŞTERİ BİLGİ FORMU ALANI -->
         <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
             <div class="form-group">
@@ -434,6 +463,7 @@
 
           <button class="btn btn-success" style="width: 100%; padding: 12px; font-size:1rem; margin-top: 10px;" onclick="submitManualBooking()">Müşteri Kaydını Tamamla ve Onayla</button>
         </div>
+
       </div>
     </div>
   </div>
@@ -453,15 +483,19 @@
     let rangeStartDay = null;
     let rangeEndDay = null;
 
-    let modalStartDay = null;
-    let modalEndDay = null;
+    /* YENİ ÇİFT TAKVİM DEĞİŞKENLERİ */
+    let modalStartMonthIdx = new Date().getMonth(); 
+    let modalStartYear = new Date().getFullYear();
+    let modalStartDate = null; // JavaScript Date Objesi
+    let modalEndDate = null;   // JavaScript Date Objesi
+
+    const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
 
     async function init() {
       const currentMonth = new Date().getMonth();
       document.getElementById('centerMonthSelect').value = currentMonth;
       document.getElementById('rightMonthSelect').value = currentMonth;
       document.getElementById('finMonthSelect').value = currentMonth;
-      document.getElementById('mMonthSelect').value = currentMonth;
 
       renderAgencies();
       await loadVillas();
@@ -1145,10 +1179,15 @@
       }
     }
 
-    /* 📝 MANUEL MÜŞTERİ KAYDI */
+    /* 📝 MANUEL MÜŞTERİ KAYDI VE YENİLENMİŞ ÇİFT TAKVİM LOGİĞİ */
     function openManualBookingModal() {
-      modalStartDay = null;
-      modalEndDay = null;
+      modalStartDate = null;
+      modalEndDate = null;
+      
+      const now = new Date();
+      modalStartMonthIdx = now.getMonth();
+      modalStartYear = now.getFullYear();
+
       document.getElementById('mGuestName').value = "";
       document.getElementById('mGuestPhone').value = "";
       document.getElementById('mDepositPrice').value = "";
@@ -1164,13 +1203,42 @@
       document.getElementById('manualBookingModal').classList.remove('active');
     }
 
+    function changeModalMonth(step) {
+      modalStartMonthIdx += step;
+      if (modalStartMonthIdx > 11) {
+        modalStartMonthIdx = 0;
+        modalStartYear++;
+      } else if (modalStartMonthIdx < 0) {
+        modalStartMonthIdx = 11;
+        modalStartYear--;
+      }
+      renderModalCalendar();
+    }
+
     function renderModalCalendar() {
-      const calGrid = document.getElementById('modalCalendarGrid');
+      const m1Idx = modalStartMonthIdx;
+      const m1Year = modalStartYear;
+
+      let m2Idx = m1Idx + 1;
+      let m2Year = m1Year;
+      if (m2Idx > 11) {
+        m2Idx = 0;
+        m2Year++;
+      }
+
+      document.getElementById('mDoubleCalendarTitle').innerText = `${monthNames[m1Idx]} ${m1Year} - ${monthNames[m2Idx]} ${m2Year}`;
+      document.getElementById('mFirstMonthTitle').innerText = `${monthNames[m1Idx]} ${m1Year}`;
+      document.getElementById('mSecondMonthTitle').innerText = `${monthNames[m2Idx]} ${m2Year}`;
+
+      renderSingleMonthGrid('modalCalendarGrid1', m1Year, m1Idx);
+      renderSingleMonthGrid('modalCalendarGrid2', m2Year, m2Idx);
+    }
+
+    function renderSingleMonthGrid(containerId, year, monthIdx) {
+      const calGrid = document.getElementById(containerId);
       calGrid.innerHTML = '';
 
       const selectedVillaId = document.getElementById('mVillaSelect').value;
-      const currentYear = new Date().getFullYear();
-      const monthIdx = parseInt(document.getElementById('mMonthSelect').value);
 
       const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
       days.forEach(d => {
@@ -1180,8 +1248,8 @@
         calGrid.appendChild(h);
       });
 
-      const totalDays = new Date(currentYear, monthIdx + 1, 0).getDate();
-      let firstDayIndex = new Date(currentYear, monthIdx, 1).getDay();
+      const totalDays = new Date(year, monthIdx + 1, 0).getDate();
+      let firstDayIndex = new Date(year, monthIdx, 1).getDay();
       firstDayIndex = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
 
       for (let i = 0; i < firstDayIndex; i++) calGrid.appendChild(document.createElement('div'));
@@ -1189,7 +1257,8 @@
       const v = villas.find(item => String(item.id) === String(selectedVillaId));
 
       for (let day = 1; day <= totalDays; day++) {
-        const dateStr = `${currentYear}-${String(monthIdx + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const cellDate = new Date(year, monthIdx, day);
+        const dateStr = `${year}-${String(monthIdx + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
         let isApprovedStay = false;
         let isManuallyClosed = false;
@@ -1218,15 +1287,19 @@
         let isStay = false;
         let isCheckoutDate = false;
 
-        if (modalStartDay !== null && modalEndDay === null) {
-          if (day === modalStartDay) isCheckinDate = true;
-        } else if (modalStartDay !== null && modalEndDay !== null) {
-          const min = Math.min(modalStartDay, modalEndDay);
-          const max = Math.max(modalStartDay, modalEndDay);
-          
-          if (day === min) isCheckinDate = true;
-          else if (day > min && day < max) isStay = true;
-          else if (day === max) isCheckoutDate = true;
+        if (modalStartDate !== null && modalEndDate === null) {
+          if (cellDate.getTime() === modalStartDate.getTime()) isCheckinDate = true;
+        } else if (modalStartDate !== null && modalEndDate !== null) {
+          const startTime = modalStartDate.getTime();
+          const endTime = modalEndDate.getTime();
+          const cellTime = cellDate.getTime();
+
+          const minTime = Math.min(startTime, endTime);
+          const maxTime = Math.max(startTime, endTime);
+
+          if (cellTime === minTime) isCheckinDate = true;
+          else if (cellTime > minTime && cellTime < maxTime) isStay = true;
+          else if (cellTime === maxTime) isCheckoutDate = true;
         }
 
         if (isCheckinDate) {
@@ -1241,35 +1314,44 @@
         cell.style.minHeight = '42px';
         cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${isUnavailable ? 'Dolu' : 'Boş'}</span>`;
 
-        if (!isUnavailable) cell.onclick = () => handleModalDayClick(day);
+        if (!isUnavailable) cell.onclick = () => handleModalDateClick(cellDate);
 
         calGrid.appendChild(cell);
       }
     }
 
-    function handleModalDayClick(day) {
-      if (modalStartDay === null || (modalStartDay !== null && modalEndDay !== null)) {
-        modalStartDay = day;
-        modalEndDay = null;
+    function handleModalDateClick(clickedDate) {
+      if (modalStartDate === null || (modalStartDate !== null && modalEndDate !== null)) {
+        modalStartDate = clickedDate;
+        modalEndDate = null;
       } else {
-        if (day > modalStartDay) {
-          modalEndDay = day;
+        if (clickedDate.getTime() > modalStartDate.getTime()) {
+          modalEndDate = clickedDate;
         } else {
-          modalStartDay = day;
-          modalEndDay = null;
+          modalStartDate = clickedDate;
+          modalEndDate = null;
         }
       }
 
-      const mIdx = parseInt(document.getElementById('mMonthSelect').value) + 1;
       const textElem = document.getElementById('modalSelectedDatesText');
 
-      if (modalStartDay !== null && modalEndDay !== null) {
-        textElem.innerText = `Seçilen: ${modalStartDay}.${mIdx} (Giriş) - ${modalEndDay}.${mIdx} (Çıkış)`;
-      } else if (modalStartDay !== null) {
-        textElem.innerText = `Giriş: ${modalStartDay}.${mIdx} (Çıkış gününe tıklayın)`;
+      if (modalStartDate !== null && modalEndDate !== null) {
+        const inStr = `${modalStartDate.getDate()} ${monthNames[modalStartDate.getMonth()]} ${modalStartDate.getFullYear()}`;
+        const outStr = `${modalEndDate.getDate()} ${monthNames[modalEndDate.getMonth()]} ${modalEndDate.getFullYear()}`;
+        textElem.innerText = `Seçilen Tarihler: ${inStr} (Giriş) - ${outStr} (Çıkış)`;
+      } else if (modalStartDate !== null) {
+        const inStr = `${modalStartDate.getDate()} ${monthNames[modalStartDate.getMonth()]} ${modalStartDate.getFullYear()}`;
+        textElem.innerText = `Giriş Tarihi: ${inStr} (Lütfen çıkış gününe tıklayın)`;
       }
 
       renderModalCalendar();
+    }
+
+    function formatDateToYYYYMMDD(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     async function submitManualBooking() {
@@ -1278,26 +1360,26 @@
       const name = document.getElementById('mGuestName').value.trim();
       const phone = document.getElementById('mGuestPhone').value.trim();
       const agencyName = document.getElementById('mAgencySelect').value;
-      
-      const currentYear = new Date().getFullYear();
-      const mIdx = parseInt(document.getElementById('mMonthSelect').value) + 1;
 
-      if (!modalStartDay || !modalEndDay) return alert("Lütfen takvimden boş olan giriş ve çıkış gününü seçin.");
+      if (!modalStartDate || !modalEndDate) return alert("Lütfen takvimden boş olan giriş ve çıkış gününü seçin.");
       if (!name || !phone) return alert("Lütfen müşteri adı ve telefon numarasını doldurun.");
 
-      const min = Math.min(modalStartDay, modalEndDay);
-      const max = Math.max(modalStartDay, modalEndDay);
+      const minTime = Math.min(modalStartDate.getTime(), modalEndDate.getTime());
+      const maxTime = Math.max(modalStartDate.getTime(), modalEndDate.getTime());
 
-      for (let day = min; day < max; day++) {
-        const dateStr = `${currentYear}-${String(mIdx).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      // Çakışma Kontrolü
+      let curr = new Date(minTime);
+      while (curr.getTime() < maxTime) {
+        const dateStr = formatDateToYYYYMMDD(curr);
         const hasConflict = reservations.some(r => r.status === 'Onaylandı' && String(r.villa_id) === String(vId) && (dateStr >= r.check_in && dateStr < r.check_out));
         if (hasConflict) {
-          return alert(`Seçtiğiniz tarih aralığında (${day}. Gün) başka bir onaylı müşteri kaydı var. Lütfen boş bir tarih aralığı seçin!`);
+          return alert(`Seçtiğiniz tarih aralığında (${dateStr}) başka bir onaylı müşteri kaydı var. Lütfen boş bir tarih aralığı seçin!`);
         }
+        curr.setDate(curr.getDate() + 1);
       }
 
-      const inDate = `${currentYear}-${String(mIdx).padStart(2, '0')}-${String(min).padStart(2, '0')}`;
-      const outDate = `${currentYear}-${String(mIdx).padStart(2, '0')}-${String(max).padStart(2, '0')}`;
+      const inDate = formatDateToYYYYMMDD(new Date(minTime));
+      const outDate = formatDateToYYYYMMDD(new Date(maxTime));
 
       const deposit = document.getElementById('mDepositPrice').value.trim();
       const remaining = document.getElementById('mRemainingPrice').value.trim();
@@ -1324,9 +1406,10 @@
         closeManualBookingModal();
         
         document.getElementById('finBuildingSelect').value = vId;
-        document.getElementById('finMonthSelect').value = mIdx - 1;
-        document.getElementById('rightMonthSelect').value = mIdx - 1;
-        document.getElementById('centerMonthSelect').value = mIdx - 1;
+        const resMonth = new Date(minTime).getMonth();
+        document.getElementById('finMonthSelect').value = resMonth;
+        document.getElementById('rightMonthSelect').value = resMonth;
+        document.getElementById('centerMonthSelect').value = resMonth;
         
         await loadReservations();
       } else {
