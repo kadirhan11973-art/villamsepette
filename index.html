@@ -89,9 +89,16 @@
       cursor: pointer !important;
     }
 
-    /* MÜŞTERİ SEÇİMİNDE GECE KONAKLAMA VE ÇAPRAZ ÇIKIŞ EFEKTİ */
+    /* MÜŞTERİ SEÇİMİNDE GECE KONAKLAMA VE ÇAPRAZ ÇIKIŞ/GİRİŞ EFEKTLERİ */
     .day-cell.selected { background: var(--selected-color) !important; border-color: var(--selected-border) !important; }
     
+    /* GİRİŞ GÜNÜ (CHECK-IN) ÇAPRAZ MAVİ EFEKTİ */
+    .day-cell.selected-checkin {
+      background: linear-gradient(135deg, var(--available-color) 0%, var(--available-color) 49%, #cbd5e1 50%, var(--selected-color) 51%, var(--selected-color) 100%) !important;
+      border-color: var(--selected-border) !important;
+    }
+
+    /* ÇIKIŞ GÜNÜ (CHECKOUT) ÇAPRAZ MAVİ EFEKTİ */
     .day-cell.selected-checkout {
       background: linear-gradient(135deg, var(--selected-color) 0%, var(--selected-color) 49%, #cbd5e1 50%, var(--available-color) 51%, var(--available-color) 100%) !important;
       border-color: var(--selected-border) !important;
@@ -426,21 +433,25 @@
           classes.push('available');
         }
 
-        // Müşterinin ekrandan tarih seçme görseli (Çapraz Seçim Dahil)
+        // Müşterinin ekrandan tarih seçme görseli (Giriş Çapraz, Gece Tam, Çıkış Çapraz Mavi)
+        let isCheckinDate = false;
         let isStay = false;
         let isCheckoutDate = false;
 
         if (selectedStartDate && !selectedEndDate) {
-          if (thisDate.getTime() === selectedStartDate.getTime()) isStay = true;
+          if (thisDate.getTime() === selectedStartDate.getTime()) isCheckinDate = true;
         } else if (selectedStartDate && selectedEndDate) {
-          if (thisDate >= selectedStartDate && thisDate < selectedEndDate) isStay = true;
-          if (thisDate.getTime() === selectedEndDate.getTime()) isCheckoutDate = true;
+          if (thisDate.getTime() === selectedStartDate.getTime()) isCheckinDate = true;
+          else if (thisDate > selectedStartDate && thisDate < selectedEndDate) isStay = true;
+          else if (thisDate.getTime() === selectedEndDate.getTime()) isCheckoutDate = true;
         }
 
-        if (isStay) {
-          classes.push('selected');
+        if (isCheckinDate) {
+          classes.push('selected-checkin'); // Çapraz Giriş Mavi Görünüm
+        } else if (isStay) {
+          classes.push('selected'); // Tam Mavi Gece
         } else if (isCheckoutDate) {
-          classes.push('selected-checkout'); // Çapraz Mavi Görünüm
+          classes.push('selected-checkout'); // Çapraz Çıkış Mavi Görünüm
         }
 
         cell.className = classes.join(' ');
@@ -498,7 +509,7 @@
       const priceText = document.getElementById('totalPriceText');
 
       if (selectedStartDate && selectedEndDate) {
-        datesText.innerText = `${formatDate(selectedStartDate)} - ${formatDate(selectedEndDate)} (Öğlen Çıkış)`;
+        datesText.innerText = `${formatDate(selectedStartDate)} (Öğleden Sonra Giriş) - ${formatDate(selectedEndDate)} (Öğlen Çıkış)`;
         
         let total = 0;
         let cur = new Date(selectedStartDate);
@@ -508,7 +519,7 @@
         }
         priceText.innerText = total.toLocaleString('tr-TR') + " TL";
       } else if (selectedStartDate) {
-        datesText.innerText = `${formatDate(selectedStartDate)} (Çıkış Seçin)`;
+        datesText.innerText = `${formatDate(selectedStartDate)} (Giriş Seçildi - Çıkış Seçin)`;
         priceText.innerText = "-";
       }
 
@@ -559,16 +570,20 @@
         const cell = document.createElement('div');
         cell.className = 'day-cell ' + (isPast ? 'past-day' : 'available');
         
+        let isCheckin = false;
         let isStay = false;
         let isCheckout = false;
 
-        if (searchStart && !searchEnd && thisDate.getTime() === searchStart.getTime()) isStay = true;
+        if (searchStart && !searchEnd && thisDate.getTime() === searchStart.getTime()) isCheckin = true;
         if (searchStart && searchEnd) {
-          if (thisDate >= searchStart && thisDate < searchEnd) isStay = true;
-          if (thisDate.getTime() === searchEnd.getTime()) isCheckout = true;
+          if (thisDate.getTime() === searchStart.getTime()) isCheckin = true;
+          else if (thisDate > searchStart && thisDate < searchEnd) isStay = true;
+          else if (thisDate.getTime() === searchEnd.getTime()) isCheckout = true;
         }
 
-        if (isStay) {
+        if (isCheckin) {
+          cell.className += ' selected-checkin';
+        } else if (isStay) {
           cell.className += ' selected';
         } else if (isCheckout) {
           cell.className += ' selected-checkout';
@@ -600,7 +615,7 @@
       const statusText = document.getElementById('searchRangeText');
 
       if (searchStart && searchEnd) {
-        statusText.innerText = `Seçilen: ${formatDate(searchStart)} - ${formatDate(searchEnd)} (Çıkış)`;
+        statusText.innerText = `Seçilen: ${formatDate(searchStart)} (Giriş) - ${formatDate(searchEnd)} (Çıkış)`;
       } else if (searchStart) {
         statusText.innerText = `Giriş: ${formatDate(searchStart)} (Çıkış Seçin)`;
       }
@@ -690,7 +705,7 @@
                   `👤 *Müşteri:* ${name}%0A` +
                   `📞 *Telefon:* ${phone}%0A` +
                   `✉️ *E-Posta:* ${email || '-'}%0A` +
-                  `📅 *Giriş Tarihi:* ${inStr}%0A` +
+                  `📅 *Giriş Tarihi:* ${inStr} (Öğleden Sonra)%0A` +
                   `📅 *Çıkış Tarihi:* ${outStr} (Öğlen)%0A` +
                   `💰 *Hesaplanan Tutar:* ${totalPriceStr}`;
 
