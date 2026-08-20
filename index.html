@@ -82,6 +82,7 @@
     .day-cell.available { background: var(--available-color); border-color: #86efac; }
     .day-cell.booked { background: var(--booked-color); border-color: #fca5a5; cursor: not-allowed; }
     .day-cell.pending-day { background: var(--pending-color) !important; border-color: #cbd5e1 !important; color: #64748b; }
+    .day-cell.past-day { background: #e2e8f0 !important; border-color: #cbd5e1 !important; color: #94a3b8 !important; cursor: not-allowed !important; opacity: 0.6; }
     
     .day-cell.split-checkout {
       background: linear-gradient(135deg, var(--booked-color) 0%, var(--booked-color) 49%, #cbd5e1 50%, var(--available-color) 51%, var(--available-color) 100%) !important;
@@ -375,6 +376,9 @@
       const currentYear = new Date().getFullYear();
       const selectedMonthIndex = parseInt(document.getElementById('monthSelect').value);
 
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
       const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
       days.forEach(d => {
         const h = document.createElement('div');
@@ -397,6 +401,9 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const thisDate = new Date(currentYear, selectedMonthIndex, day);
+        thisDate.setHours(0,0,0,0);
+        const isPast = thisDate < today;
+
         const customInfo = monthPrices.customDays ? monthPrices.customDays[day] : null;
         const priceStr = customInfo ? customInfo.price : (monthPrices.defaultPrice || "Fiyat Yok");
         const manualAvailable = customInfo ? customInfo.available : true;
@@ -407,7 +414,9 @@
         let classes = ['day-cell'];
 
         // Durum Tespiti
-        if (isApprovedCheckout && !isApprovedStay) {
+        if (isPast) {
+          classes.push('past-day');
+        } else if (isApprovedCheckout && !isApprovedStay) {
           classes.push('split-checkout');
         } else if (isApprovedStay || !manualAvailable) {
           classes.push('booked');
@@ -437,13 +446,14 @@
         cell.className = classes.join(' ');
         
         let labelPrice = priceStr;
-        if (isPendingStay && !isApprovedStay) labelPrice = "Opsiyonlu";
-        if (isApprovedStay) labelPrice = "Dolu";
-        if (isApprovedCheckout && !isApprovedStay) labelPrice = "Çıkışlı";
+        if (isPast) labelPrice = "-";
+        else if (isPendingStay && !isApprovedStay) labelPrice = "Opsiyonlu";
+        else if (isApprovedStay) labelPrice = "Dolu";
+        else if (isApprovedCheckout && !isApprovedStay) labelPrice = "Çıkışlı";
 
         cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${labelPrice}</span>`;
 
-        if (!isApprovedStay && manualAvailable) {
+        if (!isPast && !isApprovedStay && manualAvailable) {
           cell.onclick = () => handleDateClick(currentYear, selectedMonthIndex, day);
         }
 
@@ -522,6 +532,9 @@
       const currentYear = new Date().getFullYear();
       const monthIndex = parseInt(document.getElementById('searchMonthSelect').value);
 
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
       const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
       days.forEach(d => {
         const h = document.createElement('div');
@@ -540,8 +553,11 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const thisDate = new Date(currentYear, monthIndex, day);
+        thisDate.setHours(0,0,0,0);
+        const isPast = thisDate < today;
+
         const cell = document.createElement('div');
-        cell.className = 'day-cell available';
+        cell.className = 'day-cell ' + (isPast ? 'past-day' : 'available');
         
         let isStay = false;
         let isCheckout = false;
@@ -559,7 +575,9 @@
         }
 
         cell.innerHTML = `<span class="day-num">${day}</span>`;
-        cell.onclick = () => handleSearchDayClick(currentYear, monthIndex, day);
+        if (!isPast) {
+          cell.onclick = () => handleSearchDayClick(currentYear, monthIndex, day);
+        }
         grid.appendChild(cell);
       }
     }
