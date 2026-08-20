@@ -26,7 +26,7 @@
     header { text-align: center; margin-bottom: 25px; }
     header h1 { color: #0f172a; margin-bottom: 6px; }
 
-    /* ÜÇLÜ DÜZEN: SOL BEYNER | VİLLA LİSTESİ | SAĞ TAKVİM SIDEBAR */
+    /* ÜÇLÜ DÜZEN: SOL BANNER | VİLLA LİSTESİ | SAĞ TAKVİM SIDEBAR */
     .main-layout { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; align-items: flex-start; }
     
     /* SOL DİKEY REKLAM BANNERI */
@@ -85,8 +85,16 @@
     
     .day-cell.split-checkout {
       background: linear-gradient(135deg, var(--booked-color) 0%, var(--booked-color) 49%, #cbd5e1 50%, var(--available-color) 51%, var(--available-color) 100%) !important;
+      cursor: pointer !important;
     }
+
+    /* MÜŞTERİ SEÇİMİNDE GECE KONAKLAMA VE ÇAPRAZ ÇIKIŞ EFEKTİ */
     .day-cell.selected { background: var(--selected-color) !important; border-color: var(--selected-border) !important; }
+    
+    .day-cell.selected-checkout {
+      background: linear-gradient(135deg, var(--selected-color) 0%, var(--selected-color) 49%, #cbd5e1 50%, var(--available-color) 51%, var(--available-color) 100%) !important;
+      border-color: var(--selected-border) !important;
+    }
 
     .day-num { font-weight: bold; font-size: 0.8rem; text-align: left; padding-left: 2px; z-index: 2; }
     .day-price { font-size: 0.65rem; color: #15803d; text-align: right; font-weight: 600; z-index: 2; }
@@ -341,7 +349,7 @@
       updateFrontSlider();
     }
 
-    /* MÜSAİTLİK TAKVİMİ */
+    /* MÜSAİTLİK TAKVİMİ REZERVASYON DURUMU HESAPLAMA */
     function getDayReservationStatus(villaId, year, monthIndex, day) {
       const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       let isApprovedStay = false, isApprovedCheckout = false, isPendingStay = false;
@@ -353,7 +361,7 @@
           if (dateStr >= r.check_in && dateStr < r.check_out) isApprovedStay = true;
           if (dateStr === r.check_out) isApprovedCheckout = true;
         } else if (r.status === 'Beklemede') {
-          if (dateStr >= r.check_in && dateStr <= r.check_out) isPendingStay = true;
+          if (dateStr >= r.check_in && dateStr < r.check_out) isPendingStay = true;
         }
       });
 
@@ -398,6 +406,7 @@
         const cell = document.createElement('div');
         let classes = ['day-cell'];
 
+        // Durum Tespiti
         if (isApprovedCheckout && !isApprovedStay) {
           classes.push('split-checkout');
         } else if (isApprovedStay || !manualAvailable) {
@@ -408,21 +417,29 @@
           classes.push('available');
         }
 
-        let isStay = false, isCheckout = false;
+        // Müşterinin ekrandan tarih seçme görseli (Çapraz Seçim Dahil)
+        let isStay = false;
+        let isCheckoutDate = false;
+
         if (selectedStartDate && !selectedEndDate) {
           if (thisDate.getTime() === selectedStartDate.getTime()) isStay = true;
         } else if (selectedStartDate && selectedEndDate) {
           if (thisDate >= selectedStartDate && thisDate < selectedEndDate) isStay = true;
-          if (thisDate.getTime() === selectedEndDate.getTime()) isCheckout = true;
+          if (thisDate.getTime() === selectedEndDate.getTime()) isCheckoutDate = true;
         }
 
-        if (isStay) classes.push('selected');
+        if (isStay) {
+          classes.push('selected');
+        } else if (isCheckoutDate) {
+          classes.push('selected-checkout'); // Çapraz Mavi Görünüm
+        }
 
         cell.className = classes.join(' ');
         
         let labelPrice = priceStr;
         if (isPendingStay && !isApprovedStay) labelPrice = "Opsiyonlu";
         if (isApprovedStay) labelPrice = "Dolu";
+        if (isApprovedCheckout && !isApprovedStay) labelPrice = "Çıkışlı";
 
         cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${labelPrice}</span>`;
 
@@ -442,7 +459,24 @@
         selectedEndDate = null;
       } else {
         if (clicked > selectedStartDate) {
-          selectedEndDate = clicked;
+          let hasBlockedNight = false;
+          let temp = new Date(selectedStartDate);
+          while (temp < clicked) {
+            const status = getDayReservationStatus(activeVilla.id, temp.getFullYear(), temp.getMonth(), temp.getDate());
+            if (status.isApprovedStay) {
+              hasBlockedNight = true;
+              break;
+            }
+            temp.setDate(temp.getDate() + 1);
+          }
+
+          if (hasBlockedNight) {
+            alert("Seçtiğiniz tarihler arasında dolu geceler bulunmaktadır. Lütfen müsait bir aralık seçin.");
+            selectedStartDate = clicked;
+            selectedEndDate = null;
+          } else {
+            selectedEndDate = clicked;
+          }
         } else {
           selectedStartDate = clicked;
           selectedEndDate = null;
@@ -480,7 +514,7 @@
       return isNaN(num) ? 0 : num;
     }
 
-    /* ARAMA FİLTRESİ */
+    /* ARAMA FİLTRESİ (SAĞ SIDEBAR) */
     function renderSearchCalendar() {
       const grid = document.getElementById('searchCalendarGrid');
       grid.innerHTML = '';
@@ -509,11 +543,20 @@
         const cell = document.createElement('div');
         cell.className = 'day-cell available';
         
-        let isSelected = false;
-        if (searchStart && !searchEnd && thisDate.getTime() === searchStart.getTime()) isSelected = true;
-        if (searchStart && searchEnd && thisDate >= searchStart && thisDate <= searchEnd) isSelected = true;
+        let isStay = false;
+        let isCheckout = false;
 
-        if (isSelected) cell.className += ' selected';
+        if (searchStart && !searchEnd && thisDate.getTime() === searchStart.getTime()) isStay = true;
+        if (searchStart && searchEnd) {
+          if (thisDate >= searchStart && thisDate < searchEnd) isStay = true;
+          if (thisDate.getTime() === searchEnd.getTime()) isCheckout = true;
+        }
+
+        if (isStay) {
+          cell.className += ' selected';
+        } else if (isCheckout) {
+          cell.className += ' selected-checkout';
+        }
 
         cell.innerHTML = `<span class="day-num">${day}</span>`;
         cell.onclick = () => handleSearchDayClick(currentYear, monthIndex, day);
@@ -539,7 +582,7 @@
       const statusText = document.getElementById('searchRangeText');
 
       if (searchStart && searchEnd) {
-        statusText.innerText = `Seçilen: ${formatDate(searchStart)} - ${formatDate(searchEnd)}`;
+        statusText.innerText = `Seçilen: ${formatDate(searchStart)} - ${formatDate(searchEnd)} (Çıkış)`;
       } else if (searchStart) {
         statusText.innerText = `Giriş: ${formatDate(searchStart)} (Çıkış Seçin)`;
       }
