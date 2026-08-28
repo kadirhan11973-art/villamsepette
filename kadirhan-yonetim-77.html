@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Flatpickr (Çift Ay Takvim Modülü) -->
+  <!-- Flatpickr -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 
@@ -41,7 +41,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-    /* HEADER & HAMBURGER */
     .admin-header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--border);
@@ -71,7 +70,6 @@
     }
     .menu-toggle-btn:hover { background: var(--primary); color: white; }
 
-    /* SIDEBAR DRAWER */
     .sidebar-drawer {
       position: fixed;
       top: 0;
@@ -117,7 +115,6 @@
     .nav-item.special-nav { background: rgba(37, 99, 235, 0.15); border: 1px solid var(--primary); color: #60a5fa; }
     .nav-item.special-nav:hover { background: var(--primary); color: white; }
 
-    /* TAB DÜZENİ */
     .tab-content { display: none; padding: 24px; max-width: 1600px; margin: 0 auto; }
     .tab-content.active-tab { display: block; animation: fadeIn 0.3s ease; }
 
@@ -162,9 +159,8 @@
     .stat-card span { font-size: 0.8rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
     .stat-card h4 { font-size: 1.5rem; font-weight: 800; color: white; }
 
-    .today-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .today-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 
-    /* TAKVİMLER */
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .day-header { font-weight: 700; font-size: 0.75rem; color: var(--text-sub); }
     
@@ -193,9 +189,8 @@
     .badge-in { background: var(--success); color: white; }
     .badge-out { background: var(--split-orange); color: white; }
 
-    /* TABLOLAR VE FORM */
-    .res-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 800px; }
-    .res-table th, .res-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .res-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 700px; }
+    .res-table th, .res-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
     .res-table th { background: var(--card-inner); color: white; font-weight: 700; }
 
     .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
@@ -213,7 +208,7 @@
     .btn-danger { background: var(--danger); }
     .btn-success { background: var(--success); }
 
-    .villa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+    .villa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
     .villa-card { background: var(--card-inner); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; position: relative; cursor: pointer; }
     .villa-card img { width: 100%; height: 160px; object-fit: cover; }
     .villa-card-body { padding: 14px; text-align: center; }
@@ -229,10 +224,9 @@
     .offer-villa-item img { width: 100%; height: 180px; object-fit: cover; }
     .offer-villa-body { padding: 14px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
 
-    /* MODAL */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 200; justify-content: center; align-items: center; padding: 16px; }
     .modal.active { display: flex; }
-    .modal-content { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); max-width: 850px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 26px; position: relative; }
+    .modal-content { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); max-width: 850px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; position: relative; }
     .close-btn { position: absolute; top: 16px; right: 20px; font-size: 26px; cursor: pointer; background: none; border: none; color: white; }
 
     .slider { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
@@ -245,6 +239,17 @@
     .photo-order-bar { display: flex; gap: 10px; overflow-x: auto; padding: 8px 0; margin-bottom: 14px; border-bottom: 1px solid var(--border); }
     .photo-thumb { width: 65px; height: 48px; border-radius: 6px; object-fit: cover; border: 2px solid transparent; cursor: pointer; flex-shrink: 0; }
     .photo-thumb.active { border-color: var(--primary); }
+
+    @media (max-width: 768px) {
+      .admin-header { padding: 12px 16px; }
+      .tab-content { padding: 14px 10px; }
+      .card-box { padding: 14px; margin-bottom: 16px; border-radius: 12px; }
+      .day-cell { min-height: 44px; padding: 2px; }
+      .day-num { font-size: 0.7rem; }
+      .day-price { font-size: 0.55rem; }
+      .finance-stats-grid { grid-template-columns: 1fr; }
+      .today-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -253,7 +258,7 @@
   <header class="admin-header">
     <div class="header-left">
       <button class="menu-toggle-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-      <h1 style="font-size: 1.2rem; font-weight: 800; color: white;">Tatilim Sepette <span style="font-weight: 400; color: var(--text-sub); font-size: 0.9rem;">| VIP Yönetim Portalı</span></h1>
+      <h1 style="font-size: 1.1rem; font-weight: 800; color: white;">Tatilim Sepette <span style="font-weight: 400; color: var(--text-sub); font-size: 0.85rem;">| VIP Admin</span></h1>
     </div>
   </header>
 
@@ -276,18 +281,18 @@
   <!-- TAB 0: MÜSAİT VİLLA ARA & VIP TEKLİF OLUŞTUR -->
   <div id="tab-vip-offer" class="tab-content">
     <div class="card-box">
-      <h2><i class="fa-solid fa-magnifying-glass-dollar" style="color:var(--primary);"></i> Müsait Villa Arama & Müşteriye Özel Link Üretici</h2>
+      <h2><i class="fa-solid fa-magnifying-glass-dollar" style="color:var(--primary);"></i> Müsait Villa Ara & VIP Teklif Linki</h2>
       
-      <div style="display:flex; gap:16px; align-items:flex-end; max-width:700px; margin-bottom:20px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:260px;">
-          <label>Giriş - Çıkış Tarihi Seçin (2 Ay Görünüm):</label>
+      <div style="display:flex; gap:12px; align-items:flex-end; max-width:700px; margin-bottom:20px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:240px;">
+          <label>Giriş - Çıkış Tarihi Seçin:</label>
           <input type="text" id="offerDateRange" placeholder="Tarih aralığı seçin..." readonly style="background:var(--card-inner); cursor:pointer; font-weight:bold; color:var(--primary);">
         </div>
-        <button class="btn btn-success" onclick="searchAvailableVillasForOffer()"><i class="fa-solid fa-filter"></i> Müsait Binaları Getir</button>
+        <button class="btn btn-success" onclick="searchAvailableVillasForOffer()"><i class="fa-solid fa-filter"></i> Binaları Getir</button>
       </div>
 
-      <div id="offerResultsContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
-        <div style="color:var(--text-sub); font-size:0.9rem; grid-column:1/-1;">Lütfen yukarıdan tarih aralığını seçip "Müsait Binaları Getir" butonuna basın.</div>
+      <div id="offerResultsContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:16px;">
+        <div style="color:var(--text-sub); font-size:0.9rem; grid-column:1/-1;">Lütfen yukarıdan tarih aralığını seçip "Binaları Getir" butonuna basın.</div>
       </div>
     </div>
   </div>
@@ -297,21 +302,21 @@
     <div class="card-box">
       <h3><i class="fa-solid fa-calendar-day" style="color: var(--primary);"></i> Bugünkü Giriş ve Çıkış Yapan Binalar</h3>
       <div class="today-grid">
-        <div style="padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--card-inner); border-left:5px solid var(--success);">
-          <h4 style="color: var(--success); font-size: 0.95rem; margin-bottom: 8px;">📥 Bugün Giriş Yapılacak Binalar (<span id="todayCheckinCount">0</span>)</h4>
+        <div style="padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--card-inner); border-left:5px solid var(--success);">
+          <h4 style="color: var(--success); font-size: 0.9rem; margin-bottom: 6px;">📥 Bugün Giriş Yapılacak Binalar (<span id="todayCheckinCount">0</span>)</h4>
           <ul id="todayCheckinList" style="list-style: none; font-size: 0.85rem; color: var(--text-sub);">Yükleniyor...</ul>
         </div>
-        <div style="padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--card-inner); border-left:5px solid var(--split-orange);">
-          <h4 style="color: var(--split-orange); font-size: 0.95rem; margin-bottom: 8px;">📤 Bugün Çıkış Yapılacak Binalar (<span id="todayCheckoutCount">0</span>)</h4>
+        <div style="padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--card-inner); border-left:5px solid var(--split-orange);">
+          <h4 style="color: var(--split-orange); font-size: 0.9rem; margin-bottom: 6px;">📤 Bugün Çıkış Yapılacak Binalar (<span id="todayCheckoutCount">0</span>)</h4>
           <ul id="todayCheckoutList" style="list-style: none; font-size: 0.85rem; color: var(--text-sub);">Yükleniyor...</ul>
         </div>
       </div>
     </div>
 
     <div class="card-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
-        <h3><i class="fa-solid fa-chart-simple" style="color: var(--primary);"></i> Günlük Giriş / Çıkış Yoğunluk Takvimi</h3>
-        <select id="rightMonthSelect" onchange="renderRightMovementCalendar();" style="width: 150px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; flex-wrap:wrap; gap:8px;">
+        <h3><i class="fa-solid fa-chart-simple" style="color: var(--primary);"></i> Günlük Giriş / Çıkış Yoğunluğu</h3>
+        <select id="rightMonthSelect" onchange="renderRightMovementCalendar();" style="width: 130px;">
           <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
           <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
           <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
@@ -326,14 +331,14 @@
     </div>
 
     <div class="card-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
-        <div style="display:flex; gap:12px; align-items:center;">
-          <h3 id="selectedVillaCalendarTitle" style="margin:0;"><i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i> Müsaitlik & Fiyat Takvimi</h3>
-          <select id="centerVillaFilterSelect" onchange="renderCenterCalendar()" style="width: 180px; font-weight:bold;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <h3 id="selectedVillaCalendarTitle" style="margin:0;"><i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i> Müsaitlik Takvimi</h3>
+          <select id="centerVillaFilterSelect" onchange="renderCenterCalendar()" style="width: 140px; font-weight:bold;">
             <option value="ALL">Tüm Villalar</option>
           </select>
         </div>
-        <select id="centerMonthSelect" onchange="renderCenterCalendar()" style="width: 150px;">
+        <select id="centerMonthSelect" onchange="renderCenterCalendar()" style="width: 130px;">
           <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
           <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
           <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
@@ -347,32 +352,32 @@
   <!-- TAB 2: FİNANSAL TAKİP & KAYITLAR -->
   <div id="tab-financials" class="tab-content">
     <div class="card-box">
-      <h2><i class="fa-solid fa-wallet"></i> Finansal Takip & Otomatik Kasa Toplamları</h2>
+      <h2><i class="fa-solid fa-wallet"></i> Finansal Takip & Otomatik Kasa</h2>
       
       <div class="finance-stats-grid">
         <div class="stat-card" style="border-left: 4px solid var(--primary);">
-          <span>Toplam Ciro (Seçili Filtre)</span>
+          <span>Toplam Ciro</span>
           <h4 id="totalRevenueText">0 TL</h4>
         </div>
         <div class="stat-card" style="border-left: 4px solid var(--success);">
-          <span>Alınan Toplam Kaparo</span>
+          <span>Alınan Kaparo</span>
           <h4 id="totalDepositText" style="color:#22c55e;">0 TL</h4>
         </div>
         <div class="stat-card" style="border-left: 4px solid var(--split-orange);">
-          <span>Girişte Alınacak Kalan Bakiye</span>
+          <span>Kalan Bakiye</span>
           <h4 id="totalRemainingText" style="color:#f97316;">0 TL</h4>
         </div>
       </div>
 
-      <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:200px;">
-          <label>Bina Seçimi:</label>
+      <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px;">
+          <label>Bina:</label>
           <select id="finBuildingSelect" onchange="renderFilteredFinancials()">
             <option value="ALL">Tüm Binalar</option>
           </select>
         </div>
-        <div style="flex:1; min-width:200px;">
-          <label>Ay Seçimi:</label>
+        <div style="flex:1; min-width:140px;">
+          <label>Ay:</label>
           <select id="finMonthSelect" onchange="renderFilteredFinancials()">
             <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
             <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
@@ -382,19 +387,20 @@
         </div>
       </div>
 
-      <div id="financialListContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px;"></div>
+      <div id="financialListContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:14px;"></div>
     </div>
   </div>
 
   <!-- TAB 3: VİLLA EKLE -->
   <div id="tab-add-villa" class="tab-content">
-    <div class="card-box" style="max-width: 650px; margin: 0 auto;">
+    <div class="card-box" style="max-width: 600px; margin: 0 auto;">
       <h2><i class="fa-solid fa-plus-circle"></i> Yeni Villa Kaydı</h2>
       <form id="addVillaForm">
         <div class="form-group"><label>Villa Adı:</label><input type="text" id="vName" required placeholder="Örn: Villa Çağan"></div>
         <div class="form-group"><label>Slogan / Açıklama:</label><input type="text" id="vTagline" placeholder="Örn: Deniz Manzaralı Özel Havuzlu"></div>
+        <div class="form-group"><label>Kart Gecelik Başlangıç Fiyatı (TL):</label><input type="text" id="vDefaultNightPrice" placeholder="Örn: 10.000"></div>
         <div class="form-group"><label>Fotoğraflar (Çoklu Seçin):</label><input type="file" id="vImages" accept="image/*" multiple required></div>
-        <button type="submit" class="btn btn-success" style="width:100%; justify-content:center;"><i class="fa-solid fa-save"></i> Villayı Sisteme Yükle</button>
+        <button type="submit" class="btn btn-success" style="width:100%; justify-content:center;"><i class="fa-solid fa-save"></i> Villayı Yükle</button>
       </form>
     </div>
   </div>
@@ -402,7 +408,7 @@
   <!-- TAB 4: VİLLALARI DÜZENLE -->
   <div id="tab-manage-villas" class="tab-content">
     <div class="card-box">
-      <h2><i class="fa-solid fa-house-gear"></i> Kayıtlı Binalar (Fotoğraf & Takvim Ayarları)</h2>
+      <h2><i class="fa-solid fa-house-gear"></i> Kayıtlı Binalar</h2>
       <div class="villa-grid" id="manageVillaGrid"></div>
     </div>
   </div>
@@ -426,10 +432,10 @@
 
   <!-- TAB 6: ACENTELER -->
   <div id="tab-agencies" class="tab-content">
-    <div class="card-box" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-box" style="max-width: 500px; margin: 0 auto;">
       <h2><i class="fa-solid fa-handshake"></i> Acente Yönetimi</h2>
       <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-        <input type="text" id="newAgencyName" placeholder="Yeni Acente adı...">
+        <input type="text" id="newAgencyName" placeholder="Acente adı...">
         <button class="btn btn-success" onclick="addAgency()">Ekle</button>
       </div>
       <div id="agencyList" style="display: flex; flex-direction: column; gap: 8px;"></div>
@@ -438,15 +444,14 @@
 
   <!-- TAB 7: SİTE & GÖRSEL AYARLARI -->
   <div id="tab-settings" class="tab-content">
-    <div class="card-box" style="max-width: 650px; margin: 0 auto;">
+    <div class="card-box" style="max-width: 600px; margin: 0 auto;">
       <h2><i class="fa-solid fa-sliders"></i> Arayüz & Reklam Banner Yönetimi</h2>
-      <div class="form-group"><label>Site Başlığı (Title):</label><input type="text" id="settingSiteTitle" placeholder="Tatilim Sepette"></div>
+      <div class="form-group"><label>Site Başlığı:</label><input type="text" id="settingSiteTitle" placeholder="Tatilim Sepette"></div>
       <div class="form-group"><label>Hero Slogan:</label><input type="text" id="settingSiteSubtitle" placeholder="Ayrılmak İstemeyeceğiniz Bir Tatil..."></div>
       
       <div style="border-top:1px dashed var(--border); padding-top:14px; margin-top:14px;">
         <label style="font-size:0.9rem; font-weight:700; color:white;">Sol Reklam Banner Görseli Yükle:</label>
         <input type="file" id="settingBannerFile" accept="image/*" style="margin-top:6px;">
-        <p style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">💡 **Önerilen Ölçü:** 300x600 px dikey banner görseli.</p>
       </div>
 
       <button class="btn btn-success" style="margin-top:16px; width:100%; justify-content:center;" onclick="saveSiteSettings()"><i class="fa-solid fa-floppy-disk"></i> Ayarları Kaydet</button>
@@ -459,6 +464,15 @@
       <button class="close-btn" onclick="closeModal()">&times;</button>
       <h2 id="modalTitle" style="margin-bottom:14px;">Villa Yönetimi</h2>
       
+      <!-- ✨ YENİ: Kart Gecelik Fiyatı Düzenleme Alanı -->
+      <div style="background:var(--card-inner); padding:12px; border-radius:12px; border:1px solid var(--border); margin-bottom:14px;">
+        <label style="font-size:0.8rem; color:#60a5fa; font-weight:700;">🏷️ Web Sitesindeki Kart Gecelik Fiyatı (TL):</label>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <input type="text" id="modalCardDefaultPrice" placeholder="Örn: 12.000 TL" style="flex:1;">
+          <button class="btn btn-success" style="padding:8px 14px; font-size:0.8rem;" onclick="saveCardDefaultPrice()"><i class="fa-solid fa-floppy-disk"></i> Fiyatı Kaydet</button>
+        </div>
+      </div>
+
       <div class="slider">
         <img id="sliderImg" src="" alt="Villa Fotoğrafı">
         <button class="slider-btn prev" onclick="prevImage()">&#10094;</button>
@@ -468,17 +482,17 @@
 
       <div class="photo-order-bar" id="photoOrderBar"></div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; background:var(--card-inner); padding:10px 14px; border-radius:10px;">
-        <div style="display:flex; gap:8px;">
-          <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="movePhotoLeft()">← Sola Kaydır</button>
-          <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="movePhotoRight()">Sağa Kaydır →</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; background:var(--card-inner); padding:10px; border-radius:10px; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:6px;">
+          <button class="btn" style="padding:6px 10px; font-size:0.75rem;" onclick="movePhotoLeft()">← Sola</button>
+          <button class="btn" style="padding:6px 10px; font-size:0.75rem;" onclick="movePhotoRight()">Sağa →</button>
         </div>
-        <button class="btn btn-danger" style="padding:6px 12px; font-size:0.8rem;" onclick="deleteCurrentImage()"><i class="fa-solid fa-trash"></i> Bu Fotoğrafı Sil</button>
+        <button class="btn btn-danger" style="padding:6px 10px; font-size:0.75rem;" onclick="deleteCurrentImage()"><i class="fa-solid fa-trash"></i> Sil</button>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h4>Müsaitlik ve Fiyat Takvimi Güncelle</h4>
-        <select id="editMonthSelect" onchange="resetSelection(); renderEditCalendar();" style="width:140px; font-weight:bold;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
+        <h4>Takvim ve Fiyat Güncelle</h4>
+        <select id="editMonthSelect" onchange="resetSelection(); renderEditCalendar();" style="width:120px; font-weight:bold;">
           <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
           <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
           <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
@@ -488,20 +502,20 @@
 
       <div class="calendar-grid" id="editCalendarGrid"></div>
 
-      <div style="background:var(--card-inner); padding:14px; border-radius:12px; border:1px solid var(--border); margin-top:16px;">
-        <div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:8px;" id="rangeStatus">Başlangıç ve bitiş gününe tıklayarak aralık seçin.</div>
+      <div style="background:var(--card-inner); padding:12px; border-radius:12px; border:1px solid var(--border); margin-top:14px;">
+        <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:6px;" id="rangeStatus">Gün seçin.</div>
         
-        <div style="display:flex; gap:10px; align-items:flex-end;">
-          <div style="flex:1;">
-            <label style="font-size:0.8rem;">Gecelik Fiyat (₺):</label>
+        <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
+          <div style="flex:1; min-width:140px;">
+            <label style="font-size:0.75rem;">Seçili Tarih Gecelik Fiyatı (₺):</label>
             <input type="text" id="rangePriceInput" placeholder="Örn: 15.000 TL">
           </div>
-          <button class="btn" onclick="saveOnlyPrice()"><i class="fa-solid fa-coins"></i> Sadece Fiyatı Güncelle</button>
+          <button class="btn" onclick="saveOnlyPrice()"><i class="fa-solid fa-coins"></i> Fiyatı Güncelle</button>
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:12px; padding-top:10px; border-top:1px dashed var(--border);">
-          <button class="btn btn-danger" style="flex:1;" onclick="toggleAvailability(false)"><i class="fa-solid fa-lock"></i> Tarihleri Kapat (Dolu Yap)</button>
-          <button class="btn btn-success" style="flex:1;" onclick="toggleAvailability(true)"><i class="fa-solid fa-lock-open"></i> Tarihleri Aç (Müsait Yap)</button>
+        <div style="display:flex; gap:8px; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); flex-wrap:wrap;">
+          <button class="btn btn-danger" style="flex:1;" onclick="toggleAvailability(false)"><i class="fa-solid fa-lock"></i> Kapat (Dolu)</button>
+          <button class="btn btn-success" style="flex:1;" onclick="toggleAvailability(true)"><i class="fa-solid fa-lock-open"></i> Aç (Müsait)</button>
           <button class="btn" style="background: #64748b;" onclick="resetSelection(); renderEditCalendar();">Temizle</button>
         </div>
       </div>
@@ -542,7 +556,7 @@
 
       flatpickr("#offerDateRange", {
         mode: "range",
-        showMonths: 2,
+        showMonths: 1,
         minDate: "today",
         dateFormat: "Y-m-d",
         locale: "tr",
@@ -585,7 +599,7 @@
     function addAgency() {
       const input = document.getElementById('newAgencyName');
       const val = input.value.trim();
-      if (!val) return alert("Lütfen bir acente adı girin.");
+      if (!val) return alert("Lütfen acente adı girin.");
       if (agencies.includes(val)) return alert("Bu acente zaten ekli.");
       agencies.push(val);
       input.value = '';
@@ -593,7 +607,7 @@
     }
 
     function deleteAgency(idx) {
-      if (!confirm("Bu acenteyi silmek istediğinize emin misiniz?")) return;
+      if (!confirm("Acente silinsin mi?")) return;
       agencies.splice(idx, 1);
       renderAgencies();
     }
@@ -641,10 +655,10 @@
       const outList = document.getElementById('todayCheckoutList');
 
       inList.innerHTML = checkins.length === 0 ? '<li style="color:var(--text-sub);">Bugün giriş yok.</li>' : '';
-      checkins.forEach(c => inList.innerHTML += `<li style="margin-bottom:6px;"><b>${c.guest_name}</b> <span>(${c.villa_name})</span></li>`);
+      checkins.forEach(c => inList.innerHTML += `<li style="margin-bottom:4px;"><b>${c.guest_name}</b> <span>(${c.villa_name})</span></li>`);
 
       outList.innerHTML = checkouts.length === 0 ? '<li style="color:var(--text-sub);">Bugün çıkış yok.</li>' : '';
-      checkouts.forEach(c => outList.innerHTML += `<li style="margin-bottom:6px;"><b>${c.guest_name}</b> <span>(${c.villa_name})</span></li>`);
+      checkouts.forEach(c => outList.innerHTML += `<li style="margin-bottom:4px;"><b>${c.guest_name}</b> <span>(${c.villa_name})</span></li>`);
     }
 
     function renderCenterCalendar() {
@@ -739,8 +753,8 @@
         cell.className = 'day-cell available';
 
         let badgeHtml = '';
-        if (checkins.length > 0) badgeHtml += `<span class="event-badge badge-in">📥 ${checkins.length} Giriş</span>`;
-        if (checkouts.length > 0) badgeHtml += `<span class="event-badge badge-out">📤 ${checkouts.length} Çıkış</span>`;
+        if (checkins.length > 0) badgeHtml += `<span class="event-badge badge-in">📥 ${checkins.length}</span>`;
+        if (checkouts.length > 0) badgeHtml += `<span class="event-badge badge-out">📤 ${checkouts.length}</span>`;
 
         cell.innerHTML = `<span class="day-num">${day}</span><div style="z-index:2;">${badgeHtml}</div>`;
         cell.onclick = () => showDayDetails(day, checkins, checkouts);
@@ -758,7 +772,7 @@
       list.innerHTML = '';
 
       if (checkins.length === 0 && checkouts.length === 0) {
-        list.innerHTML = '<li style="color:var(--text-sub);">Bu tarihte giriş veya çıkış hareketi yok.</li>';
+        list.innerHTML = '<li style="color:var(--text-sub);">Giriş/Çıkış yok.</li>';
       } else {
         checkins.forEach(c => list.innerHTML += `<li style="color:#22c55e; margin-bottom:4px;"><b>📥 Giriş:</b> ${c.villa_name} - ${c.guest_name}</li>`);
         checkouts.forEach(c => list.innerHTML += `<li style="color:#f97316; margin-bottom:4px;"><b>📤 Çıkış:</b> ${c.villa_name} - ${c.guest_name}</li>`);
@@ -801,17 +815,17 @@
         sumRemaining += rem;
 
         const card = document.createElement('div');
-        card.style.cssText = "background:var(--card-inner); border:1px solid var(--border); border-radius:12px; padding:16px; position:relative;";
+        card.style.cssText = "background:var(--card-inner); border:1px solid var(--border); border-radius:12px; padding:14px; position:relative;";
         card.innerHTML = `
-          <button class="btn btn-danger" style="position:absolute; top:10px; right:10px; padding:3px 7px; font-size:0.7rem;" onclick="cancelAndDeleteReservation(${r.id})">🗑️ Sil</button>
-          <div style="font-weight:bold; color:#ffffff; font-size:0.9rem; margin-bottom:8px;">👤 ${r.guest_name} <span style="color:var(--primary);">(${r.villa_name})</span></div>
-          <div style="font-size:0.8rem; color:var(--text-sub); display:flex; flex-direction:column; gap:4px;">
+          <button class="btn btn-danger" style="position:absolute; top:10px; right:10px; padding:2px 6px; font-size:0.7rem;" onclick="cancelAndDeleteReservation(${r.id})">Sil</button>
+          <div style="font-weight:bold; color:#ffffff; font-size:0.9rem; margin-bottom:6px;">👤 ${r.guest_name} <span style="color:var(--primary);">(${r.villa_name})</span></div>
+          <div style="font-size:0.8rem; color:var(--text-sub); display:flex; flex-direction:column; gap:3px;">
             <div>🏢 Acente: <span class="agency-badge">${r.agency_name || 'Şahsi'}</span></div>
             <div>📞 Telefon: <b>${r.guest_phone || '-'}</b></div>
             <div>📅 Tarih: <b>${r.check_in} - ${r.check_out}</b></div>
             <div>💳 Kaparo: <b style="color:#22c55e;">${r.deposit_price || '0 TL'}</b></div>
-            <div>💵 Girişte Alınacak: <b style="color:#f97316;">${r.remaining_price || '-'}</b></div>
-            <div>💰 Toplam Tutar: <b>${r.total_price || '-'}</b></div>
+            <div>💵 Kalan: <b style="color:#f97316;">${r.remaining_price || '-'}</b></div>
+            <div>💰 Toplam: <b>${r.total_price || '-'}</b></div>
           </div>
         `;
         container.appendChild(card);
@@ -822,12 +836,12 @@
       document.getElementById('totalRemainingText').innerText = sumRemaining.toLocaleString('tr-TR') + " TL";
 
       if (filtered.length === 0) {
-        container.innerHTML = '<div style="grid-column: 1/-1; color:var(--text-sub); text-align:center; padding:20px;">Seçilen kriterlere uygun onaylı kayıt bulunamadı.</div>';
+        container.innerHTML = '<div style="grid-column: 1/-1; color:var(--text-sub); text-align:center; padding:14px;">Kayıt bulunamadı.</div>';
       }
     }
 
     async function cancelAndDeleteReservation(resId) {
-      if (!confirm("Bu kayıt silinsin mi?")) return;
+      if (!confirm("Kayıt silinsin mi?")) return;
       const { error } = await _supabase.from('reservations').delete().eq('id', resId);
       if (!error) await loadReservations();
     }
@@ -858,9 +872,9 @@
             <td><b>${r.total_price || '-'}</b></td>
             <td><span class="status-badge ${statusClass}">${r.status || 'Beklemede'}</span></td>
             <td>
-              <button class="btn btn-success" style="padding:4px 8px; font-size:0.75rem;" onclick="updateStatus(${r.id}, 'Onaylandı')">Onayla</button>
-              <button class="btn" style="padding:4px 8px; font-size:0.75rem; background:var(--split-orange);" onclick="updateStatus(${r.id}, 'Reddedildi')">Reddet</button>
-              <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="cancelAndDeleteReservation(${r.id})">Sil</button>
+              <button class="btn btn-success" style="padding:4px 6px; font-size:0.7rem;" onclick="updateStatus(${r.id}, 'Onaylandı')">Onayla</button>
+              <button class="btn" style="padding:4px 6px; font-size:0.7rem; background:var(--split-orange);" onclick="updateStatus(${r.id}, 'Reddedildi')">Reddet</button>
+              <button class="btn btn-danger" style="padding:4px 6px; font-size:0.7rem;" onclick="cancelAndDeleteReservation(${r.id})">Sil</button>
             </td>
           </tr>
         `;
@@ -881,15 +895,15 @@
           <div class="villa-card" onclick="openModal('${v.id}')">
             <img src="${img}">
             <div class="villa-card-body">
-              <h4 style="color:white;">${v.name}</h4>
+              <h4 style="color:white; font-size:0.95rem;">${v.name}</h4>
               <p style="font-size:0.75rem; color:var(--text-sub);">${v.tagline || ''}</p>
+              <p style="font-size:0.75rem; color:#60a5fa; margin-top:4px;"><b>Gecelik:</b> ${v.default_night_price || 'Fiyat Sorun'} TL</p>
             </div>
           </div>
         `;
       });
     }
 
-    /* 🎯 DÜZELTİLEN LİNK MOTORU BURADA: Dosya adı ne olursa olsun müşteriyi index.html'e yönlendirir */
     function searchAvailableVillasForOffer() {
       if (!offerStart || !offerEnd) return alert("Lütfen giriş ve çıkış tarihlerini seçin.");
 
@@ -910,7 +924,6 @@
         return;
       }
 
-      // Kök adresi alıp doğrudan index.html'e kilitliyoruz:
       const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 
       availableList.forEach(v => {
@@ -923,7 +936,7 @@
           let pStr = "0";
           if (monthPrices) {
             const customInfo = monthPrices.customDays ? monthPrices.customDays[dNum] : null;
-            pStr = customInfo ? customInfo.price : (monthPrices.defaultPrice || "0");
+            pStr = customInfo ? customInfo.price : (v.default_night_price || monthPrices.defaultPrice || "0");
           }
           const num = parseInt(pStr.toString().replace(/[^0-9]/g, ''));
           totalPrice += isNaN(num) ? 0 : num;
@@ -934,7 +947,6 @@
         const formattedStart = `${offerStart.getDate()} ${monthName(offerStart.getMonth())}`;
         const formattedEnd = `${offerEnd.getDate()} ${monthName(offerEnd.getMonth())}`;
 
-        // 🎯 LİNK DÜZELTİLDİ: Artık senin gizli admin adın değil, doğrudan index.html üretiliyor
         const offerLink = `${baseUrl}/index.html#teklif?v=${v.id}&in=${sInStr}&out=${sOutStr}`;
 
         const item = document.createElement('div');
@@ -943,12 +955,12 @@
           <img src="${imgUrl}" alt="${v.name}">
           <div class="offer-villa-body">
             <div>
-              <h3 style="color:white; font-size:1.1rem; margin-bottom:4px;">${v.name}</h3>
-              <div style="font-size:0.85rem; color:var(--text-sub);">📅 <b>${formattedStart} - ${formattedEnd}</b></div>
-              <div style="font-size:1.2rem; color:var(--success); font-weight:800; margin:8px 0;">Toplam: ${totalPrice.toLocaleString('tr-TR')} TL</div>
+              <h3 style="color:white; font-size:1rem; margin-bottom:4px;">${v.name}</h3>
+              <div style="font-size:0.8rem; color:var(--text-sub);">📅 <b>${formattedStart} - ${formattedEnd}</b></div>
+              <div style="font-size:1.1rem; color:var(--success); font-weight:800; margin:6px 0;">Toplam: ${totalPrice.toLocaleString('tr-TR')} TL</div>
             </div>
-            <button class="btn btn-success" style="width:100%; justify-content:center; font-size:0.85rem;" onclick="copyOfferLink('${offerLink}')">
-              <i class="fa-solid fa-link"></i> Müşteriye Özel Linki Kopyala
+            <button class="btn btn-success" style="width:100%; justify-content:center; font-size:0.8rem;" onclick="copyOfferLink('${offerLink}')">
+              <i class="fa-solid fa-link"></i> Müşteriye Linki Kopyala
             </button>
           </div>
         `;
@@ -958,7 +970,7 @@
 
     function copyOfferLink(link) {
       navigator.clipboard.writeText(link);
-      alert("Müşteriye Gönderilecek Özel VIP Teklif Linki Kopyalandı!\n\nLink: " + link);
+      alert("VIP Teklif Linki Kopyalandı!\n\nLink: " + link);
     }
 
     function monthName(idx) {
@@ -970,10 +982,26 @@
       currentImageIndex = 0;
       document.getElementById('modalTitle').innerText = `${activeVilla.name} - Yönetim`;
       document.getElementById('editMonthSelect').value = new Date().getMonth();
+      document.getElementById('modalCardDefaultPrice').value = activeVilla.default_night_price || '';
       resetSelection();
       updateSlider();
       renderEditCalendar();
       document.getElementById('villaModal').classList.add('active');
+    }
+
+    /* ✨ YENİ: Kart Gecelik Fiyatını Kaydetme Fonksiyonu */
+    async function saveCardDefaultPrice() {
+      const priceVal = document.getElementById('modalCardDefaultPrice').value.trim();
+      if (!priceVal) return alert("Lütfen bir fiyat yazın.");
+
+      const { error } = await _supabase.from('villas').update({ default_night_price: priceVal }).eq('id', activeVilla.id);
+      if (!error) {
+        activeVilla.default_night_price = priceVal;
+        renderManageVillaGrid();
+        alert("Kart Gecelik Fiyatı Güncellendi!");
+      } else {
+        alert("Hata oluştu: " + error.message);
+      }
     }
 
     function closeModal() { document.getElementById('villaModal').classList.remove('active'); }
@@ -984,7 +1012,7 @@
       const barElem = document.getElementById('photoOrderBar');
 
       if (!activeVilla.images || activeVilla.images.length === 0) {
-        imgElem.src = 'https://via.placeholder.com/600x450?text=Fotoğraf+Yok';
+        imgElem.src = 'https://via.placeholder.com/600x450';
         counterElem.innerText = '0 / 0';
         barElem.innerHTML = '';
         return;
@@ -1039,7 +1067,7 @@
 
     async function deleteCurrentImage() {
       if (!activeVilla.images || activeVilla.images.length === 0) return;
-      if (!confirm("Seçili fotoğrafı silmek istediğinize emin misiniz?")) return;
+      if (!confirm("Fotoğraf silinsin mi?")) return;
 
       activeVilla.images.splice(currentImageIndex, 1);
       if (currentImageIndex >= activeVilla.images.length && currentImageIndex > 0) currentImageIndex--;
@@ -1050,7 +1078,7 @@
 
     function resetSelection() {
       rangeStartDay = null; rangeEndDay = null;
-      document.getElementById('rangeStatus').innerText = "Başlangıç ve bitiş gününe tıklayarak aralık seçin.";
+      document.getElementById('rangeStatus').innerText = "Gün seçin.";
       document.getElementById('rangePriceInput').value = "";
     }
 
@@ -1073,7 +1101,7 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const customInfo = monthPrices.customDays ? monthPrices.customDays[day] : null;
-        const price = customInfo ? customInfo.price : (monthPrices.defaultPrice || "Müsait");
+        const price = customInfo ? customInfo.price : (activeVilla.default_night_price || monthPrices.defaultPrice || "Müsait");
         const manualAvailable = customInfo ? customInfo.available : true;
 
         const cell = document.createElement('div');
@@ -1140,7 +1168,7 @@
       if (!pricesData[monthIdx].customDays) pricesData[monthIdx].customDays = {};
 
       for (let d = min; d <= max; d++) {
-        const exPrice = pricesData[monthIdx].customDays[d] ? pricesData[monthIdx].customDays[d].price : (pricesData[monthIdx].defaultPrice || "Müsait");
+        const exPrice = pricesData[monthIdx].customDays[d] ? pricesData[monthIdx].customDays[d].price : (activeVilla.default_night_price || pricesData[monthIdx].defaultPrice || "Müsait");
         pricesData[monthIdx].customDays[d] = { price: exPrice, available: isAvailable };
       }
 
@@ -1180,6 +1208,7 @@
       e.preventDefault();
       const name = document.getElementById('vName').value;
       const tagline = document.getElementById('vTagline').value;
+      const defaultPrice = document.getElementById('vDefaultNightPrice').value;
       const files = document.getElementById('vImages').files;
 
       let imageUrls = [];
@@ -1190,7 +1219,7 @@
         imageUrls.push(data.publicUrl);
       }
 
-      await _supabase.from('villas').insert([{ id: Date.now().toString(), name, tagline, images: imageUrls, prices: {} }]);
+      await _supabase.from('villas').insert([{ id: Date.now().toString(), name, tagline, default_night_price: defaultPrice, images: imageUrls, prices: {} }]);
       document.getElementById('addVillaForm').reset();
       alert("Villa Eklendi!");
       loadVillas();
