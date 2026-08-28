@@ -35,7 +35,7 @@
 
             --booked-color: #fee2e2;
             --available-color: #dcfce7;
-            --pending-color: #e2e8f0;
+            --pending-color: #fef08a;
             --selected-color: #93c5fd;
             --selected-border: #2563eb;
         }
@@ -129,7 +129,6 @@
         .v-price-val { font-size: 1.15rem; font-weight: 800; color: var(--brand-accent); }
         .btn-card-detail { background: var(--brand-primary); color: white; padding: 8px 16px; border-radius: var(--radius-md); font-weight: 700; font-size: 0.85rem; border: none; }
 
-        /* FULL PAGE VİLLA DETAY */
         .full-page-detail { position: fixed; inset: 0; background: #F8FAFC; z-index: 10000; display: none; overflow-y: auto; }
         .full-page-detail.active { display: block; }
         .detail-top-nav { background: white; border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 100; padding: 16px 6%; display: flex; justify-content: space-between; align-items: center; }
@@ -145,12 +144,25 @@
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 10px; }
         .day-header { font-weight: 700; font-size: 0.75rem; color: var(--text-sub); }
-        .day-cell { border: 1px solid var(--border-light); border-radius: 6px; padding: 4px 2px; background: #f1f5f9; display: flex; flex-direction: column; justify-content: space-between; min-height: 48px; cursor: pointer; user-select: none; }
+        .day-cell { 
+            border: 1px solid var(--border-light); border-radius: 6px; padding: 4px 2px; 
+            background: #f1f5f9; display: flex; flex-direction: column; justify-content: space-between; 
+            min-height: 48px; cursor: pointer; user-select: none; position: relative; overflow: hidden;
+        }
         .day-cell.available { background: var(--available-color); }
-        .day-cell.booked { background: var(--booked-color); cursor: not-allowed; }
-        .day-cell.selected, .day-cell.selected-checkin, .day-cell.selected-checkout { background: var(--selected-color) !important; border-color: var(--selected-border) !important; }
-        .day-num { font-weight: 700; font-size: 0.75rem; text-align: left; }
-        .day-price { font-size: 0.6rem; color: #15803d; text-align: right; font-weight: 700; }
+        .day-cell.booked { background: var(--booked-color) !important; cursor: not-allowed; }
+        .day-cell.pending { background: var(--pending-color) !important; }
+        
+        .day-cell.checkin-day {
+            background: linear-gradient(135deg, var(--available-color) 50%, var(--selected-color) 50%) !important;
+        }
+        .day-cell.checkout-day {
+            background: linear-gradient(135deg, var(--selected-color) 50%, var(--available-color) 50%) !important;
+        }
+        .day-cell.selected { background: var(--selected-color) !important; border-color: var(--selected-border) !important; }
+
+        .day-num { font-weight: 700; font-size: 0.75rem; text-align: left; position: relative; z-index: 2; }
+        .day-price { font-size: 0.6rem; color: #15803d; text-align: right; font-weight: 700; position: relative; z-index: 2; }
 
         .booking-section { background: #F8FAFC; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px; margin-top: 16px; }
         .form-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
@@ -158,30 +170,22 @@
         .btn-submit { width: 100%; padding: 12px; background: #25d366; color: white; border: none; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .month-select { padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--border-light); font-weight: 700; color: var(--brand-accent); outline: none; }
 
-        /* =========================================================
-           📱 TELEFON VE MOBİL UYUMLULUK (RESPONSIVE DÜZEN)
-           ========================================================= */
         @media (max-width: 768px) {
             .top-banner { display: none !important; }
             .nav-container { padding: 12px 16px; }
             .brand-logo { font-size: 1.25rem; }
             .nav-menu { display: none !important; }
-            
             .hero-wrapper { height: 200px !important; padding: 0 16px; }
             .hero-text h1 { font-size: 1.4rem !important; }
             .hero-text p { font-size: 0.8rem !important; }
-
             .search-engine { margin: -25px 12px 20px 12px !important; padding: 0 !important; }
             .search-card { grid-template-columns: 1fr !important; padding: 12px !important; gap: 8px !important; }
-            
             .main-layout { padding: 0 12px !important; flex-direction: column !important; }
             .left-banner-container { display: none !important; }
             .villa-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
-
             .detail-container { grid-template-columns: 1fr !important; padding: 0 12px !important; margin: 10px auto 40px auto !important; gap: 16px !important; }
             .front-slider { height: 240px !important; }
             .detail-sticky-sidebar { position: static !important; padding: 16px !important; }
-            
             .day-cell { min-height: 42px !important; }
         }
     </style>
@@ -210,7 +214,6 @@
         </div>
     </header>
 
-    <!-- TAB 1: ANASAYFA -->
     <div id="tab-home" class="page-tab active-tab">
         <section class="hero-wrapper">
             <div class="hero-text">
@@ -240,14 +243,12 @@
         </div>
     </div>
 
-    <!-- TAB 2: TÜM VİLLALAR -->
     <div id="tab-villas" class="page-tab">
         <div class="main-layout" style="margin-top: 30px;">
             <div class="villa-grid" id="allVillaGrid"></div>
         </div>
     </div>
 
-    <!-- FULL-PAGE VİLLA DETAY -->
     <div class="full-page-detail" id="villaDetailPage">
         <div class="detail-top-nav">
             <button class="btn-back" onclick="closeDetailPage()"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
@@ -345,35 +346,40 @@
         }
 
         async function loadSiteHeader() {
-            const { data } = await _supabase.from('site_settings').select('*').eq('id', 1).single();
-            if (data) {
-                if (data.title) {
-                    document.getElementById('siteTitle').innerText = data.title;
-                    document.getElementById('siteTitleTag').innerText = data.title;
+            try {
+                const { data } = await _supabase.from('site_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    if (data.title) {
+                        document.getElementById('siteTitle').innerText = data.title;
+                        document.getElementById('siteTitleTag').innerText = data.title;
+                    }
+                    if (data.subtitle) document.getElementById('siteSubtitle').innerText = data.subtitle;
+                    if (data.favicon) document.getElementById('siteFavicon').href = data.favicon;
+                    if (data.banner1) {
+                        const b1 = document.getElementById('siteBanner1');
+                        b1.src = data.banner1;
+                        b1.style.display = 'block';
+                    }
                 }
-                if (data.subtitle) document.getElementById('siteSubtitle').innerText = data.subtitle;
-                if (data.favicon) document.getElementById('siteFavicon').href = data.favicon;
-                if (data.banner1) {
-                    const b1 = document.getElementById('siteBanner1');
-                    b1.src = data.banner1;
-                    b1.style.display = 'block';
-                }
-            }
+            } catch(e) {}
         }
 
         async function loadVillas() {
-            const { data } = await _supabase.from('villas').select('*');
-            villas = data || [];
-            renderVillaGrid(villas, 'villaGrid');
-            renderVillaGrid(villas, 'allVillaGrid');
+            try {
+                const { data } = await _supabase.from('villas').select('*');
+                villas = data || [];
+                renderVillaGrid(villas, 'villaGrid');
+                renderVillaGrid(villas, 'allVillaGrid');
+            } catch(e) {}
         }
 
         async function loadReservations() {
-            const { data } = await _supabase.from('reservations').select('*').neq('status', 'Reddedildi');
-            reservations = data || [];
+            try {
+                const { data } = await _supabase.from('reservations').select('*').neq('status', 'Reddedildi');
+                reservations = data || [];
+            } catch(e) {}
         }
 
-        /* 🛡️ KORUMALI & DİNAMİK VİLLA KART DÖNGÜSÜ */
         function renderVillaGrid(list, containerId) {
             const grid = document.getElementById(containerId);
             if (!grid) return;
@@ -387,12 +393,10 @@
                 card.className = 'v-card';
                 card.onclick = () => openDetailPage(v.id);
                 
-                // Fotoğraf kontrolü (Eğer resim eksikse veya boşsa çökmez)
                 const imgUrl = (v.images && Array.isArray(v.images) && v.images.length > 0 && v.images[0]) 
                     ? v.images[0] 
                     : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80';
                 
-                // Admin panelinden kaydedilen varsayılan kart fiyatını okur
                 const displayCardPrice = (v.default_night_price && String(v.default_night_price).trim() !== '') 
                     ? v.default_night_price 
                     : 'Fiyat Sorun';
@@ -530,16 +534,18 @@
 
         function getDayReservationStatus(villaId, year, monthIndex, day) {
             const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            let isApprovedStay = false, isApprovedCheckout = false;
-            const activeRes = reservations.filter(r => r.villa_id == villaId);
+            let isApprovedStay = false;
+            let isPendingStay = false;
+
+            const activeRes = reservations.filter(r => String(r.villa_id) === String(villaId) && r.status !== 'Reddedildi');
             
             activeRes.forEach(r => {
-                if (r.status === 'Onaylandı') {
-                    if (dateStr >= r.check_in && dateStr < r.check_out) isApprovedStay = true;
-                    if (dateStr === r.check_out) isApprovedCheckout = true;
+                if (dateStr >= r.check_in && dateStr < r.check_out) {
+                    if (r.status === 'Onaylandı') isApprovedStay = true;
+                    if (r.status === 'Beklemede') isPendingStay = true;
                 }
             });
-            return { isApprovedStay, isApprovedCheckout };
+            return { isApprovedStay, isPendingStay };
         }
 
         function renderCalendar() {
@@ -573,25 +579,30 @@
                 const customInfo = monthPrices.customDays ? monthPrices.customDays[day] : null;
                 const priceStr = customInfo ? customInfo.price : (activeVilla.default_night_price || monthPrices.defaultPrice || "Fiyat Yok");
                 const manualAvailable = customInfo ? customInfo.available : true;
-                const { isApprovedStay, isApprovedCheckout } = getDayReservationStatus(activeVilla.id, currentYear, selectedMonthIndex, day);
+                const { isApprovedStay, isPendingStay } = getDayReservationStatus(activeVilla.id, currentYear, selectedMonthIndex, day);
 
                 const cell = document.createElement('div');
                 let classes = ['day-cell'];
 
                 if (isPast) classes.push('booked');
                 else if (isApprovedStay || !manualAvailable) classes.push('booked');
+                else if (isPendingStay) classes.push('pending');
                 else classes.push('available');
 
                 if (selectedStartDate && selectedEndDate) {
-                    if (thisDate.getTime() === selectedStartDate.getTime() || thisDate.getTime() === selectedEndDate.getTime() || (thisDate > selectedStartDate && thisDate < selectedEndDate)) {
+                    if (thisDate.getTime() === selectedStartDate.getTime()) {
+                        classes.push('checkin-day');
+                    } else if (thisDate.getTime() === selectedEndDate.getTime()) {
+                        classes.push('checkout-day');
+                    } else if (thisDate > selectedStartDate && thisDate < selectedEndDate) {
                         classes.push('selected');
                     }
                 } else if (selectedStartDate && thisDate.getTime() === selectedStartDate.getTime()) {
-                    classes.push('selected');
+                    classes.push('checkin-day');
                 }
 
                 cell.className = classes.join(' ');
-                cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${isApprovedStay ? 'Dolu' : priceStr}</span>`;
+                cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${isApprovedStay ? 'Dolu' : (isPendingStay ? 'Opsiyon' : priceStr)}</span>`;
 
                 if (!isPast && !isApprovedStay && manualAvailable) {
                     cell.onclick = () => handleDateClick(currentYear, selectedMonthIndex, day);
@@ -644,7 +655,7 @@
             const sOutStr = `${searchEnd.getFullYear()}-${String(searchEnd.getMonth() + 1).padStart(2, '0')}-${String(searchEnd.getDate()).padStart(2, '0')}`;
 
             const availableList = villas.filter(v => {
-                return !reservations.some(r => r.villa_id == v.id && r.status === 'Onaylandı' && (sInStr < r.check_out && sOutStr > r.check_in));
+                return !reservations.some(r => String(r.villa_id) === String(v.id) && r.status === 'Onaylandı' && (sInStr < r.check_out && sOutStr > r.check_in));
             });
             renderVillaGrid(availableList, 'villaGrid');
         }
@@ -654,26 +665,49 @@
             renderVillaGrid(villas, 'villaGrid');
         }
 
+        /* 🚀 VERİTABANINA KESİN KAYIT YAPAN FONKSİYON (created_at DÜZELTİLDİ) */
         async function submitReservation() {
             const name = document.getElementById('guestName').value.trim();
             const phone = document.getElementById('guestPhone').value.trim();
-            if (!selectedStartDate || !selectedEndDate || !name || !phone) return alert("Lütfen tüm alanları doldurun.");
+            const email = document.getElementById('guestEmail').value.trim();
+            
+            if (!selectedStartDate || !selectedEndDate) {
+                return alert("Lütfen takvim üzerinden giriş ve çıkış tarihlerini seçin.");
+            }
+            if (!name || !phone) {
+                return alert("Lütfen Adınız Soyadınız ve Telefon numarası alanlarını doldurun.");
+            }
 
             const inStr = `${selectedStartDate.getFullYear()}-${String(selectedStartDate.getMonth() + 1).padStart(2, '0')}-${String(selectedStartDate.getDate()).padStart(2, '0')}`;
             const outStr = `${selectedEndDate.getFullYear()}-${String(selectedEndDate.getMonth() + 1).padStart(2, '0')}-${String(selectedEndDate.getDate()).padStart(2, '0')}`;
             const totalPriceStr = document.getElementById('totalPriceText').innerText;
 
-            await _supabase.from('reservations').insert([{
-                villa_id: activeVilla.id, villa_name: activeVilla.name,
-                guest_name: name, guest_phone: phone,
-                check_in: inStr, check_out: outStr,
-                total_price: totalPriceStr, status: 'Beklemede'
-            }]);
+            // Supabase Veritabanına Ekleme (created_at eklendi)
+            const { data, error } = await _supabase.from('reservations').insert([{
+                villa_id: String(activeVilla.id),
+                villa_name: String(activeVilla.name),
+                guest_name: String(name),
+                guest_phone: String(phone),
+                check_in: String(inStr),
+                check_out: String(outStr),
+                total_price: String(totalPriceStr),
+                agency_name: 'Şahsi / Doğrudan Satış',
+                status: 'Beklemede',
+                created_at: new Date().toISOString()
+            }]).select();
 
-            const msg = `Merhaba, ${activeVilla.name} için rezervasyon talebi:%0A👤 ${name}%0A📞 ${phone}%0A📅 ${inStr} - ${outStr}%0A💰 ${totalPriceStr}`;
+            if (error) {
+                console.error("Supabase Veritabanı Kayıt Hatası:", error);
+                alert("Veritabanına eklenirken bir hata oluştu: " + error.message);
+                return;
+            }
+
+            // WhatsApp Yönlendirmesi
+            const msg = `Merhaba, ${activeVilla.name} için rezervasyon talebi:%0A👤 ${name}%0A📞 ${phone}%0A📧 ${email}%0A📅 ${inStr} - ${outStr}%0A💰 ${totalPriceStr}`;
             window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+            
             closeDetailPage();
-            alert("Talebiniz iletildi!");
+            await loadReservations();
         }
 
         init();
