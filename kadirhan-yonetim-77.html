@@ -167,6 +167,7 @@
     .day-cell { border: 1px solid var(--border); border-radius: 8px; padding: 6px 4px; background: var(--card-inner); display: flex; flex-direction: column; justify-content: space-between; min-height: 56px; cursor: pointer; user-select: none; position: relative; overflow: hidden; }
     .day-cell.available { background: var(--available-color); color: white; }
     .day-cell.booked { background: var(--booked-color) !important; color: white !important; }
+    .day-cell.pending { background: var(--pending-color) !important; color: #fef08a !important; }
 
     .day-cell.split-checkout {
       background: linear-gradient(135deg, var(--booked-color) 0%, var(--booked-color) 49%, #334155 50%, var(--available-color) 51%, var(--available-color) 100%) !important;
@@ -278,7 +279,7 @@
     <div class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i> Site & Görsel Ayarları</div>
   </div>
 
-  <!-- TAB 0: MÜSAİT VİLLA ARA & VIP TEKLİF OLUŞTUR -->
+  <!-- TAB 0: VIP TEKLİF -->
   <div id="tab-vip-offer" class="tab-content">
     <div class="card-box">
       <h2><i class="fa-solid fa-magnifying-glass-dollar" style="color:var(--primary);"></i> Müsait Villa Ara & VIP Teklif Linki</h2>
@@ -297,7 +298,7 @@
     </div>
   </div>
 
-  <!-- TAB 1: DASHBOARD (ANA SAYFA) -->
+  <!-- TAB 1: DASHBOARD -->
   <div id="tab-dashboard" class="tab-content active-tab">
     <div class="card-box">
       <h3><i class="fa-solid fa-calendar-day" style="color: var(--primary);"></i> Bugünkü Giriş ve Çıkış Yapan Binalar</h3>
@@ -349,7 +350,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: FİNANSAL TAKİP & KAYITLAR -->
+  <!-- TAB 2: FİNANSAL TAKİP -->
   <div id="tab-financials" class="tab-content">
     <div class="card-box">
       <h2><i class="fa-solid fa-wallet"></i> Finansal Takip & Otomatik Kasa</h2>
@@ -442,7 +443,7 @@
     </div>
   </div>
 
-  <!-- TAB 7: SİTE & GÖRSEL AYARLARI -->
+  <!-- TAB 7: SİTE AYARLARI -->
   <div id="tab-settings" class="tab-content">
     <div class="card-box" style="max-width: 600px; margin: 0 auto;">
       <h2><i class="fa-solid fa-sliders"></i> Arayüz & Reklam Banner Yönetimi</h2>
@@ -464,7 +465,6 @@
       <button class="close-btn" onclick="closeModal()">&times;</button>
       <h2 id="modalTitle" style="margin-bottom:14px;">Villa Yönetimi</h2>
       
-      <!-- ✨ YENİ: Kart Gecelik Fiyatı Düzenleme Alanı -->
       <div style="background:var(--card-inner); padding:12px; border-radius:12px; border:1px solid var(--border); margin-bottom:14px;">
         <label style="font-size:0.8rem; color:#60a5fa; font-weight:700;">🏷️ Web Sitesindeki Kart Gecelik Fiyatı (TL):</label>
         <div style="display:flex; gap:8px; margin-top:6px;">
@@ -630,8 +630,11 @@
       renderCenterCalendar();
     }
 
+    /* 🔄 REZERVASYONLARI ÇEKME VE LİSTELEME */
     async function loadReservations() {
-      const { data } = await _supabase.from('reservations').select('*').order('created_at', { ascending: false });
+      const { data, error } = await _supabase.from('reservations').select('*').order('id', { ascending: false });
+      if (error) console.error("Çekme hatası:", error);
+      
       reservations = data || [];
       
       renderTodaySummary();
@@ -681,16 +684,22 @@
       for (let day = 1; day <= totalDays; day++) {
         const dateStr = `${currentYear}-${String(monthIdx + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         let isApprovedStay = false, isApprovedCheckin = false, isApprovedCheckout = false;
+        let isPendingStay = false;
         let isManualStay = false;
 
         const filteredRes = selectedVillaId === 'ALL' 
-          ? reservations.filter(r => r.status === 'Onaylandı') 
-          : reservations.filter(r => r.status === 'Onaylandı' && String(r.villa_id) === String(selectedVillaId));
+          ? reservations.filter(r => r.status !== 'Reddedildi') 
+          : reservations.filter(r => r.status !== 'Reddedildi' && String(r.villa_id) === String(selectedVillaId));
 
         filteredRes.forEach(r => {
-          if (dateStr > r.check_in && dateStr < r.check_out) isApprovedStay = true;
-          if (dateStr === r.check_in) isApprovedCheckin = true;
-          if (dateStr === r.check_out) isApprovedCheckout = true;
+          if (dateStr >= r.check_in && dateStr < r.check_out) {
+            if (r.status === 'Onaylandı') isApprovedStay = true;
+            if (r.status === 'Beklemede') isPendingStay = true;
+          }
+          if (r.status === 'Onaylandı') {
+            if (dateStr === r.check_in) isApprovedCheckin = true;
+            if (dateStr === r.check_out) isApprovedCheckout = true;
+          }
         });
 
         let priceDisplay = "Müsait";
@@ -717,10 +726,12 @@
         else if (isCheckout) classes.push('split-checkout');
         else if (isCheckin) classes.push('split-checkin');
         else if (isStay) classes.push('booked');
+        else if (isPendingStay) classes.push('pending');
         else classes.push('available');
 
         let labelText = priceDisplay;
-        if (isStay || isCheckin || isCheckout) labelText = "Dolu";
+        if (isStay) labelText = "Dolu";
+        else if (isPendingStay) labelText = "Opsiyon";
 
         cell.className = classes.join(' ');
         cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${labelText}</span>`;
@@ -846,6 +857,7 @@
       if (!error) await loadReservations();
     }
 
+    /* 📋 MÜŞTERİ TALEPLERİ TABLOSUNU DOLDURMA */
     function renderResTable() {
       const tbody = document.getElementById('resTableBody');
       tbody.innerHTML = '';
@@ -864,7 +876,7 @@
             <td><b>${r.villa_name || 'Villa'}</b></td>
             <td><span class="agency-badge">${r.agency_name || 'Şahsi'}</span></td>
             <td>${r.guest_name}</td>
-            <td>📞 ${r.guest_phone}</td>
+            <td>📞 ${r.guest_phone || '-'}</td>
             <td><b>${r.check_in}</b></td>
             <td><b>${r.check_out}</b></td>
             <td style="color:#22c55e;"><b>${r.deposit_price || '-'}</b></td>
@@ -881,9 +893,14 @@
       });
     }
 
+    /* 🔄 ONAYLA / REDDET BUTONLARI */
     async function updateStatus(id, st) {
-      await _supabase.from('reservations').update({ status: st }).eq('id', id);
-      await loadReservations();
+      const { error } = await _supabase.from('reservations').update({ status: st }).eq('id', id);
+      if (!error) {
+        await loadReservations();
+      } else {
+        alert("Durum güncellenirken hata oluştu: " + error.message);
+      }
     }
 
     function renderManageVillaGrid() {
@@ -912,7 +929,7 @@
       const sOutStr = formatDateStr(offerEnd);
 
       const availableList = villas.filter(v => {
-        const hasOverlap = reservations.some(r => r.villa_id == v.id && r.status === 'Onaylandı' && (sInStr < r.check_out && sOutStr > r.check_in));
+        const hasOverlap = reservations.some(r => String(r.villa_id) === String(v.id) && r.status === 'Onaylandı' && (sInStr < r.check_out && sOutStr > r.check_in));
         return !hasOverlap;
       });
 
@@ -989,7 +1006,6 @@
       document.getElementById('villaModal').classList.add('active');
     }
 
-    /* ✨ YENİ: Kart Gecelik Fiyatını Kaydetme Fonksiyonu */
     async function saveCardDefaultPrice() {
       const priceVal = document.getElementById('modalCardDefaultPrice').value.trim();
       if (!priceVal) return alert("Lütfen bir fiyat yazın.");
