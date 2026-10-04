@@ -3,714 +3,932 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="siteTitleTag">Tatilim Sepette | Lüks Villa Kiralama & Tatil Deneyimi</title>
-    <link id="siteFavicon" rel="icon" href="" type="image/x-icon">
-
+    <title>Mağaza & Ürün Kataloğu</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Flatpickr -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
-
     <style>
-        :root {
-            --brand-primary: #0F172A;
-            --brand-secondary: #1E293B;
-            --brand-accent: #2563EB;
-            --brand-glow: #3B82F6;
-            --bg-body: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --text-main: #0F172A;
-            --text-sub: #64748B;
-            --border-light: #E2E8F0;
-            --glass-bg: rgba(255, 255, 255, 0.92);
-            --radius-xl: 20px;
-            --radius-md: 12px;
-            --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-
-            --booked-color: #fee2e2;
-            --available-color: #dcfce7;
-            --pending-color: #fef08a;
-            --selected-color: #93c5fd;
-            --selected-border: #2563eb;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
-        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
-
-        .top-banner {
-            background: linear-gradient(90deg, #0F172A, #1E293B);
-            color: #94A3B8; font-size: 0.825rem; padding: 10px 6%;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .top-banner strong { color: var(--brand-glow); }
-        .top-banner a { color: #E2E8F0; text-decoration: none; margin-left: 15px; }
-
-        header {
-            background: var(--glass-bg); backdrop-filter: blur(12px);
-            position: sticky; top: 0; z-index: 999; border-bottom: 1px solid var(--border-light);
-        }
-        .nav-container {
-            max-width: 1350px; margin: 0 auto; padding: 16px 24px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .brand-logo {
-            font-size: 1.5rem; font-weight: 800; color: var(--brand-primary);
-            text-decoration: none; display: flex; align-items: center; gap: 8px; cursor: pointer;
-        }
-        .brand-logo span { color: var(--brand-accent); }
-        .nav-menu { display: flex; gap: 32px; list-style: none; }
-        .nav-link { text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
-        .nav-link:hover, .nav-link.active { color: var(--brand-accent); }
-
-        .btn-whatsapp {
-            background: #25D366; color: white; padding: 10px 20px; border-radius: 50px;
-            font-weight: 600; font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
-        }
-
-        .page-tab { display: none; }
-        .page-tab.active-tab { display: block; }
-
-        .hero-wrapper {
-            position: relative; height: 350px;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.8) 100%),
-                        url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
-            display: flex; align-items: center; justify-content: center; text-align: center; color: white; padding: 0 20px;
-        }
-        .hero-text h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
-        .hero-text p { font-size: 1.05rem; color: #E2E8F0; max-width: 650px; margin: 0 auto; }
-
-        .search-engine { max-width: 950px; margin: -40px auto 40px auto; position: relative; z-index: 10; padding: 0 20px; }
-        .search-card {
-            background: var(--card-bg); border-radius: var(--radius-xl); padding: 20px 24px;
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12); border: 1px solid var(--border-light);
-            display: grid; grid-template-columns: 2fr 160px 140px; gap: 16px; align-items: center;
-        }
-        .input-block {
-            display: flex; flex-direction: column; gap: 4px; padding: 8px 14px;
-            background: #F8FAFC; border-radius: var(--radius-md); border: 1px solid var(--border-light);
-        }
-        .input-block label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-sub); }
-        .input-block input { border: none; background: transparent; outline: none; font-size: 0.95rem; font-weight: 700; color: var(--text-main); width: 100%; cursor: pointer; }
-
-        .btn-search-trigger {
-            background: linear-gradient(135deg, var(--brand-accent), #1D4ED8); color: white; border: none;
-            min-height: 50px; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-reset-trigger { background: #64748B; color: white; border: none; min-height: 50px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; }
-
-        .main-layout { display: flex; gap: 28px; max-width: 1350px; margin: 0 auto 80px auto; padding: 0 24px; align-items: flex-start; }
-        .left-banner-container { width: 250px; flex-shrink: 0; }
-        .left-banner-img { width: 100%; border-radius: var(--radius-xl); border: 1px solid var(--border-light); display: none; object-fit: cover; }
-
-        .villa-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-        .v-card {
-            background: var(--card-bg); border-radius: var(--radius-xl); overflow: hidden;
-            border: 1px solid var(--border-light); box-shadow: var(--shadow-subtle); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s;
-        }
-        .v-card:hover { transform: translateY(-4px); }
-        .v-card-img { position: relative; height: 220px; overflow: hidden; background: #cbd5e1; }
-        .v-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .v-badge-location {
-            position: absolute; top: 12px; left: 12px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(6px);
-            color: white; padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 700;
-        }
-        .v-card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
-        .v-title { font-size: 1.2rem; font-weight: 800; color: var(--brand-primary); margin-bottom: 6px; }
-        .v-tagline { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .v-card-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
-        .v-price-val { font-size: 1.15rem; font-weight: 800; color: var(--brand-accent); }
-        .btn-card-detail { background: var(--brand-primary); color: white; padding: 8px 16px; border-radius: var(--radius-md); font-weight: 700; font-size: 0.85rem; border: none; }
-
-        .full-page-detail { position: fixed; inset: 0; background: #F8FAFC; z-index: 10000; display: none; overflow-y: auto; }
-        .full-page-detail.active { display: block; }
-        .detail-top-nav { background: white; border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 100; padding: 16px 6%; display: flex; justify-content: space-between; align-items: center; }
-        .btn-back { background: #E2E8F0; color: var(--brand-primary); border: none; padding: 8px 16px; border-radius: 50px; font-weight: 700; cursor: pointer; }
-        .detail-container { max-width: 1200px; margin: 20px auto 60px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
-        .front-slider { position: relative; width: 100%; height: 400px; background: #000; border-radius: var(--radius-xl); overflow: hidden; }
-        .front-slider img { width: 100%; height: 100%; object-fit: cover; }
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 10; }
-        .slider-btn.prev { left: 12px; }
-        .slider-btn.next { right: 12px; }
-        .slider-counter { position: absolute; bottom: 12px; right: 12px; background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
-        .detail-sticky-sidebar { background: white; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 24px; height: fit-content; position: sticky; top: 90px; }
-
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 10px; }
-        .day-header { font-weight: 700; font-size: 0.75rem; color: var(--text-sub); }
-        .day-cell { 
-            border: 1px solid var(--border-light); border-radius: 6px; padding: 4px 2px; 
-            background: #f1f5f9; display: flex; flex-direction: column; justify-content: space-between; 
-            min-height: 48px; cursor: pointer; user-select: none; position: relative; overflow: hidden;
-        }
-        .day-cell.available { background: var(--available-color); }
-        .day-cell.booked { background: var(--booked-color) !important; cursor: not-allowed; }
-        .day-cell.pending { background: var(--pending-color) !important; }
-        
-        .day-cell.checkin-day {
-            background: linear-gradient(135deg, var(--available-color) 50%, var(--selected-color) 50%) !important;
-        }
-        .day-cell.checkout-day {
-            background: linear-gradient(135deg, var(--selected-color) 50%, var(--available-color) 50%) !important;
-        }
-        .day-cell.selected { background: var(--selected-color) !important; border-color: var(--selected-border) !important; }
-
-        .day-num { font-weight: 700; font-size: 0.75rem; text-align: left; position: relative; z-index: 2; }
-        .day-price { font-size: 0.6rem; color: #15803d; text-align: right; font-weight: 700; position: relative; z-index: 2; }
-
-        .booking-section { background: #F8FAFC; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px; margin-top: 16px; }
-        .form-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-        .form-grid input { padding: 10px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-light); outline: none; font-size: 0.9rem; }
-        .btn-submit { width: 100%; padding: 12px; background: #25d366; color: white; border: none; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .month-select { padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--border-light); font-weight: 700; color: var(--brand-accent); outline: none; }
-
-        @media (max-width: 768px) {
-            .top-banner { display: none !important; }
-            .nav-container { padding: 12px 16px; }
-            .brand-logo { font-size: 1.25rem; }
-            .nav-menu { display: none !important; }
-            .hero-wrapper { height: 200px !important; padding: 0 16px; }
-            .hero-text h1 { font-size: 1.4rem !important; }
-            .hero-text p { font-size: 0.8rem !important; }
-            .search-engine { margin: -25px 12px 20px 12px !important; padding: 0 !important; }
-            .search-card { grid-template-columns: 1fr !important; padding: 12px !important; gap: 8px !important; }
-            .main-layout { padding: 0 12px !important; flex-direction: column !important; }
-            .left-banner-container { display: none !important; }
-            .villa-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
-            .detail-container { grid-template-columns: 1fr !important; padding: 0 12px !important; margin: 10px auto 40px auto !important; gap: 16px !important; }
-            .front-slider { height: 240px !important; }
-            .detail-sticky-sidebar { position: static !important; padding: 16px !important; }
-            .day-cell { min-height: 42px !important; }
-        }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <div class="top-banner">
-        <div><i class="fa-solid fa-shield-halved"></i> <strong>Tatilim Sepette</strong> | Resmî Onaylı Villa Kiralama</div>
-        <div><a href="https://wa.me/905332016490" target="_blank"><i class="fa-brands fa-whatsapp"></i> Destek</a></div>
-    </div>
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Brand Logo & Name -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('client')">
+                <img id="siteLogo" src="" alt="Logo" class="h-10 w-auto max-w-[120px] object-contain hidden rounded">
+                <span id="siteTitle" class="text-xl md:text-2xl font-bold tracking-tight text-amber-400">CepMobil</span>
+            </div>
 
-    <header>
-        <div class="nav-container">
-            <a onclick="switchTab('home')" class="brand-logo">
-                <i class="fa-solid fa-house-signal"></i> <span id="siteTitle">Tatilim Sepette</span>
-            </a>
-            <ul class="nav-menu">
-                <li><a onclick="switchTab('home')" class="nav-link active" id="nav-home">Anasayfa</a></li>
-                <li><a onclick="switchTab('villas')" class="nav-link" id="nav-villas">Tüm Villalar</a></li>
-            </ul>
+            <!-- Admin Button -->
             <div>
-                <a href="https://wa.me/905332016490" class="btn-whatsapp" target="_blank">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                </a>
+                <button onclick="handleAdminAccess()" class="bg-slate-800 hover:bg-slate-700 text-xs md:text-sm px-3 py-2 rounded-lg transition border border-slate-700 flex items-center space-x-1">
+                    <i class="fa-solid fa-user-gear text-amber-400"></i>
+                    <span id="adminBtnText">Admin Paneli</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <div id="tab-home" class="page-tab active-tab">
-        <section class="hero-wrapper">
-            <div class="hero-text">
-                <h1>Ayrılmak İstemeyeceğiniz Bir Tatil</h1>
-                <p id="siteSubtitle">Tarihlerinizi seçerek rezervasyon talebinizi iletebilirsiniz.</p>
+    <!-- CLIENT INTERFACE -->
+    <main id="clientTab" class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+        <!-- Search Bar -->
+        <div class="mb-6 space-y-4">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400"></i>
+                <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Ürün adı veya açıklama ile ara..." class="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
             </div>
-        </section>
 
-        <div class="search-engine">
-            <div class="search-card">
-                <div class="input-block">
-                    <label><i class="fa-regular fa-calendar-days"></i> Giriş - Çıkış Tarihi</label>
-                    <input type="text" id="doubleDateRangePicker" placeholder="Tarih Seçiniz..." readonly>
-                </div>
-                <button class="btn-search-trigger" onclick="filterAvailableVillas()">
-                    <i class="fa-solid fa-magnifying-glass"></i> Müsait Ara
+            <!-- Category Pills -->
+            <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none" id="categoryFilterContainer">
+                <!-- Dynamically Populated -->
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <!-- Dynamically Populated Cards -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-12 text-gray-500">
+            <i class="fa-solid fa-box-open text-5xl mb-3 text-gray-300"></i>
+            <p class="text-base font-medium">Aramanıza veya seçilen kategoriye uygun ürün bulunamadı.</p>
+        </div>
+    </main>
+
+    <!-- CLIENT PRODUCT DETAIL MODAL -->
+    <div id="detailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative flex flex-col">
+            <!-- Modal Header / Top Navigation Bar -->
+            <div class="sticky top-0 bg-white/90 backdrop-blur-md px-4 py-3 border-b border-gray-100 flex items-center justify-between z-10">
+                <button onclick="closeDetailModal()" class="flex items-center space-x-2 text-slate-700 hover:text-amber-600 font-semibold text-sm transition">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                    <span>Geri</span>
                 </button>
-                <button class="btn-reset-trigger" onclick="resetSearchFilter()">Tümünü Göster</button>
+                <span id="detailCategoryBadge" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                    Kategori
+                </span>
+                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
             </div>
-        </div>
 
-        <div class="main-layout">
-            <div class="left-banner-container">
-                <img id="siteBanner1" class="left-banner-img" src="" alt="Banner">
+            <!-- Modal Content Body -->
+            <div class="p-4 sm:p-6 space-y-6">
+                <!-- Image Slider Area (Tıklandığında Tam Ekran Açılır) -->
+                <div class="relative w-full h-64 sm:h-80 bg-slate-900 rounded-2xl overflow-hidden group flex items-center justify-center cursor-zoom-in" onclick="openFullscreenModal()">
+                    <img id="detailMainImage" src="" class="max-h-full max-w-full object-contain transition-all duration-300">
+                    
+                    <div class="absolute top-3 right-3 bg-black/60 text-white text-[10px] font-semibold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition flex items-center space-x-1 pointer-events-none">
+                        <i class="fa-solid fa-expand"></i>
+                        <span>Tam Ekran İncele</span>
+                    </div>
+
+                    <!-- Navigation Arrows -->
+                    <button id="prevImgBtn" onclick="event.stopPropagation(); changeDetailImage(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg shadow transition">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button id="nextImgBtn" onclick="event.stopPropagation(); changeDetailImage(1)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg shadow transition">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+
+                    <div id="imageCounter" class="absolute bottom-3 right-3 bg-slate-900/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md">
+                        1 / 1
+                    </div>
+                </div>
+
+                <!-- Thumbnails Bar -->
+                <div id="detailThumbnails" class="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
+                    <!-- Dynamically Populated Thumbnails -->
+                </div>
+
+                <!-- Product Info -->
+                <div class="space-y-3">
+                    <h2 id="detailTitle" class="text-xl sm:text-2xl font-bold text-gray-900">Ürün Adı</h2>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-amber-600" id="detailPrice">0 ₺</div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200/80">
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Ürün Açıklaması</h4>
+                        <p id="detailDesc" class="text-sm text-gray-700 whitespace-pre-line leading-relaxed">Açıklama yükleniyor...</p>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="pt-2">
+                    <a id="detailWhatsappBtn" href="#" target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl text-sm sm:text-base flex items-center justify-center space-x-2 shadow-lg hover:shadow-emerald-500/20 transition">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i>
+                        <span>WhatsApp İle Bilgi Al</span>
+                    </a>
+                </div>
+
+                <!-- Related Products Section -->
+                <div class="pt-4 border-t border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-800 mb-3">Benzer Ürünler</h3>
+                    <div id="relatedProductsGrid" class="grid grid-cols-2 gap-3">
+                        <!-- Dynamically Populated -->
+                    </div>
+                </div>
             </div>
-            <div class="villa-grid" id="villaGrid"></div>
         </div>
     </div>
 
-    <div id="tab-villas" class="page-tab">
-        <div class="main-layout" style="margin-top: 30px;">
-            <div class="villa-grid" id="allVillaGrid"></div>
+    <!-- FULLSCREEN LIGHTBOX MODAL (TAM EKRAN FOTOĞRAF İNCELEME) -->
+    <div id="fullscreenModal" class="fixed inset-0 bg-black/95 z-50 flex flex-col justify-between p-4 hidden backdrop-blur-md">
+        <!-- Top Control Bar -->
+        <div class="flex items-center justify-between text-white z-10 pt-2 px-2">
+            <button onclick="closeFullscreenModal()" class="flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl text-sm font-medium transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Geri Çıkış</span>
+            </button>
+            <span id="fullscreenCounter" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full">
+                1 / 1
+            </span>
+            <button onclick="closeFullscreenModal()" class="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Main Fullscreen Image View -->
+        <div class="relative flex-grow flex items-center justify-center my-4 overflow-hidden">
+            <img id="fullscreenImage" src="" class="max-h-full max-w-full object-contain rounded-lg transition-transform duration-200">
+
+            <!-- Next / Prev Buttons -->
+            <button id="fsPrevBtn" onclick="changeDetailImage(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl backdrop-blur-md transition">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button id="fsNextBtn" onclick="changeDetailImage(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl backdrop-blur-md transition">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Bottom Title Hint -->
+        <div class="text-center text-gray-400 text-xs pb-2">
+            <span id="fullscreenTitle">Ürün Adı</span> - <span class="text-gray-500">Tam Ekran Görünüm</span>
         </div>
     </div>
 
-    <div class="full-page-detail" id="villaDetailPage">
-        <div class="detail-top-nav">
-            <button class="btn-back" onclick="closeDetailPage()"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
-            <button onclick="copyShareLink()" style="padding: 6px 14px; background: #e2e8f0; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem;"><i class="fa-solid fa-link"></i> Paylaş</button>
+    <!-- ADMIN INTERFACE -->
+    <main id="adminTab" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Admin Yönetim Paneli</h1>
+                <p class="text-xs text-gray-500">Alış/satış fiyatları, kâr analitiği ve görsel yönetimi.</p>
+            </div>
+            <button onclick="openProductModal()" class="w-full md:w-auto bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 shadow">
+                <i class="fa-solid fa-plus"></i>
+                <span>Yeni Ürün Ekle</span>
+            </button>
         </div>
 
-        <div class="detail-container">
-            <div class="detail-main-content">
+        <!-- Analytics Stats Row -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                <span class="text-xs text-gray-500 block mb-1">Toplam Ürün</span>
+                <span id="statTotalProducts" class="text-xl font-bold text-slate-800">0</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                <span class="text-xs text-gray-500 block mb-1">Toplam Stok Maliyeti</span>
+                <span id="statTotalBuy" class="text-xl font-bold text-blue-600">0 ₺</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                <span class="text-xs text-gray-500 block mb-1">Toplam Satış Değeri</span>
+                <span id="statTotalSell" class="text-xl font-bold text-emerald-600">0 ₺</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                <span class="text-xs text-gray-500 block mb-1">Potansiyel Toplam Kâr</span>
+                <span id="statTotalProfit" class="text-xl font-bold text-amber-600">0 ₺</span>
+            </div>
+        </div>
+
+        <!-- Store & Settings Section -->
+        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm mb-6 space-y-4">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center space-x-2">
+                <i class="fa-solid fa-sliders text-amber-500"></i>
+                <span>Genel Ayarlar & Mağaza Bilgileri</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <span id="detailLocation" style="color: var(--brand-accent); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;"></span>
-                    <h1 id="detailTitle" style="font-size: 1.8rem; color: var(--brand-primary); font-weight: 800; margin-top: 4px;"></h1>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Mağaza Adı</label>
+                    <input type="text" id="adminStoreName" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
-
-                <div class="front-slider">
-                    <img id="frontSliderImg" src="" alt="Villa">
-                    <button class="slider-btn prev" onclick="prevFrontImg()">&#10094;</button>
-                    <button class="slider-btn next" onclick="nextFrontImg()">&#10095;</button>
-                    <div class="slider-counter" id="frontSliderCounter">1 / 1</div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">WhatsApp İletişim Numarası</label>
+                    <input type="text" id="adminPhoneInput" placeholder="Örn: 905321234567" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
-
-                <div style="background: white; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 20px; box-shadow: var(--shadow-subtle);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
-                        <h3 style="font-size: 1.1rem; color: var(--brand-primary); font-weight: 800;">Müsaitlik Takvimi</h3>
-                        <select id="monthSelect" class="month-select" onchange="renderCalendar()">
-                            <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
-                            <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
-                            <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
-                            <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
-                        </select>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Logo Yükle (Görsel Seç)</label>
+                    <div class="flex space-x-2">
+                        <input type="file" id="adminLogoFile" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                        <button onclick="removeLogo()" class="px-3 py-2 bg-red-100 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-200 transition">Kaldır</button>
                     </div>
-                    <div class="calendar-grid" id="calendarGrid"></div>
                 </div>
             </div>
-
-            <div class="detail-sticky-sidebar">
-                <h3 style="font-size: 1.1rem; color: var(--brand-primary); font-weight: 800; margin-bottom: 14px;">Rezervasyon Talebi</h3>
-                <div class="booking-section">
-                    <div class="form-grid">
-                        <input type="text" id="guestName" placeholder="Adınız Soyadınız">
-                        <input type="tel" id="guestPhone" placeholder="Telefon (05XX...)">
-                        <input type="email" id="guestEmail" placeholder="E-Posta (İsteğe bağlı)">
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:4px; margin: 12px 0; background:#E2E8F0; padding:12px; border-radius:var(--radius-md); font-size: 0.8rem;">
-                        <div>Seçilen: <span id="selectedDatesText" style="font-weight:700;">Takvimden seçin</span></div>
-                        <div style="font-size: 0.95rem; margin-top:2px;">Toplam: <span id="totalPriceText" style="color:var(--brand-accent); font-weight:800;">-</span></div>
-                    </div>
-                    <button class="btn-submit" onclick="submitReservation()"><i class="fa-brands fa-whatsapp"></i> WhatsApp ile Gönder</button>
-                </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="saveStoreSettings()" class="bg-slate-900 text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition">Ayarları Kaydet</button>
             </div>
+        </div>
+
+        <!-- Categories Manager -->
+        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm mb-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center space-x-2">
+                <i class="fa-solid fa-list text-amber-500"></i>
+                <span>Kategori Yönetimi</span>
+            </h2>
+            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                <input type="text" id="newCategoryInput" placeholder="Yeni Kategori Adı" class="flex-grow px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                <button onclick="addCategory()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Ekle</button>
+            </div>
+            <div id="adminCategoryList" class="flex flex-wrap gap-2">
+                <!-- Dynamically Populated -->
+            </div>
+        </div>
+
+        <!-- Admin Product Table -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="font-bold text-gray-800">Ürün Listesi & Fiyat Analizi</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-xs text-gray-500 uppercase border-b border-gray-200">
+                            <th class="py-3 px-4">Görsel Sayısı</th>
+                            <th class="py-3 px-4">Ürün Adı</th>
+                            <th class="py-3 px-4">Kategori</th>
+                            <th class="py-3 px-4">Alış Fiyatı</th>
+                            <th class="py-3 px-4">Satış Fiyatı</th>
+                            <th class="py-3 px-4">Tahmini Kâr</th>
+                            <th class="py-3 px-4 text-right">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminProductTable" class="divide-y divide-gray-100 text-sm">
+                        <!-- Dynamically Populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- PRODUCT ADD/EDIT MODAL -->
+    <div id="productModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProductModal()" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-4">Yeni Ürün Ekle</h3>
+            
+            <form id="productForm" onsubmit="handleProductSubmit(event)" class="space-y-4">
+                <input type="hidden" id="editProductId">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Ürün Başlığı / Modeli</label>
+                    <input type="text" id="prodTitle" required placeholder="Örn: iPhone 13 Pro Max 128GB" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
+                    <select id="prodCategory" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <!-- Dynamically Populated -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Alış Fiyatı (₺)</label>
+                        <input type="number" id="prodBuyPrice" required min="0" placeholder="0" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Satış Fiyatı (₺)</label>
+                        <input type="number" id="prodSellPrice" required min="0" placeholder="0" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Existing Images Management -->
+                <div id="existingImagesContainer" class="hidden space-y-2">
+                    <label class="block text-xs font-semibold text-gray-600">Mevcut Yüklü Fotoğraflar</label>
+                    <div id="existingImagesList" class="flex flex-wrap gap-2">
+                        <!-- Dynamically Populated Thumbnails -->
+                    </div>
+                </div>
+
+                <!-- New Multi Image Upload -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Fotoğraf Ekle (Birden Fazla Seçebilirsiniz)</label>
+                    <input type="file" id="prodImageFiles" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                    <p class="text-[11px] text-gray-400 mt-1">İpucu: Klavyeden Ctrl veya Shift basılı tutarak birden fazla resim seçebilirsiniz.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Açıklama / Durumu</label>
+                    <textarea id="prodDesc" rows="3" placeholder="Örn: Pili %90, ekranı orijinal, kutusu ve garantisi var." class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200">İptal</button>
+                    <button type="submit" id="saveBtn" class="px-4 py-2 bg-amber-500 text-slate-900 font-semibold rounded-lg text-sm hover:bg-amber-600 shadow">Kaydet</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- JS Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
-
+    <!-- SCRIPT & SUPABASE INTEGRATION -->
     <script>
-        const SUPABASE_URL = "https://kpiguuorrjwtavglspse.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_msm-5EXXHX6CiShmkDJx2A_pdbzkvio";
-        const MY_WHATSAPP_NUMBER = "905332016490"; 
+        // Supabase Credentials
+        const SUPABASE_URL = "https://zcxrfsrnttacpryaidsj.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjeHJmc3JudHRhY3ByeWFpZHNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNjEwODYsImV4cCI6MjEwNjYzNzA4Nn0.VdFmIrT9B-yvJdoqrblyZS5Tvz1XSNCoCSI54vLOkls";
 
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let villas = [];
-        let reservations = [];
-        let activeVilla = null;
-        let activePhotoIndex = 0;
-        let selectedStartDate = null;
-        let selectedEndDate = null;
-        let searchStart = null;
-        let searchEnd = null;
+        // App State
+        let categories = [];
+        let products = [];
+        let storeSettings = { site_name: 'CepMobil', phone_number: '905321234567', logo_url: '' };
+        let activeCategory = 'Tümü';
+        let isAdminLoggedIn = false;
 
-        const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+        // Active Product Detail State
+        let currentDetailProduct = null;
+        let currentImageIndex = 0;
+        let editProductTempImages = [];
 
-        async function init() {
-            await loadSiteHeader();
-            await loadVillas();
-            await loadReservations();
+        // Keyboard Shortcut for ESC Key to Close Modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeFullscreenModal();
+                closeDetailModal();
+                closeProductModal();
+            }
+        });
 
-            flatpickr("#doubleDateRangePicker", {
-                mode: "range",
-                showMonths: 1,
-                minDate: "today",
-                dateFormat: "d.m.Y",
-                locale: "tr",
-                onChange: function(selectedDates) {
-                    if (selectedDates.length === 2) {
-                        searchStart = selectedDates[0];
-                        searchEnd = selectedDates[1];
-                    }
-                }
-            });
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadStoreSettings();
+            await loadCategories();
+            await loadProducts();
+        });
 
-            checkUrlHash();
-        }
-
-        async function loadSiteHeader() {
+        // Load Settings
+        async function loadStoreSettings() {
             try {
-                const { data } = await _supabase.from('site_settings').select('*').eq('id', 1).single();
+                const { data } = await supabaseClient.from('settings').select('*').eq('id', 1).single();
                 if (data) {
-                    if (data.title) {
-                        document.getElementById('siteTitle').innerText = data.title;
-                        document.getElementById('siteTitleTag').innerText = data.title;
-                    }
-                    if (data.subtitle) document.getElementById('siteSubtitle').innerText = data.subtitle;
-                    if (data.favicon) document.getElementById('siteFavicon').href = data.favicon;
-                    if (data.banner1) {
-                        const b1 = document.getElementById('siteBanner1');
-                        b1.src = data.banner1;
-                        b1.style.display = 'block';
-                    }
+                    storeSettings = data;
+                    applySettingsUI();
                 }
-            } catch(e) {}
+            } catch (err) {
+                console.error("Ayarlar yüklenemedi:", err);
+            }
         }
 
-        async function loadVillas() {
+        function applySettingsUI() {
+            document.getElementById('siteTitle').innerText = storeSettings.site_name || 'CepMobil';
+            document.getElementById('adminStoreName').value = storeSettings.site_name || '';
+            document.getElementById('adminPhoneInput').value = storeSettings.phone_number || '';
+            
+            const logoImg = document.getElementById('siteLogo');
+            if (storeSettings.logo_url) {
+                logoImg.src = storeSettings.logo_url;
+                logoImg.classList.remove('hidden');
+            } else {
+                logoImg.classList.add('hidden');
+            }
+        }
+
+        // Load Categories
+        async function loadCategories() {
             try {
-                const { data } = await _supabase.from('villas').select('*');
-                villas = data || [];
-                renderVillaGrid(villas, 'villaGrid');
-                renderVillaGrid(villas, 'allVillaGrid');
-            } catch(e) {}
+                const { data } = await supabaseClient.from('categories').select('*').order('id', { ascending: true });
+                if (data && data.length > 0) {
+                    categories = data.map(c => c.name);
+                } else {
+                    categories = ['Tümü', 'iPhone', 'Samsung', 'Aksesuar'];
+                }
+                renderCategoryFilters();
+                renderAdminCategories();
+                populateCategoryDropdown();
+            } catch (err) {
+                console.error("Kategoriler çekilemedi:", err);
+            }
         }
 
-        async function loadReservations() {
+        // Load Products
+        async function loadProducts() {
             try {
-                const { data } = await _supabase.from('reservations').select('*').neq('status', 'Reddedildi');
-                reservations = data || [];
-            } catch(e) {}
+                const { data } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
+                if (data) {
+                    products = data.map(p => {
+                        let imgs = [];
+                        if (p.image_url) {
+                            try {
+                                imgs = JSON.parse(p.image_url);
+                                if (!Array.isArray(imgs)) imgs = [p.image_url];
+                            } catch(e) {
+                                imgs = [p.image_url];
+                            }
+                        }
+                        return { ...p, images: imgs };
+                    });
+                    renderProducts();
+                    renderAdminProducts();
+                    updateAnalytics();
+                }
+            } catch (err) {
+                console.error("Ürünler çekilemedi:", err);
+            }
         }
 
-        function renderVillaGrid(list, containerId) {
-            const grid = document.getElementById(containerId);
-            if (!grid) return;
-            grid.innerHTML = '';
-            if (!list || list.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 30px; background:white; border-radius:12px; color:#64748b; font-weight:bold;">Müsait villa bulunamadı.</div>';
+        // Upload File to Supabase Storage
+        async function uploadFileToSupabase(file) {
+            try {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+                const filePath = `${fileName}`;
+
+                const { data, error } = await supabaseClient.storage
+                    .from('images')
+                    .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+                if (error) {
+                    console.error("Resim yükleme hatası:", error);
+                    return null;
+                }
+
+                const { data: publicUrlData } = supabaseClient.storage.from('images').getPublicUrl(filePath);
+                return publicUrlData.publicUrl;
+            } catch (err) {
+                console.error("Yükleme işlemi başarısız:", err);
+                return null;
+            }
+        }
+
+        // Render Client Category Filters
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryFilterContainer');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setFilterCategory('${cat}')" class="px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${activeCategory === cat ? 'bg-amber-500 text-slate-900 shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function setFilterCategory(cat) {
+            activeCategory = cat;
+            renderCategoryFilters();
+            filterProducts();
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => {
+                const matchesCat = activeCategory === 'Tümü' || p.category === activeCategory;
+                const matchesSearch = p.title.toLowerCase().includes(query) || (p.desc_text && p.desc_text.toLowerCase().includes(query));
+                return matchesCat && matchesSearch;
+            });
+            renderProductGrid(filtered);
+        }
+
+        function renderProducts() {
+            filterProducts();
+        }
+
+        // Render Client Main Grid
+        function renderProductGrid(list) {
+            const grid = document.getElementById('productGrid');
+            const empty = document.getElementById('emptyState');
+
+            if (list.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
                 return;
             }
-            list.forEach(v => {
-                const card = document.createElement('div');
-                card.className = 'v-card';
-                card.onclick = () => openDetailPage(v.id);
-                
-                const imgUrl = (v.images && Array.isArray(v.images) && v.images.length > 0 && v.images[0]) 
-                    ? v.images[0] 
-                    : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80';
-                
-                const displayCardPrice = (v.default_night_price && String(v.default_night_price).trim() !== '') 
-                    ? v.default_night_price 
-                    : 'Fiyat Sorun';
 
-                card.innerHTML = `
-                    <div class="v-card-img">
-                        <span class="v-badge-location"><i class="fa-solid fa-location-dot"></i> Kaş / Kalkan</span>
-                        <img src="${imgUrl}" alt="${v.name || 'Villa'}" onerror="this.src='https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80';">
-                    </div>
-                    <div class="v-card-body">
-                        <h3 class="v-title">${v.name || 'İsimsiz Villa'}</h3>
-                        <p class="v-tagline">${v.tagline || 'Özel havuzlu lüks tatil villası.'}</p>
-                        <div class="v-card-footer">
+            empty.classList.add('hidden');
+            grid.innerHTML = list.map(p => {
+                const defaultImg = 'https://via.placeholder.com/300x200?text=Gorsel+Yok';
+                const mainImg = (p.images && p.images.length > 0) ? p.images[0] : defaultImg;
+                const imgCount = p.images ? p.images.length : 0;
+
+                return `
+                    <div onclick="openDetailModal(${p.id})" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition cursor-pointer group">
+                        <div class="h-40 md:h-48 w-full bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                            <img src="${mainImg}" alt="${p.title}" class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
+                            <span class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-md text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                ${p.category}
+                            </span>
+                            ${imgCount > 1 ? `
+                                <span class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded-md flex items-center space-x-1">
+                                    <i class="fa-solid fa-images"></i>
+                                    <span>${imgCount}</span>
+                                </span>
+                            ` : ''}
+                        </div>
+                        <div class="p-3 md:p-4 flex-grow flex flex-col justify-between">
                             <div>
-                                <span style="font-size:0.7rem; color:var(--text-sub);">Gecelik</span>
-                                <div class="v-price-val">${displayCardPrice} TL</div>
+                                <h3 class="font-bold text-gray-800 text-sm md:text-base line-clamp-1 group-hover:text-amber-600 transition">${p.title}</h3>
+                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">${p.desc_text || 'Açıklama bulunmuyor.'}</p>
                             </div>
-                            <button class="btn-card-detail">İncele</button>
+                            <div class="mt-4 pt-2 border-t border-gray-100 flex items-center justify-between">
+                                <div class="text-base md:text-lg font-extrabold text-slate-900">
+                                    ${Number(p.sell_price).toLocaleString('tr-TR')} ₺
+                                </div>
+                                <span class="text-xs text-amber-600 font-semibold group-hover:translate-x-1 transition flex items-center space-x-1">
+                                    <span>İncele</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 `;
-                grid.appendChild(card);
-            });
+            }).join('');
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.page-tab').forEach(el => el.classList.remove('active-tab'));
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active-tab');
-            window.scrollTo({top: 0, behavior: 'smooth'});
+        // PRODUCT DETAIL MODAL LOGIC
+        function openDetailModal(productId) {
+            const p = products.find(x => x.id === productId);
+            if (!p) return;
+
+            currentDetailProduct = p;
+            currentImageIndex = 0;
+
+            document.getElementById('detailTitle').innerText = p.title;
+            document.getElementById('detailCategoryBadge').innerText = p.category;
+            document.getElementById('detailPrice').innerText = `${Number(p.sell_price).toLocaleString('tr-TR')} ₺`;
+            document.getElementById('detailDesc').innerText = p.desc_text || 'Bu ürün için henüz detaylı bir açıklama eklenmedi.';
+
+            const msg = encodeURIComponent(`Merhaba, ${p.title} ürünü hakkında bilgi almak istiyorum.`);
+            document.getElementById('detailWhatsappBtn').href = `https://wa.me/${storeSettings.phone_number || '905321234567'}?text=${msg}`;
+
+            updateDetailImageDisplay();
+            renderRelatedProducts(p);
+
+            document.getElementById('detailModal').classList.remove('hidden');
         }
 
-        function checkUrlHash() {
-            const hash = window.location.hash;
-            if (hash && hash.startsWith('#teklif')) {
-                const paramString = hash.includes('?') ? hash.split('?')[1] : '';
-                const params = new URLSearchParams(paramString);
-                const vId = params.get('v');
-                const inDateStr = params.get('in');
-                const outDateStr = params.get('out');
-                if (vId && inDateStr && outDateStr) openVIPOfferPage(vId, inDateStr, outDateStr);
-                return;
-            }
-            if (hash && hash.startsWith('#villa-')) {
-                const vId = parseInt(hash.replace('#villa-', ''));
-                if (vId) openDetailPage(vId);
-            }
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            currentDetailProduct = null;
         }
 
-        function openVIPOfferPage(villaId, checkInStr, checkOutStr) {
-            const targetVilla = villas.find(v => String(v.id) === String(villaId));
-            if (!targetVilla) return;
-            openDetailPage(targetVilla.id);
+        function updateDetailImageDisplay() {
+            if (!currentDetailProduct) return;
+            const imgs = (currentDetailProduct.images && currentDetailProduct.images.length > 0) 
+                ? currentDetailProduct.images 
+                : ['https://via.placeholder.com/500x300?text=Gorsel+Yok'];
 
-            const dIn = new Date(checkInStr);
-            const dOut = new Date(checkOutStr);
-            selectedStartDate = dIn;
-            selectedEndDate = dOut;
+            const currentImgUrl = imgs[currentImageIndex];
 
-            let total = 0;
-            let cur = new Date(dIn);
-            while (cur < dOut) {
-                total += getDayPriceNumber(targetVilla, cur.getMonth(), cur.getDate());
-                cur.setDate(cur.getDate() + 1);
-            }
+            // Update Detail Modal
+            document.getElementById('detailMainImage').src = currentImgUrl;
+            document.getElementById('imageCounter').innerText = `${currentImageIndex + 1} / ${imgs.length}`;
 
-            const formatDateStr = (d) => `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-            document.getElementById('selectedDatesText').innerText = `${formatDateStr(dIn)} - ${formatDateStr(dOut)}`;
-            document.getElementById('totalPriceText').innerText = total.toLocaleString('tr-TR') + " TL";
-            document.getElementById('detailLocation').innerText = "SİZE ÖZEL VIP TEKLİF";
-            document.getElementById('monthSelect').value = dIn.getMonth();
-            renderCalendar();
-        }
+            // Update Fullscreen Modal if active
+            document.getElementById('fullscreenImage').src = currentImgUrl;
+            document.getElementById('fullscreenCounter').innerText = `${currentImageIndex + 1} / ${imgs.length}`;
+            document.getElementById('fullscreenTitle').innerText = currentDetailProduct.title;
 
-        function openDetailPage(id) {
-            activeVilla = villas.find(v => String(v.id) === String(id));
-            if (!activeVilla) return;
-
-            activePhotoIndex = 0;
-            selectedStartDate = null;
-            selectedEndDate = null;
-            
-            document.getElementById('detailTitle').innerText = activeVilla.name;
-            document.getElementById('detailLocation').innerText = "KAŞ / KALKAN";
-            document.getElementById('monthSelect').value = new Date().getMonth();
-            document.getElementById('guestName').value = "";
-            document.getElementById('guestPhone').value = "";
-            document.getElementById('guestEmail').value = "";
-            document.getElementById('selectedDatesText').innerText = "Takvimden seçin";
-            document.getElementById('totalPriceText').innerText = "-";
-            
-            updateFrontSlider();
-            renderCalendar();
-
-            document.getElementById('villaDetailPage').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            window.location.hash = `#villa-${activeVilla.id}`;
-        }
-
-        function closeDetailPage() {
-            document.getElementById('villaDetailPage').classList.remove('active');
-            document.body.style.overflow = 'auto';
-            history.pushState("", document.title, window.location.pathname + window.location.search);
-        }
-
-        function copyShareLink() {
-            const url = `${window.location.origin}${window.location.pathname}#villa-${activeVilla.id}`;
-            navigator.clipboard.writeText(url);
-            alert("Bağlantı kopyalandı!");
-        }
-
-        function updateFrontSlider() {
-            const imgElem = document.getElementById('frontSliderImg');
-            const counterElem = document.getElementById('frontSliderCounter');
-            if (!activeVilla.images || activeVilla.images.length === 0) {
-                imgElem.src = 'https://via.placeholder.com/600x450';
-                counterElem.innerText = '0 / 0';
-                return;
-            }
-            imgElem.src = activeVilla.images[activePhotoIndex];
-            counterElem.innerText = `${activePhotoIndex + 1} / ${activeVilla.images.length}`;
-        }
-
-        function nextFrontImg() {
-            if (!activeVilla.images || !activeVilla.images.length) return;
-            activePhotoIndex = (activePhotoIndex + 1) % activeVilla.images.length;
-            updateFrontSlider();
-        }
-
-        function prevFrontImg() {
-            if (!activeVilla.images || !activeVilla.images.length) return;
-            activePhotoIndex = (activePhotoIndex - 1 + activeVilla.images.length) % activeVilla.images.length;
-            updateFrontSlider();
-        }
-
-        function getDayReservationStatus(villaId, year, monthIndex, day) {
-            const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            let isApprovedStay = false;
-            let isPendingStay = false;
-
-            const activeRes = reservations.filter(r => String(r.villa_id) === String(villaId) && r.status !== 'Reddedildi');
-            
-            activeRes.forEach(r => {
-                if (dateStr >= r.check_in && dateStr < r.check_out) {
-                    if (r.status === 'Onaylandı') isApprovedStay = true;
-                    if (r.status === 'Beklemede') isPendingStay = true;
+            // Arrow Visibility
+            const hasMultiple = imgs.length > 1;
+            ['prevImgBtn', 'nextImgBtn', 'fsPrevBtn', 'fsNextBtn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (hasMultiple) btn.classList.remove('hidden');
+                    else btn.classList.add('hidden');
                 }
             });
-            return { isApprovedStay, isPendingStay };
-        }
 
-        function renderCalendar() {
-            const calGrid = document.getElementById('calendarGrid');
-            calGrid.innerHTML = '';
-            const currentYear = new Date().getFullYear();
-            const selectedMonthIndex = parseInt(document.getElementById('monthSelect').value);
-            const today = new Date(); today.setHours(0,0,0,0);
-
-            const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
-            days.forEach(d => {
-                const h = document.createElement('div');
-                h.className = 'day-header';
-                h.innerText = d;
-                calGrid.appendChild(h);
-            });
-
-            const totalDays = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
-            let firstDayIndex = new Date(currentYear, selectedMonthIndex, 1).getDay();
-            firstDayIndex = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
-
-            for (let i = 0; i < firstDayIndex; i++) calGrid.appendChild(document.createElement('div'));
-
-            const monthPrices = (activeVilla.prices && activeVilla.prices[selectedMonthIndex]) ? activeVilla.prices[selectedMonthIndex] : { defaultPrice: "-", customDays: {} };
-
-            for (let day = 1; day <= totalDays; day++) {
-                const thisDate = new Date(currentYear, selectedMonthIndex, day);
-                thisDate.setHours(0,0,0,0);
-                const isPast = thisDate < today;
-
-                const customInfo = monthPrices.customDays ? monthPrices.customDays[day] : null;
-                const priceStr = customInfo ? customInfo.price : (activeVilla.default_night_price || monthPrices.defaultPrice || "Fiyat Yok");
-                const manualAvailable = customInfo ? customInfo.available : true;
-                const { isApprovedStay, isPendingStay } = getDayReservationStatus(activeVilla.id, currentYear, selectedMonthIndex, day);
-
-                const cell = document.createElement('div');
-                let classes = ['day-cell'];
-
-                if (isPast) classes.push('booked');
-                else if (isApprovedStay || !manualAvailable) classes.push('booked');
-                else if (isPendingStay) classes.push('pending');
-                else classes.push('available');
-
-                if (selectedStartDate && selectedEndDate) {
-                    if (thisDate.getTime() === selectedStartDate.getTime()) {
-                        classes.push('checkin-day');
-                    } else if (thisDate.getTime() === selectedEndDate.getTime()) {
-                        classes.push('checkout-day');
-                    } else if (thisDate > selectedStartDate && thisDate < selectedEndDate) {
-                        classes.push('selected');
-                    }
-                } else if (selectedStartDate && thisDate.getTime() === selectedStartDate.getTime()) {
-                    classes.push('checkin-day');
-                }
-
-                cell.className = classes.join(' ');
-                cell.innerHTML = `<span class="day-num">${day}</span><span class="day-price">${isApprovedStay ? 'Dolu' : (isPendingStay ? 'Opsiyon' : priceStr)}</span>`;
-
-                if (!isPast && !isApprovedStay && manualAvailable) {
-                    cell.onclick = () => handleDateClick(currentYear, selectedMonthIndex, day);
-                }
-                calGrid.appendChild(cell);
-            }
-        }
-
-        function handleDateClick(year, month, day) {
-            const clicked = new Date(year, month, day);
-            if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
-                selectedStartDate = clicked;
-                selectedEndDate = null;
+            // Render Thumbnails
+            const thumbContainer = document.getElementById('detailThumbnails');
+            if (hasMultiple) {
+                thumbContainer.innerHTML = imgs.map((img, idx) => `
+                    <button onclick="setDetailImage(${idx})" class="h-14 w-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition ${idx === currentImageIndex ? 'border-amber-500 scale-105' : 'border-gray-200 opacity-60 hover:opacity-100'}">
+                        <img src="${img}" class="w-full h-full object-cover">
+                    </button>
+                `).join('');
+                thumbContainer.classList.remove('hidden');
             } else {
-                if (clicked > selectedStartDate) selectedEndDate = clicked;
-                else { selectedStartDate = clicked; selectedEndDate = null; }
+                thumbContainer.classList.add('hidden');
             }
-
-            const formatDate = (d) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
-            if (selectedStartDate && selectedEndDate) {
-                document.getElementById('selectedDatesText').innerText = `${formatDate(selectedStartDate)} - ${formatDate(selectedEndDate)}`;
-                let total = 0, cur = new Date(selectedStartDate);
-                while (cur < selectedEndDate) {
-                    total += getDayPriceNumber(activeVilla, cur.getMonth(), cur.getDate());
-                    cur.setDate(cur.getDate() + 1);
-                }
-                document.getElementById('totalPriceText').innerText = total.toLocaleString('tr-TR') + " TL";
-            } else if (selectedStartDate) {
-                document.getElementById('selectedDatesText').innerText = `${formatDate(selectedStartDate)} (Çıkış seçin)`;
-            }
-            renderCalendar();
         }
 
-        function getDayPriceNumber(villa, month, day) {
-            const monthPrices = villa.prices ? villa.prices[month] : null;
-            let priceStr = "0";
-            if (monthPrices) {
-                const customInfo = monthPrices.customDays ? monthPrices.customDays[day] : null;
-                priceStr = customInfo ? customInfo.price : (villa.default_night_price || monthPrices.defaultPrice || "0");
-            } else {
-                priceStr = villa.default_night_price || "0";
-            }
-            const num = parseInt(priceStr.toString().replace(/[^0-9]/g, ''));
-            return isNaN(num) ? 0 : num;
+        function changeDetailImage(step) {
+            if (!currentDetailProduct || !currentDetailProduct.images) return;
+            const total = currentDetailProduct.images.length;
+            currentImageIndex = (currentImageIndex + step + total) % total;
+            updateDetailImageDisplay();
         }
 
-        function filterAvailableVillas() {
-            if (!searchStart || !searchEnd) return alert("Lütfen tarih seçin.");
-            const sInStr = `${searchStart.getFullYear()}-${String(searchStart.getMonth() + 1).padStart(2, '0')}-${String(searchStart.getDate()).padStart(2, '0')}`;
-            const sOutStr = `${searchEnd.getFullYear()}-${String(searchEnd.getMonth() + 1).padStart(2, '0')}-${String(searchEnd.getDate()).padStart(2, '0')}`;
-
-            const availableList = villas.filter(v => {
-                return !reservations.some(r => String(r.villa_id) === String(v.id) && r.status === 'Onaylandı' && (sInStr < r.check_out && sOutStr > r.check_in));
-            });
-            renderVillaGrid(availableList, 'villaGrid');
+        function setDetailImage(index) {
+            currentImageIndex = index;
+            updateDetailImageDisplay();
         }
 
-        function resetSearchFilter() {
-            searchStart = null; searchEnd = null;
-            renderVillaGrid(villas, 'villaGrid');
+        // FULLSCREEN LIGHTBOX FUNCTIONS
+        function openFullscreenModal() {
+            if (!currentDetailProduct) return;
+            updateDetailImageDisplay();
+            document.getElementById('fullscreenModal').classList.remove('hidden');
         }
 
-        /* 🚀 VERİTABANINA KESİN KAYIT YAPAN FONKSİYON (created_at DÜZELTİLDİ) */
-        async function submitReservation() {
-            const name = document.getElementById('guestName').value.trim();
-            const phone = document.getElementById('guestPhone').value.trim();
-            const email = document.getElementById('guestEmail').value.trim();
-            
-            if (!selectedStartDate || !selectedEndDate) {
-                return alert("Lütfen takvim üzerinden giriş ve çıkış tarihlerini seçin.");
-            }
-            if (!name || !phone) {
-                return alert("Lütfen Adınız Soyadınız ve Telefon numarası alanlarını doldurun.");
-            }
+        function closeFullscreenModal() {
+            document.getElementById('fullscreenModal').classList.add('hidden');
+        }
 
-            const inStr = `${selectedStartDate.getFullYear()}-${String(selectedStartDate.getMonth() + 1).padStart(2, '0')}-${String(selectedStartDate.getDate()).padStart(2, '0')}`;
-            const outStr = `${selectedEndDate.getFullYear()}-${String(selectedEndDate.getMonth() + 1).padStart(2, '0')}-${String(selectedEndDate.getDate()).padStart(2, '0')}`;
-            const totalPriceStr = document.getElementById('totalPriceText').innerText;
+        function renderRelatedProducts(currentP) {
+            const relatedContainer = document.getElementById('relatedProductsGrid');
+            const related = products.filter(p => p.category === currentP.category && p.id !== currentP.id).slice(0, 2);
 
-            // Supabase Veritabanına Ekleme (created_at eklendi)
-            const { data, error } = await _supabase.from('reservations').insert([{
-                villa_id: String(activeVilla.id),
-                villa_name: String(activeVilla.name),
-                guest_name: String(name),
-                guest_phone: String(phone),
-                check_in: String(inStr),
-                check_out: String(outStr),
-                total_price: String(totalPriceStr),
-                agency_name: 'Şahsi / Doğrudan Satış',
-                status: 'Beklemede',
-                created_at: new Date().toISOString()
-            }]).select();
-
-            if (error) {
-                console.error("Supabase Veritabanı Kayıt Hatası:", error);
-                alert("Veritabanına eklenirken bir hata oluştu: " + error.message);
+            if (related.length === 0) {
+                relatedContainer.innerHTML = '<p class="text-xs text-gray-400 col-span-2">Aynı kategoride başka ürün bulunmuyor.</p>';
                 return;
             }
 
-            // WhatsApp Yönlendirmesi
-            const msg = `Merhaba, ${activeVilla.name} için rezervasyon talebi:%0A👤 ${name}%0A📞 ${phone}%0A📧 ${email}%0A📅 ${inStr} - ${outStr}%0A💰 ${totalPriceStr}`;
-            window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${msg}`, '_blank');
-            
-            closeDetailPage();
-            await loadReservations();
+            relatedContainer.innerHTML = related.map(p => {
+                const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
+                return `
+                    <div onclick="openDetailModal(${p.id})" class="flex items-center space-x-3 p-2 border rounded-xl hover:border-amber-400 transition cursor-pointer bg-white">
+                        <img src="${img}" class="w-12 h-12 rounded-lg object-cover bg-slate-800">
+                        <div class="overflow-hidden">
+                            <h4 class="text-xs font-bold text-gray-800 truncate">${p.title}</h4>
+                            <p class="text-xs text-amber-600 font-extrabold">${Number(p.sell_price).toLocaleString('tr-TR')} ₺</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        init();
+        // ADMIN FUNCTIONS
+        function handleAdminAccess() {
+            if (isAdminLoggedIn) {
+                switchTab('admin');
+                return;
+            }
+            const pwd = prompt("Admin Paneli Giriş Şifresi:");
+            if (pwd === "1234") {
+                isAdminLoggedIn = true;
+                document.getElementById('adminBtnText').innerText = "Yönetim Paneli";
+                switchTab('admin');
+            } else if (pwd !== null) {
+                alert("Hatalı Şifre!");
+            }
+        }
+
+        function switchTab(tab) {
+            if (tab === 'admin') {
+                document.getElementById('clientTab').classList.add('hidden');
+                document.getElementById('adminTab').classList.remove('hidden');
+            } else {
+                document.getElementById('adminTab').classList.add('hidden');
+                document.getElementById('clientTab').classList.remove('hidden');
+            }
+        }
+
+        // Store Settings
+        async function saveStoreSettings() {
+            const name = document.getElementById('adminStoreName').value;
+            const phone = document.getElementById('adminPhoneInput').value;
+            const logoFile = document.getElementById('adminLogoFile').files[0];
+
+            let logoUrl = storeSettings.logo_url;
+            if (logoFile) {
+                const uploadedUrl = await uploadFileToSupabase(logoFile);
+                if (uploadedUrl) logoUrl = uploadedUrl;
+            }
+
+            const updatedSettings = {
+                id: 1,
+                site_name: name,
+                phone_number: phone,
+                logo_url: logoUrl
+            };
+
+            const { error } = await supabaseClient.from('settings').upsert(updatedSettings);
+            if (!error) {
+                storeSettings = updatedSettings;
+                applySettingsUI();
+                alert("Mağaza ayarları kaydedildi!");
+                renderProducts();
+            } else {
+                alert("Ayarlar kaydedilirken hata oluştu.");
+            }
+        }
+
+        async function removeLogo() {
+            storeSettings.logo_url = '';
+            await supabaseClient.from('settings').upsert({ id: 1, logo_url: '' });
+            applySettingsUI();
+            alert("Logo kaldırıldı.");
+        }
+
+        // Category Management
+        async function addCategory() {
+            const input = document.getElementById('newCategoryInput');
+            const val = input.value.trim();
+            if (!val) return;
+            if (categories.includes(val)) {
+                alert("Bu kategori zaten var!");
+                return;
+            }
+
+            const { error } = await supabaseClient.from('categories').insert([{ name: val }]);
+            if (!error) {
+                input.value = '';
+                await loadCategories();
+            }
+        }
+
+        async function deleteCategory(catName) {
+            if (catName === 'Tümü') return;
+            if (confirm(`'${catName}' kategorisini silmek istediğinizden emin misiniz?`)) {
+                const { error } = await supabaseClient.from('categories').delete().eq('name', catName);
+                if (!error) await loadCategories();
+            }
+        }
+
+        function renderAdminCategories() {
+            const container = document.getElementById('adminCategoryList');
+            container.innerHTML = categories.map(cat => `
+                <span class="inline-flex items-center bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">
+                    ${cat}
+                    ${cat !== 'Tümü' ? `<button onclick="deleteCategory('${cat}')" class="ml-2 text-red-500 hover:text-red-700"><i class="fa-solid fa-xmark"></i></button>` : ''}
+                </span>
+            `).join('');
+        }
+
+        function populateCategoryDropdown() {
+            const select = document.getElementById('prodCategory');
+            select.innerHTML = categories.filter(c => c !== 'Tümü').map(c => `
+                <option value="${c}">${c}</option>
+            `).join('');
+        }
+
+        // Product Modal & Operations
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('productModal');
+            const form = document.getElementById('productForm');
+            form.reset();
+            editProductTempImages = [];
+
+            if (productId) {
+                const p = products.find(x => x.id === productId);
+                if (p) {
+                    document.getElementById('modalTitle').innerText = 'Ürünü Düzenle';
+                    document.getElementById('editProductId').value = p.id;
+                    document.getElementById('prodTitle').value = p.title;
+                    document.getElementById('prodCategory').value = p.category;
+                    document.getElementById('prodBuyPrice').value = p.buy_price;
+                    document.getElementById('prodSellPrice').value = p.sell_price;
+                    document.getElementById('prodDesc').value = p.desc_text || '';
+                    
+                    editProductTempImages = p.images ? [...p.images] : [];
+                    renderExistingImagesAdmin();
+                }
+            } else {
+                document.getElementById('modalTitle').innerText = 'Yeni Ürün Ekle';
+                document.getElementById('editProductId').value = '';
+                document.getElementById('existingImagesContainer').classList.add('hidden');
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function renderExistingImagesAdmin() {
+            const container = document.getElementById('existingImagesContainer');
+            const list = document.getElementById('existingImagesList');
+
+            if (editProductTempImages.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            list.innerHTML = editProductTempImages.map((img, idx) => `
+                <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-300 group">
+                    <img src="${img}" class="w-full h-full object-cover">
+                    <button type="button" onclick="removeTempImage(${idx})" class="absolute top-0.5 right-0.5 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeTempImage(idx) {
+            editProductTempImages.splice(idx, 1);
+            renderExistingImagesAdmin();
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Resimler Yükleniyor...";
+            saveBtn.disabled = true;
+
+            const id = document.getElementById('editProductId').value;
+            const title = document.getElementById('prodTitle').value;
+            const category = document.getElementById('prodCategory').value;
+            const buy_price = parseFloat(document.getElementById('prodBuyPrice').value) || 0;
+            const sell_price = parseFloat(document.getElementById('prodSellPrice').value) || 0;
+            const desc_text = document.getElementById('prodDesc').value;
+            const fileInput = document.getElementById('prodImageFiles');
+
+            let finalImages = [...editProductTempImages];
+
+            if (fileInput.files && fileInput.files.length > 0) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    const url = await uploadFileToSupabase(file);
+                    if (url) finalImages.push(url);
+                }
+            }
+
+            const image_url = JSON.stringify(finalImages);
+            const productData = { title, category, buy_price, sell_price, desc_text, image_url };
+
+            let error = null;
+            if (id) {
+                const res = await supabaseClient.from('products').update(productData).eq('id', id);
+                error = res.error;
+            } else {
+                const res = await supabaseClient.from('products').insert([productData]);
+                error = res.error;
+            }
+
+            saveBtn.innerText = "Kaydet";
+            saveBtn.disabled = false;
+
+            if (!error) {
+                closeProductModal();
+                await loadProducts();
+            } else {
+                alert("Ürün kaydedilirken veritabanı hatası oluştu!");
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
+                const { error } = await supabaseClient.from('products').delete().eq('id', id);
+                if (!error) await loadProducts();
+            }
+        }
+
+        // Render Admin Table
+        function renderAdminProducts() {
+            const table = document.getElementById('adminProductTable');
+            table.innerHTML = products.map(p => {
+                const profit = p.sell_price - p.buy_price;
+                const imgCount = p.images ? p.images.length : 0;
+                const firstImg = imgCount > 0 ? p.images[0] : 'https://via.placeholder.com/50';
+
+                return `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-3 px-4">
+                            <div class="flex items-center space-x-2">
+                                <img src="${firstImg}" class="h-10 w-10 object-cover rounded-lg border">
+                                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full">${imgCount} Adet</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 font-semibold text-gray-800">${p.title}</td>
+                        <td class="py-3 px-4 text-xs">
+                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-medium">${p.category}</span>
+                        </td>
+                        <td class="py-3 px-4 text-gray-600">${Number(p.buy_price).toLocaleString('tr-TR')} ₺</td>
+                        <td class="py-3 px-4 font-bold text-gray-900">${Number(p.sell_price).toLocaleString('tr-TR')} ₺</td>
+                        <td class="py-3 px-4 font-bold ${profit >= 0 ? 'text-emerald-600' : 'text-red-500'}">
+                            +${Number(profit).toLocaleString('tr-TR')} ₺
+                        </td>
+                        <td class="py-3 px-4 text-right space-x-2">
+                            <button onclick="openProductModal(${p.id})" class="text-blue-600 hover:text-blue-800 p-1" title="Düzenle">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 p-1" title="Sil">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Analytics
+        function updateAnalytics() {
+            const totalBuy = products.reduce((sum, p) => sum + Number(p.buy_price), 0);
+            const totalSell = products.reduce((sum, p) => sum + Number(p.sell_price), 0);
+            const totalProfit = totalSell - totalBuy;
+
+            document.getElementById('statTotalProducts').innerText = products.length;
+            document.getElementById('statTotalBuy').innerText = totalBuy.toLocaleString('tr-TR') + ' ₺';
+            document.getElementById('statTotalSell').innerText = totalSell.toLocaleString('tr-TR') + ' ₺';
+            document.getElementById('statTotalProfit').innerText = totalProfit.toLocaleString('tr-TR') + ' ₺';
+        }
     </script>
 </body>
 </html>
