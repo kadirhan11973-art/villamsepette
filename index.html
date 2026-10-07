@@ -29,12 +29,56 @@
 
         .pulse-btn { animation: pulse-ring 2s infinite; }
 
+        /* YAZDIRMA (PRINT) CSS DÜZELTMELERİ */
         @media print {
+            @page {
+                size: 80mm auto;
+                margin: 0;
+            }
+            body {
+                background: #fff !important;
+                color: #000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
             body * { visibility: hidden !important; }
-            body.print-receipt #receipt-print-area, body.print-receipt #receipt-print-area * { visibility: visible !important; }
-            body.print-receipt #receipt-print-area { position: absolute !important; left: 0 !important; top: 0 !important; width: 80mm !important; padding: 2mm !important; font-family: 'Courier New', Courier, monospace !important; font-size: 11px !important; color: #000 !important; background: #fff !important; }
-            body.print-a4 #a4-mektup-print-area, body.print-a4 #a4-mektup-print-area * { visibility: visible !important; }
-            body.print-a4 #a4-mektup-print-area { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; margin: 0 !important; padding: 15mm !important; font-family: 'Inter', sans-serif !important; color: #000 !important; background: #fff !important; }
+            
+            /* 80mm Termal / Lazer Fiş Yazdırma Modu */
+            body.print-receipt #receipt-print-area, 
+            body.print-receipt #receipt-print-area * { 
+                visibility: visible !important; 
+            }
+            body.print-receipt #receipt-print-area { 
+                display: block !important;
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 80mm !important; 
+                margin: 0 !important;
+                padding: 3mm !important; 
+                font-family: 'Courier New', Courier, monospace !important; 
+                font-size: 11px !important; 
+                color: #000 !important; 
+                background: #fff !important; 
+            }
+            
+            /* A4 Mektup Yazdırma Modu */
+            body.print-a4 #a4-mektup-print-area, 
+            body.print-a4 #a4-mektup-print-area * { 
+                visibility: visible !important; 
+            }
+            body.print-a4 #a4-mektup-print-area { 
+                display: block !important;
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 100% !important; 
+                margin: 0 !important; 
+                padding: 15mm !important; 
+                font-family: 'Inter', sans-serif !important; 
+                color: #000 !important; 
+                background: #fff !important; 
+            }
             .no-print { display: none !important; }
         }
 
@@ -46,6 +90,15 @@
 
     <!-- ARKA PLANI RESİMLİ GİRİŞ EKRANI -->
     <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 login-bg-overlay overflow-y-auto">
+        
+        <!-- SOL ÜST HAMBURGER MENÜ (3 ÇİZGİ) -->
+        <div class="fixed top-5 left-5 z-50">
+            <button onclick="openAboutModal()" class="bg-slate-800/80 hover:bg-slate-700 text-white p-3.5 rounded-2xl border border-slate-600/80 shadow-xl backdrop-blur-md flex items-center gap-2 transition active:scale-95">
+                <i class="fa-solid fa-bars text-xl text-emerald-400"></i>
+                <span class="text-xs font-extrabold hidden sm:inline text-slate-200">Bilgi & Hakkımızda</span>
+            </button>
+        </div>
+
         <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-700/80 my-auto">
             <div class="text-center mb-6">
                 <div class="bg-emerald-500 text-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-3xl mx-auto mb-3 shadow-lg shadow-emerald-500/30">
@@ -87,9 +140,56 @@
         </div>
     </div>
 
+    <!-- GİRİŞ EKRANI HAKKIMIZDA & KULLANIM BİLGİSİ MODALI (3 ÇİZGİ TIKLANDIĞINDA) -->
+    <div id="about-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-100 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="bg-emerald-100 text-emerald-800 p-2.5 rounded-2xl">
+                        <i class="fa-solid fa-circle-info text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-slate-900 text-lg">Sistem & Bilgilendirme</h3>
+                        <p class="text-xs text-slate-500">Hal Hesap Otomasyon Portalı Hakkında</p>
+                    </div>
+                </div>
+                <button onclick="closeAboutModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-sm mb-1 text-emerald-700 flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-packing"></i> Hakkımızda & Tanıtım
+                    </h4>
+                    <p id="about-text-content">Hal Hesap; hal komisyoncuları, tüccarlar ve müstahsiller için geliştirilmiş bulut tabanlı yeni nesil kantat, cari ve parti yönetim sistemidir.</p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-sm mb-1 text-blue-700 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye"></i> Kullanım Amaçları & Avantajları
+                    </h4>
+                    <p id="usage-text-content">* 80mm Termal & Lazer Kantar Fişi Kesme<br>* A4 Resmi Parti Mektubu Düzenleme ve Yazdırma<br>* Müstahsil ve Tüccar Borç/Alacak Bakiye Takibi<br>* Detaylı Hal Kâr / Zarar Analitiği</p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-sm mb-1 text-amber-700 flex items-center gap-2">
+                        <i class="fa-solid fa-headset"></i> İletişim & Destek
+                    </h4>
+                    <p id="contact-text-content">Sistem lisans talepleri, teknik destek ve kurulum için sol alttaki WhatsApp butonunu kullanabilir veya yönetici ile direkt iletişime geçebilirsiniz.</p>
+                </div>
+            </div>
+
+            <div class="mt-6 text-right">
+                <button onclick="closeAboutModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl text-xs">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ÜYELİK SÜRESİ DOLDU (EXPIRED) EKRANI MODALI -->
     <div id="expired-modal" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center border border-slate-200 animate-bounce-short">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center border border-slate-200">
             <div class="text-6xl mb-4">😔</div>
             <h2 class="text-2xl font-black text-slate-900 mb-2 uppercase tracking-wide">ÜYELİĞİNİZ SONA ERMİŞTİR</h2>
             <p class="text-sm text-slate-600 font-medium mb-6 leading-relaxed">
@@ -157,7 +257,7 @@
                 <button onclick="sendWhatsAppReset()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1">
                     <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp İle Bildir
                 </button>
-                <button onclick="closeForgotModal()" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs">Vazgeç</button>
+                <button onclick="closeForgotPasswordModal()" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs">Vazgeç</button>
             </div>
         </div>
     </div>
@@ -384,6 +484,33 @@
                 </div>
             </div>
 
+            <!-- GİRİŞ EKRANI HAKKIMIZDA & METİN DÜZENLEYİCİ -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-emerald-600"></i> Giriş Ekranı (3 Çizgi) Hakkımızda Metin Düzenleyici
+                </h3>
+                <p class="text-xs text-slate-500 mb-4">Giriş ekranındaki hamburger menü tıklandığında açılan bilgilendirme metinlerini güncelleyin.</p>
+                <form onsubmit="handleSaveAboutTexts(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Hakkımızda & Tanıtım Metni</label>
+                        <textarea id="admin-edit-about" rows="2" class="w-full border p-2.5 text-xs rounded-xl outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Kullanım Amaçları & Avantajlar</label>
+                        <textarea id="admin-edit-usage" rows="2" class="w-full border p-2.5 text-xs rounded-xl outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">İletişim & Destek Metni</label>
+                        <textarea id="admin-edit-contact" rows="2" class="w-full border p-2.5 text-xs rounded-xl outline-none"></textarea>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs">
+                            Bilgilendirme Metinlerini Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <!-- MÜŞTERİYE ÖZEL A4 MEKTUP BAŞLIK & ŞART YÖNETİCİSİ -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
@@ -576,7 +703,7 @@
 
                         <div class="pt-2">
                             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm sm:text-base">
-                                <i class="fa-solid fa-print"></i> Alımı Kaydet & 80mm Fiş Bas
+                                <i class="fa-solid fa-print"></i> Alımı Kaydet & Fiş Bas (2 Nüsha)
                             </button>
                         </div>
                     </form>
@@ -584,8 +711,8 @@
 
                 <!-- 80mm Fiş Önizleme -->
                 <div class="lg:col-span-5 flex flex-col items-center">
-                    <div class="mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">80mm Lazer Termal Fiş Önizleme</div>
-                    <div class="thermal-receipt rounded-2xl">
+                    <div class="mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">80mm Lazer/Termal Fiş Önizleme</div>
+                    <div id="fis-template-container" class="thermal-receipt rounded-2xl">
                         <div class="text-center border-b border-dashed border-slate-400 pb-3 mb-3">
                             <h3 class="font-bold text-base uppercase tracking-wider">HAL HESAP OTOMASYONU</h3>
                             <p class="text-xs" id="rec-header-text">KAŞ / ANTALYA HALİ NO: 42</p>
@@ -933,6 +1060,7 @@
         </div>
     </div>
 
+    <!-- YAZDIRMA ALANI -->
     <div id="receipt-print-area" class="hidden"></div>
 
     <!-- SİSTEM SCRIPT MANTIĞI & SUPABASE ENTEGRASYONU -->
@@ -949,6 +1077,7 @@
         const GLOBAL_USERS_KEY = 'HAL_SAAS_USERS_V6';
         const RESET_REQUESTS_KEY = 'HAL_SAAS_RESETS_V6';
         const WHATSAPP_PHONE_KEY = 'HAL_SAAS_WA_PHONE_V6';
+        const ABOUT_TEXTS_KEY = 'HAL_SAAS_ABOUT_TEXTS_V6';
 
         const defaultUsers = [
             { 
@@ -979,13 +1108,72 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             initGlobalUsers();
-            if(!localStorage.getItem(WHATSAPP_PHONE_KEY)) {
-                localStorage.setItem(WHATSAPP_PHONE_KEY, '905320000000');
-            }
+            syncWhatsappPhoneFromDB();
+            loadAboutTexts();
         });
 
-        function getAdminWhatsappPhone() {
-            return localStorage.getItem(WHATSAPP_PHONE_KEY) || '905320000000';
+        // HAKKIMIZDA BİLGİ MODALI AÇ / KAPAT
+        function openAboutModal() {
+            loadAboutTexts();
+            document.getElementById('about-modal').classList.remove('hidden');
+        }
+
+        function closeAboutModal() {
+            document.getElementById('about-modal').classList.add('hidden');
+        }
+
+        function loadAboutTexts() {
+            const defaultTexts = {
+                about: 'Hal Hesap; hal komisyoncuları, tüccarlar ve müstahsiller için geliştirilmiş bulut tabanlı yeni nesil kantar, cari ve parti yönetim sistemidir.',
+                usage: '* 80mm Termal & Lazer Kantar Fişi Kesme\n* A4 Resmi Parti Mektubu Düzenleme ve Yazdırma\n* Müstahsil ve Tüccar Borç/Alacak Bakiye Takibi\n* Detaylı Hal Kâr / Zarar Analitiği',
+                contact: 'Sistem lisans talepleri, teknik destek ve kurulum için sol alttaki WhatsApp butonunu kullanabilir veya yönetici ile direkt iletişime geçebilirsiniz.'
+            };
+
+            const saved = JSON.parse(localStorage.getItem(ABOUT_TEXTS_KEY)) || defaultTexts;
+
+            document.getElementById('about-text-content').innerText = saved.about;
+            document.getElementById('usage-text-content').innerText = saved.usage;
+            document.getElementById('contact-text-content').innerText = saved.contact;
+
+            const edAbout = document.getElementById('admin-edit-about');
+            const edUsage = document.getElementById('admin-edit-usage');
+            const edContact = document.getElementById('admin-edit-contact');
+
+            if(edAbout) edAbout.value = saved.about;
+            if(edUsage) edUsage.value = saved.usage;
+            if(edContact) edContact.value = saved.contact;
+        }
+
+        function handleSaveAboutTexts(e) {
+            e.preventDefault();
+            const texts = {
+                about: document.getElementById('admin-edit-about').value,
+                usage: document.getElementById('admin-edit-usage').value,
+                contact: document.getElementById('admin-edit-contact').value
+            };
+
+            localStorage.setItem(ABOUT_TEXTS_KEY, JSON.stringify(texts));
+            loadAboutTexts();
+            alert('Giriş ekranı (3 Çizgi) bilgilendirme metinleri başarıyla güncellendi!');
+        }
+
+        // SUPABASE CANLI WHATSAPP TELEFON SENKRONİZASYONU
+        async function syncWhatsappPhoneFromDB() {
+            let phone = localStorage.getItem(WHATSAPP_PHONE_KEY) || '905320000000';
+            if(_supabase) {
+                try {
+                    const { data } = await _supabase.from('app_config').select('value').eq('key', 'whatsapp_phone').single();
+                    if(data && data.value) {
+                        phone = data.value;
+                        localStorage.setItem(WHATSAPP_PHONE_KEY, phone);
+                    }
+                } catch(e) {}
+            }
+            return phone;
+        }
+
+        async function getAdminWhatsappPhone() {
+            return await syncWhatsappPhoneFromDB();
         }
 
         function initGlobalUsers() {
@@ -1088,9 +1276,9 @@
             document.getElementById('expired-modal').classList.add('hidden');
         }
 
-        function contactAdminExpired() {
+        async function contactAdminExpired() {
             const uInput = document.getElementById('login-username').value.trim();
-            const phoneNum = getAdminWhatsappPhone();
+            const phoneNum = await getAdminWhatsappPhone();
             const msg = encodeURIComponent(`Merhaba, '${uInput}' kullanıcı adlı Hal Hesap üyeliğimin süresi sona erdi. Lisansımı yenilemek ve uzatmak istiyorum.`);
             window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
             closeExpiredModal();
@@ -1193,11 +1381,12 @@
         // REGISTER & WHATSAPP
         function openRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
         function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
-        function sendWhatsAppRegister() {
+        
+        async function sendWhatsAppRegister() {
             const u = document.getElementById('reg-username').value;
             const f = document.getElementById('reg-fullname').value;
             const p = document.getElementById('reg-phone').value;
-            const phoneNum = getAdminWhatsappPhone();
+            const phoneNum = await getAdminWhatsappPhone();
             const msg = encodeURIComponent(`Merhaba, yeni Hal Hesap üyeliği açmak istiyorum.\n\nKullanıcı Adı: ${u}\nİşletme Adı: ${f}\nTel: ${p}`);
             window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
             closeRegisterModal();
@@ -1212,7 +1401,7 @@
             document.getElementById('forgot-modal').classList.add('hidden');
         }
 
-        function sendWhatsAppReset() {
+        async function sendWhatsAppReset() {
             const uname = document.getElementById('forgot-username').value.trim();
             if(!uname) { alert('Lütfen kullanıcı adınızı giriniz!'); return; }
 
@@ -1220,11 +1409,11 @@
             resets.push({ id: Date.now(), username: uname, date: new Date().toLocaleString('tr-TR') });
             localStorage.setItem(RESET_REQUESTS_KEY, JSON.stringify(resets));
 
-            const phoneNum = getAdminWhatsappPhone();
+            const phoneNum = await getAdminWhatsappPhone();
             const msg = encodeURIComponent(`Merhaba, Hal Hesap otomasyonu için kullanıcı adım: '${uname}'. Şifremi sıfırlamak istiyorum.`);
             window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
 
-            closeForgotModal();
+            closeForgotPasswordModal();
             alert('WhatsApp destek hattı yönlendirildi ve Admin paneline sıfırlama talebi düşürüldü.');
         }
 
@@ -1317,7 +1506,7 @@
             if(tabId === 'user-ayarlar') renderSettingsTuccarList();
         }
 
-        // KULLANICI KENDİ ŞİFRE & PIN DEĞİŞTİRME (ESKİ ŞİFRE VE TEKRAR KONTROLLÜ)
+        // KULLANICI KENDİ ŞİFRE & PIN DEĞİŞTİRME
         function handleChangeUserPassword(e) {
             e.preventDefault();
             const oldPass = document.getElementById('user-old-pass').value;
@@ -1388,8 +1577,8 @@
             ).join('');
         }
 
-        // ADMIN YÖNETİM PANELİ İŞLEMLERİ (SÜRE UZATMA / DÜŞÜRME, SİLME, ŞİFRE & WA AYARI DAHİL)
-        function renderAdminPanel() {
+        // ADMIN YÖNETİM PANELİ İŞLEMLERİ
+        async function renderAdminPanel() {
             const users = getUsers();
             const tbody = document.getElementById('admin-users-table-body');
             tbody.innerHTML = '';
@@ -1397,7 +1586,8 @@
             const select = document.getElementById('admin-mektup-user-select');
             select.innerHTML = '';
 
-            document.getElementById('admin-whatsapp-phone').value = getAdminWhatsappPhone();
+            const currentPhone = await getAdminWhatsappPhone();
+            document.getElementById('admin-whatsapp-phone').value = currentPhone;
 
             users.forEach((u, idx) => {
                 if(u.isAdmin) return;
@@ -1491,12 +1681,23 @@
             }
         }
 
-        function handleSaveWhatsappPhone(e) {
+        // SUPABASE VERİ TABANINA WHATSAPP NUMARASI KAYDETME
+        async function handleSaveWhatsappPhone(e) {
             e.preventDefault();
             const phone = document.getElementById('admin-whatsapp-phone').value.trim();
             if(!phone) return;
+
             localStorage.setItem(WHATSAPP_PHONE_KEY, phone);
-            alert('Sistem WhatsApp destek numarası başarıyla güncellendi!');
+
+            if(_supabase) {
+                try {
+                    await _supabase.from('app_config').upsert({ key: 'whatsapp_phone', value: phone }, { onConflict: 'key' });
+                } catch(err) {
+                    console.error("Supabase telefon kaydetme hatası:", err);
+                }
+            }
+
+            alert('Sistem WhatsApp destek numarası veritabanına ve tüm modallara başarıyla kaydedildi!');
         }
 
         function extendUserDays(idx, changeDays) {
@@ -1520,7 +1721,6 @@
         async function deleteUserAccount(idx, username) {
             if(!confirm(`'${username}' kullanıcısını sistemden ve veri tabanından tamamen silmek istediğinizden emin misiniz?`)) return;
 
-            // 1. Supabase Veri Tabanından Sil
             try {
                 if(_supabase) {
                     await _supabase.from('users').delete().ilike('username', username);
@@ -1529,12 +1729,9 @@
                 console.error("Supabase Silme Hatası:", e);
             }
 
-            // 2. Yerel Depodan Sil
             const users = getUsers();
             users.splice(idx, 1);
             localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
-
-            // 3. Kullanıcı Verisini Temizle
             localStorage.removeItem(`HAL_DATA_USER_${username.toUpperCase()}`);
 
             renderAdminPanel();
@@ -1610,14 +1807,12 @@
             const pin = document.getElementById('admin-new-pin').value || '1234';
             const months = parseInt(document.getElementById('admin-new-months').value) || 2;
 
-            // 1. Supabase'e Ekle
             try {
                 if (_supabase) {
                     await _supabase.from('users').insert([{ username, password, pin, fullname, is_admin: false }]);
                 }
             } catch(err) {}
 
-            // 2. Yerel Listeye Ekle
             const users = getUsers();
             if(users.some(u => u.username.toLowerCase() === username)) {
                 alert('Bu kullanıcı adı zaten mevcut!');
@@ -1736,6 +1931,7 @@
             document.getElementById('rec-net-total').innerText = net.toFixed(1) + ' Kg';
         }
 
+        // FİŞ BASS & 2 NÜSHA ÇIKART
         function handleAlimKaydet(e) {
             e.preventDefault();
             const tuccar = document.getElementById('alim-tuccar').value;
@@ -1764,13 +1960,28 @@
             state.alimlar.push(newAlim);
             saveState();
 
+            // FİŞİ 2 NÜSHA OLARAK HAZIRLA
+            const singleReceiptHtml = document.getElementById('fis-template-container').innerHTML;
             const printContainer = document.getElementById('receipt-print-area');
-            printContainer.innerHTML = document.querySelector('.thermal-receipt').innerHTML;
+            
+            printContainer.innerHTML = `
+                <div class="receipt-copy" style="margin-bottom: 20px;">
+                    <div style="text-align:center; font-weight:bold; border-bottom:1px solid #000; margin-bottom:5px; padding-bottom:3px;">--- NÜSHA 1 (MÜSTAHSİL NÜSHASI) ---</div>
+                    ${singleReceiptHtml}
+                </div>
+                <div style="page-break-after: always; border-bottom: 2px dashed #000; margin: 15px 0;"></div>
+                <div class="receipt-copy">
+                    <div style="text-align:center; font-weight:bold; border-bottom:1px solid #000; margin-bottom:5px; padding-bottom:3px;">--- NÜSHA 2 (HAL NÜSHASI) ---</div>
+                    ${singleReceiptHtml}
+                </div>
+            `;
             
             document.body.classList.add('print-receipt');
             document.body.classList.remove('print-a4');
-            window.print();
-            alert('Alım kaydedildi ve Fiş basıldı!');
+            
+            setTimeout(() => {
+                window.print();
+            }, 100);
         }
 
         function renderMektupTable() {
