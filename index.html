@@ -2,933 +2,1123 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mağaza & Ürün Kataloğu</title>
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hal Hesap - Profesyonel Hal SaaS & Bulut Portalı</title>
+    <!-- Tailwind CSS & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .scrollbar-none::-webkit-scrollbar { display: none; }
-        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .login-bg-overlay {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.85) 100%),
+                        url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .pulse-btn { animation: pulse-ring 2s infinite; }
+
+        @media print {
+            body * { visibility: hidden !important; }
+            body.print-receipt #receipt-print-area, body.print-receipt #receipt-print-area * { visibility: visible !important; }
+            body.print-receipt #receipt-print-area { position: absolute !important; left: 0 !important; top: 0 !important; width: 80mm !important; padding: 2mm !important; font-family: 'Courier New', Courier, monospace !important; font-size: 11px !important; color: #000 !important; background: #fff !important; }
+            body.print-a4 #a4-mektup-print-area, body.print-a4 #a4-mektup-print-area * { visibility: visible !important; }
+            body.print-a4 #a4-mektup-print-area { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; margin: 0 !important; padding: 15mm !important; font-family: 'Inter', sans-serif !important; color: #000 !important; background: #fff !important; }
+            .no-print { display: none !important; }
+        }
+
+        .thermal-receipt { width: 100%; max-width: 300px; font-family: 'Courier New', Courier, monospace; background: #fff; padding: 15px; border: 1px solid #e2e8f0; color: #111; }
+        .a4-page { width: 100%; max-width: 800px; min-height: 1050px; background: #fff; padding: 40px; border: 1px solid #cbd5e1; margin: auto; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
+<body class="text-slate-800 pb-12">
 
-    <!-- HEADER / NAVIGATION -->
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <!-- Brand Logo & Name -->
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('client')">
-                <img id="siteLogo" src="" alt="Logo" class="h-10 w-auto max-w-[120px] object-contain hidden rounded">
-                <span id="siteTitle" class="text-xl md:text-2xl font-bold tracking-tight text-amber-400">CepMobil</span>
+    <!-- LOGIN EKRANI -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 login-bg-overlay overflow-y-auto">
+        <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-700/80 my-auto">
+            <div class="text-center mb-6">
+                <div class="bg-emerald-500 text-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-3xl mx-auto mb-3 shadow-lg shadow-emerald-500/30">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                </div>
+                <h2 class="text-3xl font-black text-white tracking-wide">HAL HESAP</h2>
+                <p class="text-xs text-emerald-400 font-bold mt-1">Saha & Kantar Bulut Hal Otomasyonu</p>
             </div>
 
-            <!-- Admin Button -->
-            <div>
-                <button onclick="handleAdminAccess()" class="bg-slate-800 hover:bg-slate-700 text-xs md:text-sm px-3 py-2 rounded-lg transition border border-slate-700 flex items-center space-x-1">
-                    <i class="fa-solid fa-user-gear text-amber-400"></i>
-                    <span id="adminBtnText">Admin Paneli</span>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1 uppercase">Kullanıcı Adı</label>
+                    <input type="text" id="login-username" required class="w-full bg-slate-800 border border-slate-600 text-white rounded-xl p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Örn: mehmet">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold text-slate-300 uppercase">Şifre</label>
+                        <button type="button" onclick="openForgotPasswordModal()" class="text-xs font-bold text-emerald-400 hover:underline">Şifremi Unuttum?</button>
+                    </div>
+                    <input type="password" id="login-password" required class="w-full bg-slate-800 border border-slate-600 text-white rounded-xl p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••">
+                </div>
+                <button type="submit" id="btn-login-submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-3.5 rounded-xl shadow-lg transition text-sm">
+                    SİSTEME GİRİŞ YAP
                 </button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 space-y-1">
+                <p class="font-bold text-slate-300">Giriş Bilgisi:</p>
+                <p>• <strong>Yönetici (Admin):</strong> admin / admin123</p>
             </div>
+        </div>
+
+        <div class="fixed bottom-6 left-6 z-50">
+            <button onclick="openRegisterModal()" class="pulse-btn bg-emerald-500 hover:bg-emerald-600 text-slate-950 p-4 rounded-full shadow-2xl flex items-center justify-center gap-2 font-black text-xs transition">
+                <i class="fa-brands fa-whatsapp text-2xl text-slate-950"></i>
+                <span class="hidden sm:inline pr-1">Üye Olmak İstiyorum</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- REGISTER MODAL -->
+    <div id="register-modal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-200">
+            <div class="bg-emerald-100 text-emerald-700 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3">
+                <i class="fa-brands fa-whatsapp text-3xl"></i>
+            </div>
+            <h3 class="font-black text-slate-900 text-lg">Yeni Üyelik Başvurusu</h3>
+            <p class="text-xs text-slate-500 mb-4">Bilgilerinizi doldurun, doğrudan WhatsApp üzerinden hesabınız açılsın.</p>
+
+            <div class="space-y-3 mb-4 text-left">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Kullanıcı Adı Tercihi</label>
+                    <input type="text" id="reg-username" placeholder="Örn: ahmet_hal" class="w-full bg-slate-50 border p-2.5 text-xs font-bold rounded-xl outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">İşletme / Hal Adı</label>
+                    <input type="text" id="reg-fullname" placeholder="Örn: Ahmet Tarım Hal No: 12" class="w-full bg-slate-50 border p-2.5 text-xs font-bold rounded-xl outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Telefon Numarası</label>
+                    <input type="tel" id="reg-phone" placeholder="05xx xxx xx xx" class="w-full bg-slate-50 border p-2.5 text-xs font-bold rounded-xl outline-none">
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="sendWhatsAppRegister()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1">
+                    <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp İle Gönder
+                </button>
+                <button onclick="closeRegisterModal()" class="bg-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl text-xs">Vazgeç</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN MODAL -->
+    <div id="pin-modal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl text-center border border-slate-200">
+            <div class="bg-amber-100 text-amber-700 w-12 h-12 rounded-full flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="font-black text-slate-900 text-base">Güvenlik Kilidi</h3>
+            <p class="text-xs text-slate-500 mb-4">Bu alana erişmek için 4 haneli PIN kodunuzu giriniz.</p>
+
+            <div class="flex justify-center gap-2 mb-6">
+                <input type="password" id="pin-digit-1" readonly class="w-10 h-12 text-center text-xl font-black bg-slate-100 border border-slate-300 rounded-xl">
+                <input type="password" id="pin-digit-2" readonly class="w-10 h-12 text-center text-xl font-black bg-slate-100 border border-slate-300 rounded-xl">
+                <input type="password" id="pin-digit-3" readonly class="w-10 h-12 text-center text-xl font-black bg-slate-100 border border-slate-300 rounded-xl">
+                <input type="password" id="pin-digit-4" readonly class="w-10 h-12 text-center text-xl font-black bg-slate-100 border border-slate-300 rounded-xl">
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button onclick="pressPinNum(1)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">1</button>
+                <button onclick="pressPinNum(2)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">2</button>
+                <button onclick="pressPinNum(3)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">3</button>
+                <button onclick="pressPinNum(4)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">4</button>
+                <button onclick="pressPinNum(5)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">5</button>
+                <button onclick="pressPinNum(6)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">6</button>
+                <button onclick="pressPinNum(7)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">7</button>
+                <button onclick="pressPinNum(8)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">8</button>
+                <button onclick="pressPinNum(9)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">9</button>
+                <button onclick="clearPin()" class="bg-red-100 text-red-700 font-bold text-xs py-3 rounded-xl">Sil</button>
+                <button onclick="pressPinNum(0)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">0</button>
+                <button onclick="closePinModal()" class="bg-slate-200 text-slate-700 font-bold text-xs py-3 rounded-xl">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SİSTEM ÜST BAR NAVİGASYON -->
+    <header id="app-header" class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 no-print hidden">
+        <div class="max-w-7xl mx-auto px-3 py-2.5">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="bg-emerald-500 text-slate-900 p-1.5 rounded-lg font-bold text-lg">
+                        <i class="fa-solid fa-boxes-packing"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-lg tracking-wide text-emerald-400 leading-tight">HAL HESAP</h1>
+                        <p class="text-[10px] text-slate-400" id="user-welcome-text">Aktif Kullanıcı: ---</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <span id="user-days-left-badge" class="hidden text-[10px] bg-emerald-500/20 text-emerald-300 font-extrabold px-2.5 py-1 rounded-full border border-emerald-500/30">
+                        Kalan Süre: -- Gün
+                    </span>
+                    <button id="btn-back-to-admin" onclick="returnToAdminPanel()" class="hidden bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold text-xs px-3 py-1.5 rounded-xl flex items-center gap-1 shadow">
+                        <i class="fa-solid fa-user-shield"></i> Yönetici Paneline Dön
+                    </button>
+                    <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-700 text-red-400 border border-slate-700 text-xs px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap
+                    </button>
+                </div>
+            </div>
+
+            <!-- DİNAMİK MENÜ TABLARI -->
+            <nav id="main-nav-bar" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs font-semibold">
+                <button onclick="requestTabAccess('mal-alim')" id="tab-mal-alim" class="tab-btn user-tab whitespace-nowrap px-3.5 py-2 rounded-xl transition active bg-emerald-600 text-white shadow">
+                    <i class="fa-solid fa-truck-ramp-box mr-1"></i> Mal Alım (Fiş)
+                </button>
+
+                <button onclick="requestTabAccess('mustahsil-cari')" id="tab-mustahsil-cari" class="tab-btn user-tab whitespace-nowrap px-3.5 py-2 rounded-xl transition text-slate-300 bg-slate-800 hover:text-white">
+                    <i class="fa-solid fa-user-gear mr-1"></i> Müstahsil Cari
+                </button>
+
+                <button onclick="requestTabAccess('tanimlar')" id="tab-tanimlar" class="tab-btn user-tab whitespace-nowrap px-3.5 py-2 rounded-xl transition text-slate-300 bg-slate-800 hover:text-white">
+                    <i class="fa-solid fa-sliders mr-1"></i> Tanımlamalar
+                </button>
+
+                <button onclick="requestTabAccess('mektup-parti')" id="tab-mektup-parti" class="tab-btn user-tab whitespace-nowrap px-3.5 py-2 rounded-xl transition text-slate-300 bg-slate-800 hover:text-white border border-amber-500/30">
+                    <i class="fa-solid fa-lock text-amber-400 mr-1"></i> Parti & Mektup Kesme
+                </button>
+
+                <button onclick="requestTabAccess('tuccar-cari')" id="tab-tuccar-cari" class="tab-btn user-tab whitespace-nowrap px-3.5 py-2 rounded-xl transition text-slate-300 bg-slate-800 hover:text-white border border-amber-500/30">
+                    <i class="fa-solid fa-lock text-amber-400 mr-1"></i> Tüccar Cari & Arşiv
+                </button>
+
+                <button onclick="requestTabAccess('kar-zarar')" id="tab-kar-zarar" class="tab-btn user-tab whitespace-nowrap px-3.5 py-2 rounded-xl transition text-slate-300 bg-slate-800 hover:text-white border border-amber-500/30">
+                    <i class="fa-solid fa-lock text-amber-400 mr-1"></i> Kâr / Zarar
+                </button>
+
+                <button onclick="requestTabAccess('user-ayarlar')" id="tab-user-ayarlar" class="tab-btn user-tab whitespace-nowrap px-3.5 py-2 rounded-xl transition text-slate-300 bg-slate-800 hover:text-white border border-amber-500/30">
+                    <i class="fa-solid fa-lock text-amber-400 mr-1"></i> Ayarlar & Tüccarlar
+                </button>
+
+                <button onclick="requestTabAccess('admin-panel')" id="tab-admin-panel" class="tab-btn admin-tab hidden whitespace-nowrap px-3.5 py-2 rounded-xl transition bg-amber-600 text-white font-bold shadow">
+                    <i class="fa-solid fa-user-shield mr-1"></i> Sistem Yönetim Paneli
+                </button>
+            </nav>
         </div>
     </header>
 
-    <!-- CLIENT INTERFACE -->
-    <main id="clientTab" class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
-        <!-- Search Bar -->
-        <div class="mb-6 space-y-4">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400"></i>
-                <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Ürün adı veya açıklama ile ara..." class="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
-            </div>
+    <!-- MAIN CONTENT -->
+    <main id="app-main" class="max-w-7xl mx-auto p-3 sm:p-6 no-print hidden">
 
-            <!-- Category Pills -->
-            <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none" id="categoryFilterContainer">
-                <!-- Dynamically Populated -->
-            </div>
-        </div>
-
-        <!-- Product Grid -->
-        <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            <!-- Dynamically Populated Cards -->
-        </div>
-
-        <!-- Empty State -->
-        <div id="emptyState" class="hidden text-center py-12 text-gray-500">
-            <i class="fa-solid fa-box-open text-5xl mb-3 text-gray-300"></i>
-            <p class="text-base font-medium">Aramanıza veya seçilen kategoriye uygun ürün bulunamadı.</p>
-        </div>
-    </main>
-
-    <!-- CLIENT PRODUCT DETAIL MODAL -->
-    <div id="detailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative flex flex-col">
-            <!-- Modal Header / Top Navigation Bar -->
-            <div class="sticky top-0 bg-white/90 backdrop-blur-md px-4 py-3 border-b border-gray-100 flex items-center justify-between z-10">
-                <button onclick="closeDetailModal()" class="flex items-center space-x-2 text-slate-700 hover:text-amber-600 font-semibold text-sm transition">
-                    <i class="fa-solid fa-arrow-left text-lg"></i>
-                    <span>Geri</span>
-                </button>
-                <span id="detailCategoryBadge" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">
-                    Kategori
-                </span>
-                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600 p-1">
-                    <i class="fa-solid fa-xmark text-2xl"></i>
-                </button>
-            </div>
-
-            <!-- Modal Content Body -->
-            <div class="p-4 sm:p-6 space-y-6">
-                <!-- Image Slider Area (Tıklandığında Tam Ekran Açılır) -->
-                <div class="relative w-full h-64 sm:h-80 bg-slate-900 rounded-2xl overflow-hidden group flex items-center justify-center cursor-zoom-in" onclick="openFullscreenModal()">
-                    <img id="detailMainImage" src="" class="max-h-full max-w-full object-contain transition-all duration-300">
-                    
-                    <div class="absolute top-3 right-3 bg-black/60 text-white text-[10px] font-semibold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition flex items-center space-x-1 pointer-events-none">
-                        <i class="fa-solid fa-expand"></i>
-                        <span>Tam Ekran İncele</span>
-                    </div>
-
-                    <!-- Navigation Arrows -->
-                    <button id="prevImgBtn" onclick="event.stopPropagation(); changeDetailImage(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg shadow transition">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-                    <button id="nextImgBtn" onclick="event.stopPropagation(); changeDetailImage(1)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-900/60 hover:bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg shadow transition">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-
-                    <div id="imageCounter" class="absolute bottom-3 right-3 bg-slate-900/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-md">
-                        1 / 1
-                    </div>
-                </div>
-
-                <!-- Thumbnails Bar -->
-                <div id="detailThumbnails" class="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
-                    <!-- Dynamically Populated Thumbnails -->
-                </div>
-
-                <!-- Product Info -->
-                <div class="space-y-3">
-                    <h2 id="detailTitle" class="text-xl sm:text-2xl font-bold text-gray-900">Ürün Adı</h2>
-                    <div class="text-2xl sm:text-3xl font-extrabold text-amber-600" id="detailPrice">0 ₺</div>
-                    
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200/80">
-                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Ürün Açıklaması</h4>
-                        <p id="detailDesc" class="text-sm text-gray-700 whitespace-pre-line leading-relaxed">Açıklama yükleniyor...</p>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <div class="pt-2">
-                    <a id="detailWhatsappBtn" href="#" target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl text-sm sm:text-base flex items-center justify-center space-x-2 shadow-lg hover:shadow-emerald-500/20 transition">
-                        <i class="fa-brands fa-whatsapp text-2xl"></i>
-                        <span>WhatsApp İle Bilgi Al</span>
-                    </a>
-                </div>
-
-                <!-- Related Products Section -->
-                <div class="pt-4 border-t border-gray-100">
-                    <h3 class="text-sm font-bold text-gray-800 mb-3">Benzer Ürünler</h3>
-                    <div id="relatedProductsGrid" class="grid grid-cols-2 gap-3">
-                        <!-- Dynamically Populated -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FULLSCREEN LIGHTBOX MODAL (TAM EKRAN FOTOĞRAF İNCELEME) -->
-    <div id="fullscreenModal" class="fixed inset-0 bg-black/95 z-50 flex flex-col justify-between p-4 hidden backdrop-blur-md">
-        <!-- Top Control Bar -->
-        <div class="flex items-center justify-between text-white z-10 pt-2 px-2">
-            <button onclick="closeFullscreenModal()" class="flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl text-sm font-medium transition">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>Geri Çıkış</span>
-            </button>
-            <span id="fullscreenCounter" class="text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full">
-                1 / 1
-            </span>
-            <button onclick="closeFullscreenModal()" class="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-        </div>
-
-        <!-- Main Fullscreen Image View -->
-        <div class="relative flex-grow flex items-center justify-center my-4 overflow-hidden">
-            <img id="fullscreenImage" src="" class="max-h-full max-w-full object-contain rounded-lg transition-transform duration-200">
-
-            <!-- Next / Prev Buttons -->
-            <button id="fsPrevBtn" onclick="changeDetailImage(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl backdrop-blur-md transition">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            <button id="fsNextBtn" onclick="changeDetailImage(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl backdrop-blur-md transition">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-        </div>
-
-        <!-- Bottom Title Hint -->
-        <div class="text-center text-gray-400 text-xs pb-2">
-            <span id="fullscreenTitle">Ürün Adı</span> - <span class="text-gray-500">Tam Ekran Görünüm</span>
-        </div>
-    </div>
-
-    <!-- ADMIN INTERFACE -->
-    <main id="adminTab" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 py-6">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Admin Yönetim Paneli</h1>
-                <p class="text-xs text-gray-500">Alış/satış fiyatları, kâr analitiği ve görsel yönetimi.</p>
-            </div>
-            <button onclick="openProductModal()" class="w-full md:w-auto bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 shadow">
-                <i class="fa-solid fa-plus"></i>
-                <span>Yeni Ürün Ekle</span>
-            </button>
-        </div>
-
-        <!-- Analytics Stats Row -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <span class="text-xs text-gray-500 block mb-1">Toplam Ürün</span>
-                <span id="statTotalProducts" class="text-xl font-bold text-slate-800">0</span>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <span class="text-xs text-gray-500 block mb-1">Toplam Stok Maliyeti</span>
-                <span id="statTotalBuy" class="text-xl font-bold text-blue-600">0 ₺</span>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <span class="text-xs text-gray-500 block mb-1">Toplam Satış Değeri</span>
-                <span id="statTotalSell" class="text-xl font-bold text-emerald-600">0 ₺</span>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <span class="text-xs text-gray-500 block mb-1">Potansiyel Toplam Kâr</span>
-                <span id="statTotalProfit" class="text-xl font-bold text-amber-600">0 ₺</span>
-            </div>
-        </div>
-
-        <!-- Store & Settings Section -->
-        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm mb-6 space-y-4">
-            <h2 class="text-lg font-bold text-gray-800 flex items-center space-x-2">
-                <i class="fa-solid fa-sliders text-amber-500"></i>
-                <span>Genel Ayarlar & Mağaza Bilgileri</span>
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Mağaza Adı</label>
-                    <input type="text" id="adminStoreName" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">WhatsApp İletişim Numarası</label>
-                    <input type="text" id="adminPhoneInput" placeholder="Örn: 905321234567" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Logo Yükle (Görsel Seç)</label>
-                    <div class="flex space-x-2">
-                        <input type="file" id="adminLogoFile" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
-                        <button onclick="removeLogo()" class="px-3 py-2 bg-red-100 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-200 transition">Kaldır</button>
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-end pt-2">
-                <button onclick="saveStoreSettings()" class="bg-slate-900 text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition">Ayarları Kaydet</button>
-            </div>
-        </div>
-
-        <!-- Categories Manager -->
-        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm mb-6">
-            <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center space-x-2">
-                <i class="fa-solid fa-list text-amber-500"></i>
-                <span>Kategori Yönetimi</span>
-            </h2>
-            <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                <input type="text" id="newCategoryInput" placeholder="Yeni Kategori Adı" class="flex-grow px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                <button onclick="addCategory()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Ekle</button>
-            </div>
-            <div id="adminCategoryList" class="flex flex-wrap gap-2">
-                <!-- Dynamically Populated -->
-            </div>
-        </div>
-
-        <!-- Admin Product Table -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
-                <h2 class="font-bold text-gray-800">Ürün Listesi & Fiyat Analizi</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 text-xs text-gray-500 uppercase border-b border-gray-200">
-                            <th class="py-3 px-4">Görsel Sayısı</th>
-                            <th class="py-3 px-4">Ürün Adı</th>
-                            <th class="py-3 px-4">Kategori</th>
-                            <th class="py-3 px-4">Alış Fiyatı</th>
-                            <th class="py-3 px-4">Satış Fiyatı</th>
-                            <th class="py-3 px-4">Tahmini Kâr</th>
-                            <th class="py-3 px-4 text-right">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminProductTable" class="divide-y divide-gray-100 text-sm">
-                        <!-- Dynamically Populated -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <!-- PRODUCT ADD/EDIT MODAL -->
-    <div id="productModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeProductModal()" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-4">Yeni Ürün Ekle</h3>
-            
-            <form id="productForm" onsubmit="handleProductSubmit(event)" class="space-y-4">
-                <input type="hidden" id="editProductId">
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Ürün Başlığı / Modeli</label>
-                    <input type="text" id="prodTitle" required placeholder="Örn: iPhone 13 Pro Max 128GB" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
-                    <select id="prodCategory" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                        <!-- Dynamically Populated -->
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
+        <!-- ================= ADMIN YÖNETİM PANELİ ================= -->
+        <section id="sec-admin-panel" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-md border border-slate-800">
+                <h3 class="font-black text-amber-400 text-base mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-user-lock text-lg"></i> Admin Panel Güvenliği & Şifre Değiştir
+                </h3>
+                <p class="text-xs text-slate-400 mb-4">Sistem yöneticisi giriş şifrenizi ve PIN kodunuzu buradan değiştirebilirsiniz.</p>
+                <form onsubmit="handleUpdateAdminCredentials(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Alış Fiyatı (₺)</label>
-                        <input type="number" id="prodBuyPrice" required min="0" placeholder="0" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Yeni Admin Giriş Şifresi</label>
+                        <input type="password" id="admin-own-pass" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 p-2.5 text-xs rounded-xl text-white outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Satış Fiyatı (₺)</label>
-                        <input type="number" id="prodSellPrice" required min="0" placeholder="0" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Yeni Admin PIN Kodu (4 Hane)</label>
+                        <input type="text" id="admin-own-pin" maxlength="4" required placeholder="1234" class="w-full bg-slate-800 border border-slate-700 p-2.5 text-xs font-bold text-center rounded-xl text-amber-400 outline-none">
                     </div>
-                </div>
-
-                <!-- Existing Images Management -->
-                <div id="existingImagesContainer" class="hidden space-y-2">
-                    <label class="block text-xs font-semibold text-gray-600">Mevcut Yüklü Fotoğraflar</label>
-                    <div id="existingImagesList" class="flex flex-wrap gap-2">
-                        <!-- Dynamically Populated Thumbnails -->
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-2.5 rounded-xl text-xs transition">
+                            Admin Şifresini Kaydet
+                        </button>
                     </div>
-                </div>
+                </form>
+            </div>
 
-                <!-- New Multi Image Upload -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Fotoğraf Ekle (Birden Fazla Seçebilirsiniz)</label>
-                    <input type="file" id="prodImageFiles" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
-                    <p class="text-[11px] text-gray-400 mt-1">İpucu: Klavyeden Ctrl veya Shift basılı tutarak birden fazla resim seçebilirsiniz.</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Açıklama / Durumu</label>
-                    <textarea id="prodDesc" rows="3" placeholder="Örn: Pili %90, ekranı orijinal, kutusu ve garantisi var." class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200">İptal</button>
-                    <button type="submit" id="saveBtn" class="px-4 py-2 bg-amber-500 text-slate-900 font-semibold rounded-lg text-sm hover:bg-amber-600 shadow">Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- SCRIPT & SUPABASE INTEGRATION -->
-    <script>
-        // Supabase Credentials
-        const SUPABASE_URL = "https://zcxrfsrnttacpryaidsj.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjeHJmc3JudHRhY3ByeWFpZHNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNjEwODYsImV4cCI6MjEwNjYzNzA4Nn0.VdFmIrT9B-yvJdoqrblyZS5Tvz1XSNCoCSI54vLOkls";
-
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // App State
-        let categories = [];
-        let products = [];
-        let storeSettings = { site_name: 'CepMobil', phone_number: '905321234567', logo_url: '' };
-        let activeCategory = 'Tümü';
-        let isAdminLoggedIn = false;
-
-        // Active Product Detail State
-        let currentDetailProduct = null;
-        let currentImageIndex = 0;
-        let editProductTempImages = [];
-
-        // Keyboard Shortcut for ESC Key to Close Modals
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeFullscreenModal();
-                closeDetailModal();
-                closeProductModal();
-            }
-        });
-
-        // Initialize App
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadStoreSettings();
-            await loadCategories();
-            await loadProducts();
-        });
-
-        // Load Settings
-        async function loadStoreSettings() {
-            try {
-                const { data } = await supabaseClient.from('settings').select('*').eq('id', 1).single();
-                if (data) {
-                    storeSettings = data;
-                    applySettingsUI();
-                }
-            } catch (err) {
-                console.error("Ayarlar yüklenemedi:", err);
-            }
-        }
-
-        function applySettingsUI() {
-            document.getElementById('siteTitle').innerText = storeSettings.site_name || 'CepMobil';
-            document.getElementById('adminStoreName').value = storeSettings.site_name || '';
-            document.getElementById('adminPhoneInput').value = storeSettings.phone_number || '';
-            
-            const logoImg = document.getElementById('siteLogo');
-            if (storeSettings.logo_url) {
-                logoImg.src = storeSettings.logo_url;
-                logoImg.classList.remove('hidden');
-            } else {
-                logoImg.classList.add('hidden');
-            }
-        }
-
-        // Load Categories
-        async function loadCategories() {
-            try {
-                const { data } = await supabaseClient.from('categories').select('*').order('id', { ascending: true });
-                if (data && data.length > 0) {
-                    categories = data.map(c => c.name);
-                } else {
-                    categories = ['Tümü', 'iPhone', 'Samsung', 'Aksesuar'];
-                }
-                renderCategoryFilters();
-                renderAdminCategories();
-                populateCategoryDropdown();
-            } catch (err) {
-                console.error("Kategoriler çekilemedi:", err);
-            }
-        }
-
-        // Load Products
-        async function loadProducts() {
-            try {
-                const { data } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
-                if (data) {
-                    products = data.map(p => {
-                        let imgs = [];
-                        if (p.image_url) {
-                            try {
-                                imgs = JSON.parse(p.image_url);
-                                if (!Array.isArray(imgs)) imgs = [p.image_url];
-                            } catch(e) {
-                                imgs = [p.image_url];
-                            }
-                        }
-                        return { ...p, images: imgs };
-                    });
-                    renderProducts();
-                    renderAdminProducts();
-                    updateAnalytics();
-                }
-            } catch (err) {
-                console.error("Ürünler çekilemedi:", err);
-            }
-        }
-
-        // Upload File to Supabase Storage
-        async function uploadFileToSupabase(file) {
-            try {
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-                const filePath = `${fileName}`;
-
-                const { data, error } = await supabaseClient.storage
-                    .from('images')
-                    .upload(filePath, file, { cacheControl: '3600', upsert: true });
-
-                if (error) {
-                    console.error("Resim yükleme hatası:", error);
-                    return null;
-                }
-
-                const { data: publicUrlData } = supabaseClient.storage.from('images').getPublicUrl(filePath);
-                return publicUrlData.publicUrl;
-            } catch (err) {
-                console.error("Yükleme işlemi başarısız:", err);
-                return null;
-            }
-        }
-
-        // Render Client Category Filters
-        function renderCategoryFilters() {
-            const container = document.getElementById('categoryFilterContainer');
-            container.innerHTML = categories.map(cat => `
-                <button onclick="setFilterCategory('${cat}')" class="px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${activeCategory === cat ? 'bg-amber-500 text-slate-900 shadow' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}">
-                    ${cat}
-                </button>
-            `).join('');
-        }
-
-        function setFilterCategory(cat) {
-            activeCategory = cat;
-            renderCategoryFilters();
-            filterProducts();
-        }
-
-        function filterProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => {
-                const matchesCat = activeCategory === 'Tümü' || p.category === activeCategory;
-                const matchesSearch = p.title.toLowerCase().includes(query) || (p.desc_text && p.desc_text.toLowerCase().includes(query));
-                return matchesCat && matchesSearch;
-            });
-            renderProductGrid(filtered);
-        }
-
-        function renderProducts() {
-            filterProducts();
-        }
-
-        // Render Client Main Grid
-        function renderProductGrid(list) {
-            const grid = document.getElementById('productGrid');
-            const empty = document.getElementById('emptyState');
-
-            if (list.length === 0) {
-                grid.innerHTML = '';
-                empty.classList.remove('hidden');
-                return;
-            }
-
-            empty.classList.add('hidden');
-            grid.innerHTML = list.map(p => {
-                const defaultImg = 'https://via.placeholder.com/300x200?text=Gorsel+Yok';
-                const mainImg = (p.images && p.images.length > 0) ? p.images[0] : defaultImg;
-                const imgCount = p.images ? p.images.length : 0;
-
-                return `
-                    <div onclick="openDetailModal(${p.id})" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition cursor-pointer group">
-                        <div class="h-40 md:h-48 w-full bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                            <img src="${mainImg}" alt="${p.title}" class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
-                            <span class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-md text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                                ${p.category}
-                            </span>
-                            ${imgCount > 1 ? `
-                                <span class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded-md flex items-center space-x-1">
-                                    <i class="fa-solid fa-images"></i>
-                                    <span>${imgCount}</span>
-                                </span>
-                            ` : ''}
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Yeni Kullanıcı Tanımla -->
+                <div class="lg:col-span-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-amber-600"></i> Yeni Halci Hesabı ve Süre Tanımla
+                    </h3>
+                    <form onsubmit="handleCreateUser(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Kullanıcı Adı</label>
+                            <input type="text" id="admin-new-username" placeholder="Örn: yilmaz" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
-                        <div class="p-3 md:p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Giriş Şifresi</label>
+                            <input type="password" id="admin-new-password" placeholder="••••••••" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">İşletme Adı</label>
+                            <input type="text" id="admin-new-fullname" placeholder="Örn: Yılmaz Tarım Hal" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Hassas Sayfa PIN Kodu (4 Hane)</label>
+                            <input type="text" id="admin-new-pin" maxlength="4" value="1234" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">İlk Lisans Süresi (Kullandırım Ay)</label>
+                            <select id="admin-new-months" class="w-full border p-2.5 text-xs rounded-xl font-bold bg-slate-50 outline-none">
+                                <option value="1">1 Ay (30 Gün)</option>
+                                <option value="2" selected>2 Ay (60 Gün)</option>
+                                <option value="3">3 Ay (90 Gün)</option>
+                                <option value="6">6 Ay (180 Gün)</option>
+                                <option value="12">1 Yıl (365 Gün)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                            Kullanıcıyı ve Süreyi Kaydet
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Kayıtlı Kullanıcılar -->
+                <div class="lg:col-span-8 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-users-gear text-slate-700"></i> Müşteri Lisans & Süre Yönetimi
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Kullanıcıların kalan gün sürelerini takip edebilir, ödeme yaptıkça sürelerini uzatabilirsiniz.</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
+                                <tr>
+                                    <th class="p-2.5">Kullanıcı Adı</th>
+                                    <th class="p-2.5">Giriş / PIN</th>
+                                    <th class="p-2.5">Kalan Süre (Gün)</th>
+                                    <th class="p-2.5">İşletme Adı</th>
+                                    <th class="p-2.5 text-right">Süre Uzat & Aksiyon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table-body" class="divide-y divide-slate-200">
+                                <!-- JS Doldurur -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KULLANICI ÖZEL AYARLAR -->
+        <section id="sec-user-ayarlar" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-key text-amber-600"></i> Giriş Şifremi Değiştir
+                        </h3>
+                        <form onsubmit="handleChangeUserPassword(event)" class="space-y-3">
                             <div>
-                                <h3 class="font-bold text-gray-800 text-sm md:text-base line-clamp-1 group-hover:text-amber-600 transition">${p.title}</h3>
-                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">${p.desc_text || 'Açıklama bulunmuyor.'}</p>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Yeni Giriş Şifresi</label>
+                                <input type="password" id="user-new-pass" required class="w-full border p-2.5 text-xs rounded-xl outline-none" placeholder="••••••••">
                             </div>
-                            <div class="mt-4 pt-2 border-t border-gray-100 flex items-center justify-between">
-                                <div class="text-base md:text-lg font-extrabold text-slate-900">
-                                    ${Number(p.sell_price).toLocaleString('tr-TR')} ₺
+                            <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs">
+                                Şifreyi Güncelle
+                            </button>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-lock text-emerald-600"></i> 4 Haneli PIN Kodumu Değiştir
+                        </h3>
+                        <form onsubmit="handleChangeUserPin(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Yeni 4 Haneli Sayısal PIN Kodu</label>
+                                <input type="text" id="user-new-pin" maxlength="4" required class="w-full border p-2.5 text-xs font-bold text-center rounded-xl outline-none" placeholder="1234">
+                            </div>
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs">
+                                PIN Kodunu Güncelle
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-building-user text-blue-600"></i> Tüccar / Firma Kayıtları
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Halinizin çalıştığı alıcı tüccar firmaları buradan yönetilir.</p>
+
+                    <form onsubmit="handleAddTuccarInSettings(event)" class="flex gap-2 mb-4">
+                        <input type="text" id="settings-tuccar-name" placeholder="Yeni Tüccar Firma Adı" required class="flex-1 border p-2.5 text-xs rounded-xl outline-none">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl text-xs">Firma Ekle</button>
+                    </form>
+
+                    <ul id="settings-list-tuccar" class="divide-y text-xs max-h-60 overflow-y-auto"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAL ALIM FİŞ KESME -->
+        <section id="sec-mal-alim" class="tab-content block">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div class="lg:col-span-7 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-emerald-600"></i> Hızlı Mal Alım Fişi
+                        </h2>
+                        <span class="text-[11px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Kantar Modu</span>
+                    </div>
+
+                    <form id="alim-form" onsubmit="handleAlimKaydet(event)" class="space-y-3.5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Gideceği Tüccar (Firma)</label>
+                                <select id="alim-tuccar" onchange="updateAutoParti()" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    <option value="">Tüccar Seçiniz...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Aktif Parti / Sevk No</label>
+                                <input type="text" id="alim-parti-display" readonly value="1. Parti (Otomatik)" class="w-full bg-slate-200 text-slate-700 font-extrabold border border-slate-300 rounded-xl p-3 text-sm outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Müstahsil (Üretici)</label>
+                                <select id="alim-mustahsil" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    <option value="">Müstahsil Seçiniz...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Ürün Cinsi</label>
+                                <select id="alim-urun" onchange="calculateNetKilo()" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    <option value="">Ürün Seçiniz...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Kasa Tipi</label>
+                                <select id="alim-kasa" onchange="calculateNetKilo()" required class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-sm outline-none">
+                                    <option value="">Kasa Seç...</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 sm:col-span-2">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Kasa Adeti</label>
+                                    <input type="number" id="alim-kasa-adet" min="1" value="10" oninput="calculateNetKilo()" required class="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-sm font-bold text-center outline-none">
                                 </div>
-                                <span class="text-xs text-amber-600 font-semibold group-hover:translate-x-1 transition flex items-center space-x-1">
-                                    <span>İncele</span>
-                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                                </span>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Toplam Dara (Kg)</label>
+                                    <input type="number" id="alim-toplam-dara" readonly class="w-full bg-slate-200 text-slate-700 font-bold text-center border border-slate-300 rounded-lg p-2.5 text-sm" value="0">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
-        }
 
-        // PRODUCT DETAIL MODAL LOGIC
-        function openDetailModal(productId) {
-            const p = products.find(x => x.id === productId);
-            if (!p) return;
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Brüt Kilo (Kantar)</label>
+                                <input type="number" id="alim-brut-kilo" step="0.1" value="250" oninput="calculateNetKilo()" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-base font-extrabold outline-none" placeholder="0.0">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-emerald-700 mb-1">Net Kilo (Dara Düşük)</label>
+                                <input type="number" id="alim-net-kilo" readonly class="w-full bg-emerald-50 text-emerald-800 text-lg sm:text-xl font-black border border-emerald-300 rounded-xl p-2.5 text-center" value="0">
+                            </div>
+                        </div>
 
-            currentDetailProduct = p;
-            currentImageIndex = 0;
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm sm:text-base">
+                                <i class="fa-solid fa-print"></i> Alımı Kaydet & 80mm Fiş Bas
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
-            document.getElementById('detailTitle').innerText = p.title;
-            document.getElementById('detailCategoryBadge').innerText = p.category;
-            document.getElementById('detailPrice').innerText = `${Number(p.sell_price).toLocaleString('tr-TR')} ₺`;
-            document.getElementById('detailDesc').innerText = p.desc_text || 'Bu ürün için henüz detaylı bir açıklama eklenmedi.';
+                <!-- 80mm Fiş Önizleme -->
+                <div class="lg:col-span-5 flex flex-col items-center">
+                    <div class="mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">80mm Lazer Termal Fiş Önizleme</div>
+                    <div class="thermal-receipt rounded-2xl">
+                        <div class="text-center border-b border-dashed border-slate-400 pb-3 mb-3">
+                            <h3 class="font-bold text-base uppercase tracking-wider">HAL HESAP OTOMASYONU</h3>
+                            <p class="text-xs" id="rec-header-text">KAŞ / ANTALYA HALİ NO: 42</p>
+                            <p class="text-xs mt-1">Tarih: <span id="rec-tarih">--.--.---- --:--</span></p>
+                            <p class="text-xs font-bold mt-1">FİŞ NO: #<span id="rec-no">0000</span></p>
+                        </div>
 
-            const msg = encodeURIComponent(`Merhaba, ${p.title} ürünü hakkında bilgi almak istiyorum.`);
-            document.getElementById('detailWhatsappBtn').href = `https://wa.me/${storeSettings.phone_number || '905321234567'}?text=${msg}`;
+                        <div class="space-y-1 text-xs mb-3 border-b border-dashed border-slate-400 pb-3">
+                            <div class="flex justify-between"><span>Tüccar:</span> <strong id="rec-tuccar" class="uppercase">---</strong></div>
+                            <div class="flex justify-between"><span>Parti / Sevk:</span> <strong id="rec-parti" class="uppercase">---</strong></div>
+                            <div class="flex justify-between"><span>Müstahsil:</span> <strong id="rec-mustahsil" class="uppercase">---</strong></div>
+                        </div>
 
-            updateDetailImageDisplay();
-            renderRelatedProducts(p);
+                        <table class="w-full text-xs text-left mb-3">
+                            <thead>
+                                <tr class="border-b border-slate-300">
+                                    <th class="py-1">Ürün</th>
+                                    <th class="py-1 text-center">Kasa</th>
+                                    <th class="py-1 text-right">Net Kilo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="rec-urun" class="py-1 font-semibold">---</td>
+                                    <td id="rec-kasa-detay" class="py-1 text-center">10 Ad (20 Kg Dara)</td>
+                                    <td id="rec-net-kilo" class="py-1 text-right font-bold text-sm">0 Kg</td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-            document.getElementById('detailModal').classList.remove('hidden');
-        }
-
-        function closeDetailModal() {
-            document.getElementById('detailModal').classList.add('hidden');
-            currentDetailProduct = null;
-        }
-
-        function updateDetailImageDisplay() {
-            if (!currentDetailProduct) return;
-            const imgs = (currentDetailProduct.images && currentDetailProduct.images.length > 0) 
-                ? currentDetailProduct.images 
-                : ['https://via.placeholder.com/500x300?text=Gorsel+Yok'];
-
-            const currentImgUrl = imgs[currentImageIndex];
-
-            // Update Detail Modal
-            document.getElementById('detailMainImage').src = currentImgUrl;
-            document.getElementById('imageCounter').innerText = `${currentImageIndex + 1} / ${imgs.length}`;
-
-            // Update Fullscreen Modal if active
-            document.getElementById('fullscreenImage').src = currentImgUrl;
-            document.getElementById('fullscreenCounter').innerText = `${currentImageIndex + 1} / ${imgs.length}`;
-            document.getElementById('fullscreenTitle').innerText = currentDetailProduct.title;
-
-            // Arrow Visibility
-            const hasMultiple = imgs.length > 1;
-            ['prevImgBtn', 'nextImgBtn', 'fsPrevBtn', 'fsNextBtn'].forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) {
-                    if (hasMultiple) btn.classList.remove('hidden');
-                    else btn.classList.add('hidden');
-                }
-            });
-
-            // Render Thumbnails
-            const thumbContainer = document.getElementById('detailThumbnails');
-            if (hasMultiple) {
-                thumbContainer.innerHTML = imgs.map((img, idx) => `
-                    <button onclick="setDetailImage(${idx})" class="h-14 w-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition ${idx === currentImageIndex ? 'border-amber-500 scale-105' : 'border-gray-200 opacity-60 hover:opacity-100'}">
-                        <img src="${img}" class="w-full h-full object-cover">
-                    </button>
-                `).join('');
-                thumbContainer.classList.remove('hidden');
-            } else {
-                thumbContainer.classList.add('hidden');
-            }
-        }
-
-        function changeDetailImage(step) {
-            if (!currentDetailProduct || !currentDetailProduct.images) return;
-            const total = currentDetailProduct.images.length;
-            currentImageIndex = (currentImageIndex + step + total) % total;
-            updateDetailImageDisplay();
-        }
-
-        function setDetailImage(index) {
-            currentImageIndex = index;
-            updateDetailImageDisplay();
-        }
-
-        // FULLSCREEN LIGHTBOX FUNCTIONS
-        function openFullscreenModal() {
-            if (!currentDetailProduct) return;
-            updateDetailImageDisplay();
-            document.getElementById('fullscreenModal').classList.remove('hidden');
-        }
-
-        function closeFullscreenModal() {
-            document.getElementById('fullscreenModal').classList.add('hidden');
-        }
-
-        function renderRelatedProducts(currentP) {
-            const relatedContainer = document.getElementById('relatedProductsGrid');
-            const related = products.filter(p => p.category === currentP.category && p.id !== currentP.id).slice(0, 2);
-
-            if (related.length === 0) {
-                relatedContainer.innerHTML = '<p class="text-xs text-gray-400 col-span-2">Aynı kategoride başka ürün bulunmuyor.</p>';
-                return;
-            }
-
-            relatedContainer.innerHTML = related.map(p => {
-                const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
-                return `
-                    <div onclick="openDetailModal(${p.id})" class="flex items-center space-x-3 p-2 border rounded-xl hover:border-amber-400 transition cursor-pointer bg-white">
-                        <img src="${img}" class="w-12 h-12 rounded-lg object-cover bg-slate-800">
-                        <div class="overflow-hidden">
-                            <h4 class="text-xs font-bold text-gray-800 truncate">${p.title}</h4>
-                            <p class="text-xs text-amber-600 font-extrabold">${Number(p.sell_price).toLocaleString('tr-TR')} ₺</p>
+                        <div class="border-t border-dashed border-slate-400 pt-2 text-xs space-y-1">
+                            <div class="flex justify-between"><span>Brüt Kilo:</span> <span id="rec-brut">0 Kg</span></div>
+                            <div class="flex justify-between"><span>Toplam Dara:</span> <span id="rec-dara">0 Kg</span></div>
+                            <div class="flex justify-between font-bold text-sm pt-1 border-t border-slate-200"><span>NET KİLO:</span> <span id="rec-net-total">0 Kg</span></div>
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
+                </div>
+            </div>
+        </section>
 
-        // ADMIN FUNCTIONS
-        function handleAdminAccess() {
-            if (isAdminLoggedIn) {
-                switchTab('admin');
-                return;
-            }
-            const pwd = prompt("Admin Paneli Giriş Şifresi:");
-            if (pwd === "1234") {
-                isAdminLoggedIn = true;
-                document.getElementById('adminBtnText').innerText = "Yönetim Paneli";
-                switchTab('admin');
-            } else if (pwd !== null) {
-                alert("Hatalı Şifre!");
-            }
-        }
+        <!-- MÜSTAHSİL CARİ -->
+        <section id="sec-mustahsil-cari" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-user text-purple-600"></i> Müstahsil Bakiye Sorgu
+                        </h2>
+                        <select id="cari-mustahsil-select" onchange="renderMustahsilCariDetails()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold mb-3 outline-none">
+                            <option value="">Müstahsil Seçiniz...</option>
+                        </select>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-3.5 text-center">
+                            <span class="text-[11px] font-bold text-purple-700 uppercase">Ödenecek Müstahsil Bakiyesi</span>
+                            <div id="mustahsil-bakiye-val" class="text-2xl sm:text-3xl font-black text-purple-900 mt-1">0 TL</div>
+                        </div>
+                    </div>
 
-        function switchTab(tab) {
-            if (tab === 'admin') {
-                document.getElementById('clientTab').classList.add('hidden');
-                document.getElementById('adminTab').classList.remove('hidden');
-            } else {
-                document.getElementById('adminTab').classList.add('hidden');
-                document.getElementById('clientTab').classList.remove('hidden');
-            }
-        }
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-money-bill-wave text-emerald-600"></i> Müstahsile Ödeme Yap
+                        </h3>
+                        <form onsubmit="handleMustahsilOdeme(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Ödenen Tutar (TL)</label>
+                                <input type="number" id="mustahsil-odeme-tutar" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm outline-none" placeholder="Örn: 15000">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Açıklama / Not</label>
+                                <input type="text" id="mustahsil-odeme-aciklama" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm outline-none" placeholder="Örn: Elden / Nakit Ödeme">
+                            </div>
+                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
+                                Ödemeyi Kaydet
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
-        // Store Settings
-        async function saveStoreSettings() {
-            const name = document.getElementById('adminStoreName').value;
-            const phone = document.getElementById('adminPhoneInput').value;
-            const logoFile = document.getElementById('adminLogoFile').files[0];
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Bekleyen Alış Fiyatlandırmaları
+                        </h3>
+                        <div class="overflow-x-auto -mx-4 sm:mx-0">
+                            <table class="w-full text-xs sm:text-sm text-left min-w-[450px]">
+                                <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-2.5">Tarih</th>
+                                        <th class="p-2.5">Ürün / Parti</th>
+                                        <th class="p-2.5 text-right">Net Kilo</th>
+                                        <th class="p-2.5 w-28">Alış Fiyatı</th>
+                                        <th class="p-2.5 text-right">Alacak</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mustahsil-bekleyen-body" class="divide-y divide-slate-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            let logoUrl = storeSettings.logo_url;
-            if (logoFile) {
-                const uploadedUrl = await uploadFileToSupabase(logoFile);
-                if (uploadedUrl) logoUrl = uploadedUrl;
-            }
+        <!-- TANIMLAMALAR -->
+        <section id="sec-tanimlar" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-sm mb-3">
+                        <i class="fa-solid fa-apple-whole text-emerald-600 mr-1"></i> Ürün Kayıtları
+                    </h3>
+                    <form onsubmit="handleAddUrun(event)" class="space-y-2 mb-3">
+                        <input type="text" id="def-urun-name" placeholder="Ürün Adı" required class="w-full border p-2 text-xs rounded-lg outline-none">
+                        <button type="submit" class="w-full bg-slate-800 text-white font-bold py-1.5 rounded-lg text-xs">Ekle</button>
+                    </form>
+                    <ul id="list-urun" class="divide-y text-xs max-h-48 overflow-y-auto"></ul>
+                </div>
 
-            const updatedSettings = {
-                id: 1,
-                site_name: name,
-                phone_number: phone,
-                logo_url: logoUrl
-            };
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-sm mb-3">
+                        <i class="fa-solid fa-user text-purple-600 mr-1"></i> Müstahsiller
+                    </h3>
+                    <form onsubmit="handleAddMustahsil(event)" class="space-y-2 mb-3">
+                        <input type="text" id="def-mustahsil-name" placeholder="Müstahsil Adı" required class="w-full border p-2 text-xs rounded-lg outline-none">
+                        <button type="submit" class="w-full bg-slate-800 text-white font-bold py-1.5 rounded-lg text-xs">Ekle</button>
+                    </form>
+                    <ul id="list-mustahsil" class="divide-y text-xs max-h-48 overflow-y-auto"></ul>
+                </div>
 
-            const { error } = await supabaseClient.from('settings').upsert(updatedSettings);
-            if (!error) {
-                storeSettings = updatedSettings;
-                applySettingsUI();
-                alert("Mağaza ayarları kaydedildi!");
-                renderProducts();
-            } else {
-                alert("Ayarlar kaydedilirken hata oluştu.");
-            }
-        }
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 text-sm mb-3">
+                        <i class="fa-solid fa-box text-amber-600 mr-1"></i> Kasa Daraları
+                    </h3>
+                    <form onsubmit="handleAddKasa(event)" class="space-y-2 mb-3">
+                        <input type="text" id="def-kasa-name" placeholder="Kasa Adı" required class="w-full border p-2 text-xs rounded-lg outline-none">
+                        <input type="number" step="0.1" id="def-kasa-dara" placeholder="Dara (Kg)" required class="w-full border p-2 text-xs rounded-lg outline-none">
+                        <button type="submit" class="w-full bg-slate-800 text-white font-bold py-1.5 rounded-lg text-xs">Ekle</button>
+                    </form>
+                    <ul id="list-kasa" class="divide-y text-xs max-h-48 overflow-y-auto"></ul>
+                </div>
+            </div>
+        </section>
 
-        async function removeLogo() {
-            storeSettings.logo_url = '';
-            await supabaseClient.from('settings').upsert({ id: 1, logo_url: '' });
-            applySettingsUI();
-            alert("Logo kaldırıldı.");
-        }
+        <!-- PARTİ & MEKTUP KESME -->
+        <section id="sec-mektup-parti" class="tab-content hidden space-y-4">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text text-amber-600"></i> Parti Yönetimi & Mektup Fiyatlandırma
+                        </h2>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                        <select id="mektup-tuccar-select" onchange="renderMektupTable()" class="w-full sm:w-48 bg-slate-50 border border-slate-300 text-xs sm:text-sm rounded-xl p-2.5 font-medium outline-none">
+                            <option value="">Tüccar Seçin...</option>
+                        </select>
+                    </div>
+                </div>
 
-        // Category Management
-        async function addCategory() {
-            const input = document.getElementById('newCategoryInput');
-            const val = input.value.trim();
-            if (!val) return;
-            if (categories.includes(val)) {
-                alert("Bu kategori zaten var!");
-                return;
-            }
+                <div class="overflow-x-auto -mx-4 sm:mx-0">
+                    <table class="w-full text-xs sm:text-sm text-left min-w-[600px]">
+                        <thead class="bg-slate-100 text-slate-600 uppercase text-[11px]">
+                            <tr>
+                                <th class="p-2.5">Tarih</th>
+                                <th class="p-2.5">Müstahsil</th>
+                                <th class="p-2.5">Ürün</th>
+                                <th class="p-2.5 text-right">Net Kilo</th>
+                                <th class="p-2.5 w-32">Tüccar Satış (TL)</th>
+                                <th class="p-2.5 text-right">Tutar</th>
+                                <th class="p-2.5 text-center">Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mektup-table-body" class="divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
 
-            const { error } = await supabaseClient.from('categories').insert([{ name: val }]);
-            if (!error) {
-                input.value = '';
-                await loadCategories();
-            }
-        }
-
-        async function deleteCategory(catName) {
-            if (catName === 'Tümü') return;
-            if (confirm(`'${catName}' kategorisini silmek istediğinizden emin misiniz?`)) {
-                const { error } = await supabaseClient.from('categories').delete().eq('name', catName);
-                if (!error) await loadCategories();
-            }
-        }
-
-        function renderAdminCategories() {
-            const container = document.getElementById('adminCategoryList');
-            container.innerHTML = categories.map(cat => `
-                <span class="inline-flex items-center bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">
-                    ${cat}
-                    ${cat !== 'Tümü' ? `<button onclick="deleteCategory('${cat}')" class="ml-2 text-red-500 hover:text-red-700"><i class="fa-solid fa-xmark"></i></button>` : ''}
-                </span>
-            `).join('');
-        }
-
-        function populateCategoryDropdown() {
-            const select = document.getElementById('prodCategory');
-            select.innerHTML = categories.filter(c => c !== 'Tümü').map(c => `
-                <option value="${c}">${c}</option>
-            `).join('');
-        }
-
-        // Product Modal & Operations
-        function openProductModal(productId = null) {
-            const modal = document.getElementById('productModal');
-            const form = document.getElementById('productForm');
-            form.reset();
-            editProductTempImages = [];
-
-            if (productId) {
-                const p = products.find(x => x.id === productId);
-                if (p) {
-                    document.getElementById('modalTitle').innerText = 'Ürünü Düzenle';
-                    document.getElementById('editProductId').value = p.id;
-                    document.getElementById('prodTitle').value = p.title;
-                    document.getElementById('prodCategory').value = p.category;
-                    document.getElementById('prodBuyPrice').value = p.buy_price;
-                    document.getElementById('prodSellPrice').value = p.sell_price;
-                    document.getElementById('prodDesc').value = p.desc_text || '';
-                    
-                    editProductTempImages = p.images ? [...p.images] : [];
-                    renderExistingImagesAdmin();
-                }
-            } else {
-                document.getElementById('modalTitle').innerText = 'Yeni Ürün Ekle';
-                document.getElementById('editProductId').value = '';
-                document.getElementById('existingImagesContainer').classList.add('hidden');
-            }
-            modal.classList.remove('hidden');
-        }
-
-        function renderExistingImagesAdmin() {
-            const container = document.getElementById('existingImagesContainer');
-            const list = document.getElementById('existingImagesList');
-
-            if (editProductTempImages.length === 0) {
-                container.classList.add('hidden');
-                return;
-            }
-
-            container.classList.remove('hidden');
-            list.innerHTML = editProductTempImages.map((img, idx) => `
-                <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-300 group">
-                    <img src="${img}" class="w-full h-full object-cover">
-                    <button type="button" onclick="removeTempImage(${idx})" class="absolute top-0.5 right-0.5 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow">
-                        <i class="fa-solid fa-xmark"></i>
+                <div class="mt-4 p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <div>
+                        <div class="text-[11px] font-bold text-amber-800 uppercase">Seçili Parti Mektup Özeti</div>
+                        <div class="text-xs sm:text-sm text-amber-900 mt-0.5">
+                            Toplam Net Kilo: <strong id="mektup-sum-kilo">0 Kg</strong> | 
+                            Mektup Tutar: <strong id="mektup-sum-tuccar" class="text-emerald-700 text-base">0 TL</strong>
+                        </div>
+                    </div>
+                    <button onclick="kesMektubAndPrint()" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-2.5 rounded-xl shadow transition text-xs sm:text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Mektubu Kes, A4 Yazdır & Sonraki Partiye Geç
                     </button>
                 </div>
-            `).join('');
+            </div>
+        </section>
+
+        <!-- TÜCCAR CARİ -->
+        <section id="sec-tuccar-cari" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-building-user text-blue-600"></i> Tüccar Seçimi & Bakiye
+                        </h2>
+                        <select id="cari-tuccar-select" onchange="renderTuccarCariDetails()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold mb-3 outline-none">
+                            <option value="">Tüccar Seçiniz...</option>
+                        </select>
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 text-center">
+                            <span class="text-[11px] font-bold text-blue-700 uppercase">Tüccar Kalan Bakiyesi</span>
+                            <div id="tuccar-bakiye-val" class="text-2xl sm:text-3xl font-black text-blue-900 mt-1">0 TL</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-hand-holding-dollar text-emerald-600"></i> Tahsilat / Ödeme Al
+                        </h3>
+                        <form onsubmit="handleTuccarOdeme(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Gelen Tutar (TL)</label>
+                                <input type="number" id="tuccar-odeme-tutar" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm outline-none" placeholder="Örn: 20000">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Açıklama / Dekont</label>
+                                <input type="text" id="tuccar-odeme-aciklama" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm outline-none" placeholder="Örn: Banka / Havale">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
+                                Tahsilatı Kaydet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-box-archive text-amber-600"></i> Kesilen Parti Mektupları
+                        </h3>
+                        <div id="tuccar-mektup-arsiv-list" class="space-y-2 max-h-72 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KÂR ZARAR -->
+        <section id="sec-kar-zarar" class="tab-content hidden space-y-4">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-emerald-600"></i> Hal Kâr / Zarar & Özet
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-center sm:text-left">
+                        <span class="text-[11px] font-bold text-blue-700 uppercase">Tüccar Cirosu</span>
+                        <div id="summary-tuccar-ciro" class="text-xl sm:text-2xl font-black text-blue-900 mt-1">0 TL</div>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 p-4 rounded-xl text-center sm:text-left">
+                        <span class="text-[11px] font-bold text-purple-700 uppercase">Müstahsil Maliyeti</span>
+                        <div id="summary-mustahsil-maliyet" class="text-xl sm:text-2xl font-black text-purple-900 mt-1">0 TL</div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center sm:text-left">
+                        <span class="text-[11px] font-bold text-emerald-700 uppercase">Brüt Hal Kârı</span>
+                        <div id="summary-net-kar" class="text-2xl sm:text-3xl font-black text-emerald-800 mt-1">0 TL</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- A4 MODAL -->
+    <div id="a4-mektup-modal" class="fixed inset-0 bg-slate-900/80 hidden z-50 overflow-y-auto p-2 sm:p-6">
+        <div class="max-w-4xl mx-auto space-y-4">
+            <div class="flex justify-between items-center bg-slate-800 text-white p-3 rounded-xl no-print">
+                <button onclick="closeA4Modal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-xs font-bold">
+                    ← Geri Dön
+                </button>
+                <button onclick="printA4Mektup()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-xs font-bold">
+                    <i class="fa-solid fa-print"></i> A4 Yazdır
+                </button>
+            </div>
+            <div id="a4-mektup-print-area" class="a4-page rounded-xl shadow-2xl"></div>
+        </div>
+    </div>
+
+    <div id="receipt-print-area" class="hidden"></div>
+
+    <!-- SCRIPT & SUPABASE BAGLANTISI -->
+    <script>
+        // SENIN SUPABASE BİLGİLERİN ENTEGRE EDİLDİ[cite: 3, 4]
+        const SUPABASE_URL = 'https://pmgkqpdectfqbsttjmfb.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ2txcGRlY3RmcWJzdHRqbWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNTA4NDksImV4cCI6MjA1NTkyNjg0OX0.sb_publishable_aRI67gz9bl8luqAbdlM3fQ_k8mWzMda';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const ADMIN_WHATSAPP_PHONE = '905320000000';
+        let currentUser = null;
+        let realAdminUser = null;
+        let state = { urunler: ['Domates', 'Salatalık', 'Biber'], mustahsiller: [], tuccarlar: ['Ege Gıda', 'Akdeniz Halat'], tuccarPartileri: {}, kasalar: [{ name: 'Plastik Kasa', dara: 2.0 }], alimlar: [], tuccarOdemeler: [], mustahsilOdemeler: [], kesilenMektuplar: [] };
+        let pendingTabId = null;
+        let currentEnteredPin = "";
+        const protectedTabs = ['mektup-parti', 'tuccar-cari', 'kar-zarar', 'user-ayarlar'];
+
+        function calculateDaysLeft(expiresAtStr) {
+            if(!expiresAtStr) return 0;
+            const diff = new Date(expiresAtStr) - new Date();
+            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            return days > 0 ? days : 0;
         }
 
-        function removeTempImage(idx) {
-            editProductTempImages.splice(idx, 1);
-            renderExistingImagesAdmin();
-        }
-
-        function closeProductModal() {
-            document.getElementById('productModal').classList.add('hidden');
-        }
-
-        async function handleProductSubmit(e) {
+        async function handleLogin(e) {
             e.preventDefault();
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerText = "Resimler Yükleniyor...";
-            saveBtn.disabled = true;
+            const uInput = document.getElementById('login-username').value.trim().toLowerCase();
+            const pInput = document.getElementById('login-password').value;
 
-            const id = document.getElementById('editProductId').value;
-            const title = document.getElementById('prodTitle').value;
-            const category = document.getElementById('prodCategory').value;
-            const buy_price = parseFloat(document.getElementById('prodBuyPrice').value) || 0;
-            const sell_price = parseFloat(document.getElementById('prodSellPrice').value) || 0;
-            const desc_text = document.getElementById('prodDesc').value;
-            const fileInput = document.getElementById('prodImageFiles');
+            // Supabase'den Kullanıcıyı Doğrula
+            const { data: users, error } = await _supabase.from('users').select('*').eq('username', uInput).eq('password', pInput);
 
-            let finalImages = [...editProductTempImages];
+            if(error || !users || users.length === 0) {
+                alert('Kullanıcı adı veya şifre hatalı!');
+                return;
+            }
 
-            if (fileInput.files && fileInput.files.length > 0) {
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    const file = fileInput.files[i];
-                    const url = await uploadFileToSupabase(file);
-                    if (url) finalImages.push(url);
+            const found = users[0];
+
+            if(!found.is_admin) {
+                const daysLeft = calculateDaysLeft(found.expires_at);
+                if(daysLeft <= 0) {
+                    alert('Abonelik süreniz dolmuştur! Lütfen yöneticinizle iletişime geçiniz.');
+                    return;
                 }
             }
 
-            const image_url = JSON.stringify(finalImages);
-            const productData = { title, category, buy_price, sell_price, desc_text, image_url };
+            currentUser = found;
+            realAdminUser = found.is_admin ? found : null;
+            startUserSession();
+        }
 
-            let error = null;
-            if (id) {
-                const res = await supabaseClient.from('products').update(productData).eq('id', id);
-                error = res.error;
+        async function startUserSession() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-header').classList.remove('hidden');
+            document.getElementById('app-main').classList.remove('hidden');
+
+            document.getElementById('user-welcome-text').innerText = `İşletme: ${currentUser.fullname} (${currentUser.username})`;
+
+            const daysBadge = document.getElementById('user-days-left-badge');
+            if(!currentUser.is_admin) {
+                const daysLeft = calculateDaysLeft(currentUser.expires_at);
+                daysBadge.innerText = `Kalan Süre: ${daysLeft} Gün`;
+                daysBadge.classList.remove('hidden');
             } else {
-                const res = await supabaseClient.from('products').insert([productData]);
-                error = res.error;
+                daysBadge.classList.add('hidden');
             }
 
-            saveBtn.innerText = "Kaydet";
-            saveBtn.disabled = false;
+            await fetchUserDataFromSupabase();
 
-            if (!error) {
-                closeProductModal();
-                await loadProducts();
+            if(currentUser.is_admin) {
+                document.querySelectorAll('.user-tab').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('hidden'));
+                document.getElementById('btn-back-to-admin').classList.add('hidden');
+                switchTab('admin-panel');
+                renderAdminPanel();
             } else {
-                alert("Ürün kaydedilirken veritabanı hatası oluştu!");
+                document.querySelectorAll('.user-tab').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
+                if(realAdminUser && realAdminUser.is_admin) {
+                    document.getElementById('btn-back-to-admin').classList.remove('hidden');
+                } else {
+                    document.getElementById('btn-back-to-admin').classList.add('hidden');
+                }
+                switchTab('mal-alim');
+            }
+
+            populateSelects();
+            updateAutoParti();
+            calculateNetKilo();
+        }
+
+        async function fetchUserDataFromSupabase() {
+            if(!currentUser) return;
+            const { data: alimlar } = await _supabase.from('alimlar').select('*').eq('user_id', currentUser.id);
+            if(alimlar) state.alimlar = alimlar;
+            renderKarZarar();
+        }
+
+        async function saveAlimToSupabase(newAlim) {
+            await _supabase.from('alimlar').insert([{
+                id: newAlim.id,
+                user_id: currentUser.id,
+                tarih: newAlim.tarih,
+                tuccar: newAlim.tuccar,
+                parti: newAlim.parti,
+                mustahsil: newAlim.mustahsil,
+                urun: newAlim.urun,
+                kasa_name: newAlim.kasaName,
+                kasa_adet: newAlim.kasaAdet,
+                total_dara: newAlim.totalDara,
+                brut: newAlim.brut,
+                net: newAlim.net,
+                mustahsil_fiyat: 0, tuccar_fiyat: 0, mektup_kesildi: false
+            }]);
+        }
+
+        function returnToAdminPanel() {
+            if(realAdminUser) {
+                currentUser = realAdminUser;
+                startUserSession();
             }
         }
 
-        async function deleteProduct(id) {
-            if (confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
-                const { error } = await supabaseClient.from('products').delete().eq('id', id);
-                if (!error) await loadProducts();
+        function handleLogout() {
+            currentUser = null;
+            realAdminUser = null;
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('app-header').classList.add('hidden');
+            document.getElementById('app-main').classList.add('hidden');
+        }
+
+        function openRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
+        function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
+        function sendWhatsAppRegister() {
+            const uname = document.getElementById('reg-username').value.trim();
+            const fullname = document.getElementById('reg-fullname').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            if(!uname || !fullname) { alert('Lütfen bilgileri doldurun!'); return; }
+            const msg = encodeURIComponent(`Merhaba, Hal Hesap otomasyonuna üye olmak istiyorum.\n• Kullanıcı Adı: ${uname}\n• İşletme: ${fullname}\n• Tel: ${phone}`);
+            window.open(`https://wa.me/${ADMIN_WHATSAPP_PHONE}?text=${msg}`, '_blank');
+            closeRegisterModal();
+        }
+
+        function requestTabAccess(tabId) {
+            if((realAdminUser && realAdminUser.is_admin) || !protectedTabs.includes(tabId)) {
+                switchTab(tabId);
+                return;
+            }
+            pendingTabId = tabId;
+            currentEnteredPin = "";
+            updatePinDigits();
+            document.getElementById('pin-modal').classList.remove('hidden');
+        }
+
+        function pressPinNum(num) {
+            if(currentEnteredPin.length < 4) {
+                currentEnteredPin += num;
+                updatePinDigits();
+                if(currentEnteredPin.length === 4) setTimeout(verifyPin, 100);
             }
         }
 
-        // Render Admin Table
-        function renderAdminProducts() {
-            const table = document.getElementById('adminProductTable');
-            table.innerHTML = products.map(p => {
-                const profit = p.sell_price - p.buy_price;
-                const imgCount = p.images ? p.images.length : 0;
-                const firstImg = imgCount > 0 ? p.images[0] : 'https://via.placeholder.com/50';
+        function clearPin() { currentEnteredPin = ""; updatePinDigits(); }
+        function updatePinDigits() {
+            for(let i = 1; i <= 4; i++) {
+                document.getElementById(`pin-digit-${i}`).value = i <= currentEnteredPin.length ? "•" : "";
+            }
+        }
 
-                return `
-                    <tr class="hover:bg-gray-50/80 transition">
-                        <td class="py-3 px-4">
-                            <div class="flex items-center space-x-2">
-                                <img src="${firstImg}" class="h-10 w-10 object-cover rounded-lg border">
-                                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full">${imgCount} Adet</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-4 font-semibold text-gray-800">${p.title}</td>
-                        <td class="py-3 px-4 text-xs">
-                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-medium">${p.category}</span>
-                        </td>
-                        <td class="py-3 px-4 text-gray-600">${Number(p.buy_price).toLocaleString('tr-TR')} ₺</td>
-                        <td class="py-3 px-4 font-bold text-gray-900">${Number(p.sell_price).toLocaleString('tr-TR')} ₺</td>
-                        <td class="py-3 px-4 font-bold ${profit >= 0 ? 'text-emerald-600' : 'text-red-500'}">
-                            +${Number(profit).toLocaleString('tr-TR')} ₺
-                        </td>
-                        <td class="py-3 px-4 text-right space-x-2">
-                            <button onclick="openProductModal(${p.id})" class="text-blue-600 hover:text-blue-800 p-1" title="Düzenle">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 p-1" title="Sil">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+        function verifyPin() {
+            const userPin = (currentUser && currentUser.pin) ? currentUser.pin : "1234";
+            if(currentEnteredPin === userPin) {
+                const targetTab = pendingTabId;
+                closePinModal();
+                if(targetTab) switchTab(targetTab);
+            } else {
+                alert('Hatalı PIN Kodu!');
+                clearPin();
+            }
+        }
+
+        function closePinModal() { document.getElementById('pin-modal').classList.add('hidden'); pendingTabId = null; clearPin(); }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-emerald-600', 'bg-amber-600', 'text-white', 'shadow');
+                el.classList.add('text-slate-300', 'bg-slate-800');
+            });
+
+            const targetSec = document.getElementById('sec-' + tabId);
+            if(targetSec) targetSec.classList.remove('hidden');
+
+            const activeBtn = document.getElementById('tab-' + tabId);
+            if(activeBtn) {
+                if(tabId === 'admin-panel') activeBtn.classList.add('bg-amber-600', 'text-white', 'shadow');
+                else activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow');
+                activeBtn.classList.remove('text-slate-300', 'bg-slate-800');
+            }
+
+            if(tabId === 'mektup-parti') renderMektupTable();
+            if(tabId === 'tuccar-cari') renderTuccarCariDetails();
+            if(tabId === 'mustahsil-cari') renderMustahsilCariDetails();
+            if(tabId === 'admin-panel') renderAdminPanel();
+        }
+
+        async function renderAdminPanel() {
+            const { data: users } = await _supabase.from('users').select('*');
+            const tbody = document.getElementById('admin-users-table-body');
+            tbody.innerHTML = '';
+
+            if(!users) return;
+
+            users.forEach((u, idx) => {
+                if(u.is_admin) return;
+                const daysLeft = calculateDaysLeft(u.expires_at);
+                const daysBadgeClass = daysLeft > 10 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 font-bold">${u.username}</td>
+                        <td class="p-2.5 text-xs">${u.password} (PIN: ${u.pin || '1234'})</td>
+                        <td class="p-2.5"><span class="${daysBadgeClass} font-black text-xs px-2.5 py-1 rounded-full">${daysLeft} Gün Kaldı</span></td>
+                        <td class="p-2.5 font-semibold">${u.fullname}</td>
+                        <td class="p-2.5 text-right space-x-1">
+                            <button onclick="extendUserDays('${u.id}', 30)" class="bg-amber-500 text-slate-900 font-bold px-2 py-1 rounded text-[10px]">+30 Gün</button>
+                            <button onclick="loginAsUser('${u.username}')" class="bg-blue-600 text-white font-bold px-2 py-1 rounded text-[10px]">Giriş Yap</button>
                         </td>
                     </tr>
                 `;
-            }).join('');
+            });
         }
 
-        // Analytics
-        function updateAnalytics() {
-            const totalBuy = products.reduce((sum, p) => sum + Number(p.buy_price), 0);
-            const totalSell = products.reduce((sum, p) => sum + Number(p.sell_price), 0);
-            const totalProfit = totalSell - totalBuy;
+        async function extendUserDays(userId, addDays) {
+            const { data: user } = await _supabase.from('users').select('*').eq('id', userId).single();
+            if(user) {
+                let currentExp = new Date(user.expires_at);
+                if(currentExp < new Date()) currentExp = new Date();
+                currentExp.setDate(currentExp.getDate() + addDays);
 
-            document.getElementById('statTotalProducts').innerText = products.length;
-            document.getElementById('statTotalBuy').innerText = totalBuy.toLocaleString('tr-TR') + ' ₺';
-            document.getElementById('statTotalSell').innerText = totalSell.toLocaleString('tr-TR') + ' ₺';
-            document.getElementById('statTotalProfit').innerText = totalProfit.toLocaleString('tr-TR') + ' ₺';
+                await _supabase.from('users').update({ expires_at: currentExp.toISOString() }).eq('id', userId);
+                alert('Abonelik süresi uzatıldı!');
+                renderAdminPanel();
+            }
         }
+
+        async function handleCreateUser(e) {
+            e.preventDefault();
+            const username = document.getElementById('admin-new-username').value.trim().toLowerCase();
+            const password = document.getElementById('admin-new-password').value;
+            const fullname = document.getElementById('admin-new-fullname').value;
+            const pin = document.getElementById('admin-new-pin').value || '1234';
+            const months = parseInt(document.getElementById('admin-new-months').value) || 2;
+
+            const expDate = new Date();
+            expDate.setDate(expDate.getDate() + (months * 30));
+
+            const { error } = await _supabase.from('users').insert([{
+                username, password, pin, fullname, is_admin: false,
+                expires_at: expDate.toISOString(),
+                header_text: `${fullname.toUpperCase()} - HAL NO: 1`
+            }]);
+
+            if(error) alert('Hata: ' + error.message);
+            else { alert('Yeni kullanıcı Supabase veritabanına kaydedildi!'); renderAdminPanel(); }
+        }
+
+        async function loginAsUser(targetUsername) {
+            const { data: users } = await _supabase.from('users').select('*').eq('username', targetUsername);
+            if(users && users.length > 0) {
+                currentUser = users[0];
+                startUserSession();
+                alert(`'${currentUser.fullname}' hesabına bağlandınız.`);
+            }
+        }
+
+        function populateSelects() {
+            const tuccarSelects = ['alim-tuccar', 'mektup-tuccar-select', 'cari-tuccar-select'];
+            tuccarSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = '<option value="">Tüccar Seçiniz...</option>';
+                state.tuccarlar.forEach(t => el.innerHTML += `<option value="${t}">${t}</option>`);
+            });
+
+            const mustahsilSelects = ['alim-mustahsil', 'cari-mustahsil-select'];
+            mustahsilSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = '<option value="">Müstahsil Seçiniz...</option>';
+                state.mustahsiller.forEach(m => el.innerHTML += `<option value="${m.name || m}">${m.name || m}</option>`);
+            });
+
+            const urunSelect = document.getElementById('alim-urun');
+            if(urunSelect) {
+                urunSelect.innerHTML = '<option value="">Ürün Seçiniz...</option>';
+                state.urunler.forEach(u => urunSelect.innerHTML += `<option value="${u}">${u}</option>`);
+            }
+
+            const kasaSelect = document.getElementById('alim-kasa');
+            if(kasaSelect) {
+                kasaSelect.innerHTML = '<option value="">Kasa Seç...</option>';
+                state.kasalar.forEach((k, idx) => kasaSelect.innerHTML += `<option value="${idx}">${k.name} (${k.dara} Kg)</option>`);
+            }
+        }
+
+        function updateAutoParti() {
+            const tuccar = document.getElementById('alim-tuccar').value;
+            const display = document.getElementById('alim-parti-display');
+            if(!tuccar) { display.value = "Önce Tüccar Seçin"; return; }
+            display.value = `1. Parti (Aktif)`;
+        }
+
+        function calculateNetKilo() {
+            const kasaIdx = document.getElementById('alim-kasa').value;
+            const adet = parseFloat(document.getElementById('alim-kasa-adet').value) || 0;
+            const brut = parseFloat(document.getElementById('alim-brut-kilo').value) || 0;
+            let singleDara = (kasaIdx !== "" && state.kasalar[kasaIdx]) ? state.kasalar[kasaIdx].dara : 0;
+            const totalDara = singleDara * adet;
+            const net = Math.max(0, brut - totalDara);
+
+            document.getElementById('alim-toplam-dara').value = totalDara.toFixed(1);
+            document.getElementById('alim-net-kilo').value = net.toFixed(1);
+
+            document.getElementById('rec-tarih').innerText = new Date().toLocaleString('tr-TR');
+            document.getElementById('rec-no').innerText = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('rec-tuccar').innerText = document.getElementById('alim-tuccar').value || '---';
+            document.getElementById('rec-parti').innerText = document.getElementById('alim-parti-display').value || '---';
+            document.getElementById('rec-mustahsil').innerText = document.getElementById('alim-mustahsil').value || '---';
+            document.getElementById('rec-urun').innerText = document.getElementById('alim-urun').value || '---';
+            document.getElementById('rec-kasa-detay').innerText = `${adet} Ad (${totalDara} Kg Dara)`;
+            document.getElementById('rec-brut').innerText = brut + ' Kg';
+            document.getElementById('rec-dara').innerText = totalDara + ' Kg';
+            document.getElementById('rec-net-kilo').innerText = net.toFixed(1) + ' Kg';
+            document.getElementById('rec-net-total').innerText = net.toFixed(1) + ' Kg';
+        }
+
+        async function handleAlimKaydet(e) {
+            e.preventDefault();
+            const tuccar = document.getElementById('alim-tuccar').value;
+            const mustahsil = document.getElementById('alim-mustahsil').value;
+            const urun = document.getElementById('alim-urun').value;
+            const kasaIdx = document.getElementById('alim-kasa').value;
+            const kasaAdet = parseFloat(document.getElementById('alim-kasa-adet').value);
+            const brut = parseFloat(document.getElementById('alim-brut-kilo').value);
+            const totalDara = parseFloat(document.getElementById('alim-toplam-dara').value);
+            const net = parseFloat(document.getElementById('alim-net-kilo').value);
+
+            if(!tuccar || !mustahsil || !urun) { alert('Tüm alanları doldurunuz!'); return; }
+
+            const newAlim = {
+                id: Date.now(),
+                tarih: new Date().toLocaleString('tr-TR'),
+                tuccar, parti: '1. Parti', mustahsil, urun,
+                kasaName: state.kasalar[kasaIdx]?.name || '',
+                kasaAdet, totalDara, brut, net
+            };
+
+            state.alimlar.push(newAlim);
+            await saveAlimToSupabase(newAlim);
+
+            const printContainer = document.getElementById('receipt-print-area');
+            printContainer.innerHTML = document.querySelector('.thermal-receipt').innerHTML;
+            
+            document.body.classList.add('print-receipt');
+            document.body.classList.remove('print-a4');
+            window.print();
+            alert('Alım kaydedildi ve Buluta Senkronize Edildi!');
+        }
+
+        function renderMektupTable() {
+            const tuccar = document.getElementById('mektup-tuccar-select').value;
+            const tbody = document.getElementById('mektup-table-body');
+            tbody.innerHTML = '';
+            if(!tuccar) return;
+
+            const filtered = state.alimlar.filter(a => a.tuccar === tuccar);
+            let sumKilo = 0;
+
+            filtered.forEach(item => {
+                sumKilo += item.net;
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 text-[11px]">${item.tarih}</td>
+                        <td class="p-2.5 font-medium">${item.mustahsil}</td>
+                        <td class="p-2.5 font-semibold">${item.urun}</td>
+                        <td class="p-2.5 font-bold text-emerald-700 text-right">${item.net} Kg</td>
+                        <td class="p-2.5"><input type="number" step="0.1" placeholder="0 TL" class="w-24 border p-1 text-xs rounded font-bold"></td>
+                        <td class="p-2.5 text-right font-bold">0 TL</td>
+                        <td class="p-2.5 text-center"><span class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Açık</span></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('mektup-sum-kilo').innerText = sumKilo.toFixed(1) + ' Kg';
+        }
+
+        function renderTuccarCariDetails() {}
+        function renderMustahsilCariDetails() {}
+        function renderKarZarar() {}
     </script>
 </body>
 </html>
