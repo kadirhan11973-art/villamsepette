@@ -140,7 +140,7 @@
         </div>
     </div>
 
-    <!-- GİRİŞ EKRANI HAKKIMIZDA & KULLANIM BİLGİSİ MODALI (3 ÇİZGİ TIKLANDIĞINDA) -->
+    <!-- GİRİŞ EKRANI HAKKIMIZDA & KULLANIM BİLGİSİ MODALI -->
     <div id="about-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center pb-4 border-b border-slate-100 mb-4">
@@ -161,7 +161,7 @@
                     <h4 class="font-bold text-slate-800 text-sm mb-1 text-emerald-700 flex items-center gap-2">
                         <i class="fa-solid fa-boxes-packing"></i> Hakkımızda & Tanıtım
                     </h4>
-                    <p id="about-text-content">Hal Hesap; hal komisyoncuları, tüccarlar ve müstahsiller için geliştirilmiş bulut tabanlı yeni nesil kantat, cari ve parti yönetim sistemidir.</p>
+                    <p id="about-text-content">Hal Hesap; hal komisyoncuları, tüccarlar ve müstahsiller için geliştirilmiş bulut tabanlı yeni nesil kantar, cari ve parti yönetim sistemidir.</p>
                 </div>
 
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
@@ -187,7 +187,7 @@
         </div>
     </div>
 
-    <!-- ÜYELİK SÜRESİ DOLDU (EXPIRED) EKRANI MODALI -->
+    <!-- ÜYELİK SÜRESİ DOLDU MODALI -->
     <div id="expired-modal" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center border border-slate-200">
             <div class="text-6xl mb-4">😔</div>
@@ -364,20 +364,15 @@
 
         <!-- ================= ADMIN YÖNETİM PANELİ ================= -->
         <section id="sec-admin-panel" class="tab-content hidden space-y-6">
-            <!-- Sıfırlama İstekleri Bildirim Kutusu -->
             <div id="admin-reset-requests-box" class="hidden bg-amber-50 border border-amber-300 p-4 rounded-2xl shadow-sm">
                 <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2 mb-2">
                     <i class="fa-solid fa-bell text-amber-600"></i> Bekleyen Şifre Sıfırlama İstekleri
                 </h3>
-                <div id="admin-reset-requests-list" class="space-y-2 text-xs">
-                    <!-- JS doldurur -->
-                </div>
+                <div id="admin-reset-requests-list" class="space-y-2 text-xs"></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Sol: Yeni Kullanıcı Tanımla & Admin Şifre/WhatsApp Ayarları -->
                 <div class="lg:col-span-4 space-y-6">
-                    <!-- 1. Yeni Müşteri Hesabı Açma -->
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                         <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-user-plus text-amber-600"></i> Yeni Halci Hesabı ve Süre Tanımla
@@ -420,7 +415,6 @@
                         </form>
                     </div>
 
-                    <!-- 2. Admin Kendi Giriş Şifresi & WhatsApp Numarası Değiştirme -->
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                         <div>
                             <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
@@ -452,14 +446,13 @@
                             <form onsubmit="handleSaveWhatsappPhone(event)" class="space-y-2">
                                 <input type="text" id="admin-whatsapp-phone" required placeholder="905320000000" class="w-full border p-2 text-xs font-bold rounded-lg outline-none">
                                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs">
-                                    Numarayı Kaydet
+                                    Numarayı Kaydet (Veritabanı & Global)
                                 </button>
                             </form>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sağ: Kayıtlı Müşteriler, Süre Ekle/Eksilt, Sil & Uzaktan Giriş -->
                 <div class="lg:col-span-8 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
                         <i class="fa-solid fa-users-gear text-slate-700"></i> Müşteri Lisans, Süre & Kullanıcı Yönetimi
@@ -476,15 +469,12 @@
                                     <th class="p-2.5 text-right">Süre Ayarı & Aksiyon</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-users-table-body" class="divide-y divide-slate-200">
-                                <!-- JS Doldurur -->
-                            </tbody>
+                            <tbody id="admin-users-table-body" class="divide-y divide-slate-200"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- GİRİŞ EKRANI HAKKIMIZDA & METİN DÜZENLEYİCİ -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
                     <i class="fa-solid fa-circle-info text-emerald-600"></i> Giriş Ekranı (3 Çizgi) Hakkımızda Metin Düzenleyici
@@ -511,7 +501,6 @@
                 </form>
             </div>
 
-            <!-- MÜŞTERİYE ÖZEL A4 MEKTUP BAŞLIK & ŞART YÖNETİCİSİ -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-blue-600"></i> Kullanıcıya Özel A4 Mektup Ayarları
@@ -521,9 +510,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Düzenlenecek Müşteri</label>
-                        <select id="admin-mektup-user-select" onchange="loadUserMektupSettings()" class="w-full border p-2.5 text-xs rounded-xl font-bold bg-slate-50 outline-none">
-                            <!-- JS Doldurur -->
-                        </select>
+                        <select id="admin-mektup-user-select" onchange="loadUserMektupSettings()" class="w-full border p-2.5 text-xs rounded-xl font-bold bg-slate-50 outline-none"></select>
                     </div>
                 </div>
 
@@ -552,7 +539,6 @@
         <!-- ================= KULLANICI ÖZEL AYARLAR & TÜCCAR YÖNETİMİ ================= -->
         <section id="sec-user-ayarlar" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Şifre ve PIN Değiştirme Formu -->
                 <div class="lg:col-span-5 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-5">
                     <div>
                         <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center gap-2">
@@ -614,7 +600,6 @@
                     </div>
                 </div>
 
-                <!-- Tüccar Tanımları -->
                 <div class="lg:col-span-7 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
                         <i class="fa-solid fa-building-user text-blue-600"></i> Tüccar / Firma Kayıtları
@@ -709,7 +694,6 @@
                     </form>
                 </div>
 
-                <!-- 80mm Fiş Önizleme -->
                 <div class="lg:col-span-5 flex flex-col items-center">
                     <div class="mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">80mm Lazer/Termal Fiş Önizleme</div>
                     <div id="fis-template-container" class="thermal-receipt rounded-2xl">
@@ -753,7 +737,7 @@
             </div>
         </section>
 
-        <!-- ================= 2. MÜSTAHSİL CARİ HESABI (KİLİTSİZ) ================= -->
+        <!-- ================= 2. MÜSTAHSİL CARİ HESABI ================= -->
         <section id="sec-mustahsil-cari" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <div class="lg:col-span-5 space-y-4">
@@ -807,9 +791,7 @@
                                         <th class="p-2.5 text-right">Alacak</th>
                                     </tr>
                                 </thead>
-                                <tbody id="mustahsil-bekleyen-body" class="divide-y divide-slate-200">
-                                    <!-- JS doldurur -->
-                                </tbody>
+                                <tbody id="mustahsil-bekleyen-body" class="divide-y divide-slate-200"></tbody>
                             </table>
                         </div>
                     </div>
@@ -827,9 +809,7 @@
                                         <th class="p-2.5 text-right">Ödenen Tutar</th>
                                     </tr>
                                 </thead>
-                                <tbody id="mustahsil-kapali-body" class="divide-y divide-slate-200">
-                                    <!-- JS doldurur -->
-                                </tbody>
+                                <tbody id="mustahsil-kapali-body" class="divide-y divide-slate-200"></tbody>
                             </table>
                         </div>
                     </div>
@@ -837,7 +817,7 @@
             </div>
         </section>
 
-        <!-- ================= 3. TANIMLAMALAR (KİLİTSİZ) ================= -->
+        <!-- ================= 3. TANIMLAMALAR ================= -->
         <section id="sec-tanimlar" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
@@ -877,7 +857,7 @@
             </div>
         </section>
 
-        <!-- ================= 4. PARTİ & MEKTUP KESME EKRANI (PIN KİLİTLİ) ================= -->
+        <!-- ================= 4. PARTİ & MEKTUP KESME EKRANI ================= -->
         <section id="sec-mektup-parti" class="tab-content hidden space-y-4">
             <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-100">
@@ -907,9 +887,7 @@
                                 <th class="p-2.5 text-center">Durum</th>
                             </tr>
                         </thead>
-                        <tbody id="mektup-table-body" class="divide-y divide-slate-200">
-                            <!-- JS doldurur -->
-                        </tbody>
+                        <tbody id="mektup-table-body" class="divide-y divide-slate-200"></tbody>
                     </table>
                 </div>
 
@@ -928,7 +906,7 @@
             </div>
         </section>
 
-        <!-- ================= 5. TÜCCAR CARİ HESABI & ARŞİV DÜZELTME (PIN KİLİTLİ) ================= -->
+        <!-- ================= 5. TÜCCAR CARİ HESABI & ARŞİV DÜZELTME ================= -->
         <section id="sec-tuccar-cari" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <div class="lg:col-span-5 space-y-4">
@@ -971,9 +949,7 @@
                             <i class="fa-solid fa-box-archive text-amber-600"></i> Kesilen Parti Mektupları (Düzeltme & A4 Detay)
                         </h3>
                         <p class="text-[11px] text-slate-500 mb-3">Yanlış kesilen mektupların fiyatlarını güncelleyebilir veya iptal edebilirsiniz.</p>
-                        <div id="tuccar-mektup-arsiv-list" class="space-y-2 max-h-72 overflow-y-auto">
-                            <!-- JS doldurur -->
-                        </div>
+                        <div id="tuccar-mektup-arsiv-list" class="space-y-2 max-h-72 overflow-y-auto"></div>
                     </div>
 
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
@@ -990,9 +966,7 @@
                                         <th class="p-2.5 text-right">Tutar</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tuccar-hareket-body" class="divide-y divide-slate-200">
-                                    <!-- JS doldurur -->
-                                </tbody>
+                                <tbody id="tuccar-hareket-body" class="divide-y divide-slate-200"></tbody>
                             </table>
                         </div>
                     </div>
@@ -1000,7 +974,7 @@
             </div>
         </section>
 
-        <!-- ================= 6. KÂR / ZARAR ANALİZİ (PIN KİLİTLİ) ================= -->
+        <!-- ================= 6. KÂR / ZARAR ANALİZİ ================= -->
         <section id="sec-kar-zarar" class="tab-content hidden space-y-4">
             <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h2 class="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -1037,9 +1011,7 @@
                     <i class="fa-solid fa-print"></i> A4 Yazdır
                 </button>
             </div>
-            <div id="a4-mektup-print-area" class="a4-page rounded-xl shadow-2xl">
-                <!-- JS İçeriği Doldurur -->
-            </div>
+            <div id="a4-mektup-print-area" class="a4-page rounded-xl shadow-2xl"></div>
         </div>
     </div>
 
@@ -1072,7 +1044,9 @@
         let _supabase = null;
         try {
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch(e) {}
+        } catch(e) {
+            console.error("Supabase istemcisi oluşturulamadı:", e);
+        }
 
         const GLOBAL_USERS_KEY = 'HAL_SAAS_USERS_V6';
         const RESET_REQUESTS_KEY = 'HAL_SAAS_RESETS_V6';
@@ -1157,17 +1131,24 @@
             alert('Giriş ekranı (3 Çizgi) bilgilendirme metinleri başarıyla güncellendi!');
         }
 
-        // SUPABASE CANLI WHATSAPP TELEFON SENKRONİZASYONU
+        // SUPABASE VERİTABANINDAN DOĞRUDAN WHATSAPP TELEFON NUMARASINI ÇEKME
         async function syncWhatsappPhoneFromDB() {
             let phone = localStorage.getItem(WHATSAPP_PHONE_KEY) || '905320000000';
             if(_supabase) {
                 try {
-                    const { data } = await _supabase.from('app_config').select('value').eq('key', 'whatsapp_phone').single();
-                    if(data && data.value) {
+                    const { data, error } = await _supabase
+                        .from('app_config')
+                        .select('value')
+                        .eq('key', 'whatsapp_phone')
+                        .maybeSingle();
+
+                    if(!error && data && data.value) {
                         phone = data.value;
                         localStorage.setItem(WHATSAPP_PHONE_KEY, phone);
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.warn("Supabase'den numara çekilirken varsayılana düşüldü:", e);
+                }
             }
             return phone;
         }
@@ -1221,8 +1202,13 @@
             try {
                 // 1. SUPABASE CANLI KONTROL
                 if (_supabase) {
-                    const { data: dbUsers } = await _supabase.from('users').select('*').ilike('username', uInput).eq('password', pInput);
-                    if (dbUsers && dbUsers.length > 0) {
+                    const { data: dbUsers, error } = await _supabase
+                        .from('users')
+                        .select('*')
+                        .ilike('username', uInput)
+                        .eq('password', pInput);
+                        
+                    if (!error && dbUsers && dbUsers.length > 0) {
                         const dbUser = dbUsers[0];
                         currentUser = {
                             username: dbUser.username,
@@ -1386,6 +1372,8 @@
             const u = document.getElementById('reg-username').value;
             const f = document.getElementById('reg-fullname').value;
             const p = document.getElementById('reg-phone').value;
+            
+            // VERİTABANINDAN GÜNCEL WHATSAPP NUMARASINI ÇEKİYORUZ
             const phoneNum = await getAdminWhatsappPhone();
             const msg = encodeURIComponent(`Merhaba, yeni Hal Hesap üyeliği açmak istiyorum.\n\nKullanıcı Adı: ${u}\nİşletme Adı: ${f}\nTel: ${p}`);
             window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
@@ -1409,8 +1397,21 @@
             resets.push({ id: Date.now(), username: uname, date: new Date().toLocaleString('tr-TR') });
             localStorage.setItem(RESET_REQUESTS_KEY, JSON.stringify(resets));
 
+            // VERİTABANINDAN GÜNCEL WHATSAPP NUMARASINI ÇEKİYORUZ
             const phoneNum = await getAdminWhatsappPhone();
-            const msg = encodeURIComponent(`Merhaba, Hal Hesap otomasyonu için kullanıcı adım: '${uname}'. Şifremi sıfırlamak istiyorum.`);
+            
+            // Kullanıcı veritabanındaki kayıtlı şifresini bulmaya çalışalım (bilgi amaçlı)
+            let userPassInfo = "";
+            if (_supabase) {
+                try {
+                    const { data } = await _supabase.from('users').select('password').ilike('username', uname).maybeSingle();
+                    if(data && data.password) {
+                        userPassInfo = ` (Mevcut Şifrem: ${data.password})`;
+                    }
+                } catch(e) {}
+            }
+
+            const msg = encodeURIComponent(`Merhaba, Hal Hesap otomasyonu için kullanıcı adım: '${uname}'. Şifre sıfırlama talebinde bulunuyorum.${userPassInfo}`);
             window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
 
             closeForgotPasswordModal();
@@ -1507,7 +1508,7 @@
         }
 
         // KULLANICI KENDİ ŞİFRE & PIN DEĞİŞTİRME
-        function handleChangeUserPassword(e) {
+        async function handleChangeUserPassword(e) {
             e.preventDefault();
             const oldPass = document.getElementById('user-old-pass').value;
             const newPass = document.getElementById('user-new-pass').value;
@@ -1525,6 +1526,15 @@
                 return;
             }
 
+            // Supabase Veritabanını Güncelle
+            if(_supabase) {
+                try {
+                    await _supabase.from('users').update({ password: newPass }).ilike('username', currentUser.username);
+                } catch(err) {
+                    console.error("Supabase şifre güncelleme hatası:", err);
+                }
+            }
+
             const users = getUsers();
             const found = users.find(u => u.username === currentUser.username);
             if(found) {
@@ -1534,17 +1544,25 @@
                 document.getElementById('user-old-pass').value = '';
                 document.getElementById('user-new-pass').value = '';
                 document.getElementById('user-new-pass-confirm').value = '';
-                alert('Giriş şifreniz başarıyla güncellendi!');
+                alert('Giriş şifreniz veritabanında ve sistemde başarıyla güncellendi!');
             }
         }
 
-        function handleChangeUserPin(e) {
+        async function handleChangeUserPin(e) {
             e.preventDefault();
             const newPin = document.getElementById('user-new-pin').value;
             const newPinConfirm = document.getElementById('user-new-pin-confirm').value;
 
             if(newPin.length !== 4) { alert('PIN Kodu 4 haneli sayı olmalıdır!'); return; }
             if(newPin !== newPinConfirm) { alert('Girilen PIN kodları eşleşmiyor!'); return; }
+
+            if(_supabase) {
+                try {
+                    await _supabase.from('users').update({ pin: newPin }).ilike('username', currentUser.username);
+                } catch(err) {
+                    console.error("Supabase PIN güncelleme hatası:", err);
+                }
+            }
 
             const users = getUsers();
             const found = users.find(u => u.username === currentUser.username);
@@ -1676,6 +1694,11 @@
                     currentUser.password = newPass;
                 }
                 localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+                
+                if(_supabase) {
+                    _supabase.from('users').update({ password: newPass }).eq('username', admin.username);
+                }
+
                 document.getElementById('admin-self-password').value = '';
                 alert('Admin giriş şifreniz başarıyla güncellendi!');
             }
@@ -1691,13 +1714,22 @@
 
             if(_supabase) {
                 try {
-                    await _supabase.from('app_config').upsert({ key: 'whatsapp_phone', value: phone }, { onConflict: 'key' });
+                    const { error } = await _supabase
+                        .from('app_config')
+                        .upsert({ key: 'whatsapp_phone', value: phone }, { onConflict: 'key' });
+
+                    if(error) {
+                        console.error("Supabase upsert hatası:", error);
+                        alert("Veritabanı güncelleme uyarısı: " + error.message);
+                    } else {
+                        alert('Sistem WhatsApp destek numarası Veritabanı ve tüm modallara başarıyla kaydedildi!');
+                    }
                 } catch(err) {
                     console.error("Supabase telefon kaydetme hatası:", err);
                 }
+            } else {
+                alert('Numara yerel hafızaya kaydedildi!');
             }
-
-            alert('Sistem WhatsApp destek numarası veritabanına ve tüm modallara başarıyla kaydedildi!');
         }
 
         function extendUserDays(idx, changeDays) {
@@ -1766,13 +1798,17 @@
             }
         }
 
-        function approvePasswordReset(index, username) {
+        async function approvePasswordReset(index, username) {
             const users = getUsers();
             const found = users.find(u => u.username === username);
             if(found) {
                 found.password = '1234';
                 localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
                 
+                if(_supabase) {
+                    await _supabase.from('users').update({ password: '1234' }).ilike('username', username);
+                }
+
                 let resets = JSON.parse(localStorage.getItem(RESET_REQUESTS_KEY)) || [];
                 resets.splice(index, 1);
                 localStorage.setItem(RESET_REQUESTS_KEY, JSON.stringify(resets));
@@ -1782,7 +1818,7 @@
             }
         }
 
-        function saveUserChanges(idx) {
+        async function saveUserChanges(idx) {
             const users = getUsers();
             const newUname = document.getElementById(`edit-uname-${idx}`).value.trim().toLowerCase();
             const newPass = document.getElementById(`edit-pass-${idx}`).value;
@@ -1790,13 +1826,23 @@
 
             if(!newUname || !newPass || !newPin) { alert('Tüm alanları doldurunuz!'); return; }
 
+            const oldUname = users[idx].username;
+
             users[idx].username = newUname;
             users[idx].password = newPass;
             users[idx].pin = newPin;
 
+            if(_supabase) {
+                await _supabase.from('users').update({
+                    username: newUname,
+                    password: newPass,
+                    pin: newPin
+                }).ilike('username', oldUname);
+            }
+
             localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
             renderAdminPanel();
-            alert('Kullanıcı bilgileri ve PIN şifresi başarıyla kaydedildi!');
+            alert('Kullanıcı bilgileri ve PIN şifresi veritabanına başarıyla kaydedildi!');
         }
 
         async function handleCreateUser(e) {
@@ -1931,7 +1977,6 @@
             document.getElementById('rec-net-total').innerText = net.toFixed(1) + ' Kg';
         }
 
-        // FİŞ BASS & 2 NÜSHA ÇIKART
         function handleAlimKaydet(e) {
             e.preventDefault();
             const tuccar = document.getElementById('alim-tuccar').value;
@@ -1960,7 +2005,6 @@
             state.alimlar.push(newAlim);
             saveState();
 
-            // FİŞİ 2 NÜSHA OLARAK HAZIRLA
             const singleReceiptHtml = document.getElementById('fis-template-container').innerHTML;
             const printContainer = document.getElementById('receipt-print-area');
             
