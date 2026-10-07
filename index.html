@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hal Hesap - Profesyonel Hal SaaS & Bulut Portalı</title>
-    <!-- Tailwind CSS & FontAwesome -->
+    <title>Hal Hesap - Profesyonel Hal SaaS & Lisans Portalı</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -44,7 +44,7 @@
 </head>
 <body class="text-slate-800 pb-12">
 
-    <!-- LOGIN EKRANI -->
+    <!-- ARKA PLANI RESİMLİ GİRİŞ EKRANI -->
     <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 login-bg-overlay overflow-y-auto">
         <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-700/80 my-auto">
             <div class="text-center mb-6">
@@ -52,32 +52,33 @@
                     <i class="fa-solid fa-boxes-packing"></i>
                 </div>
                 <h2 class="text-3xl font-black text-white tracking-wide">HAL HESAP</h2>
-                <p class="text-xs text-emerald-400 font-bold mt-1">Saha & Kantar Bulut Hal Otomasyonu</p>
+                <p class="text-xs text-emerald-400 font-bold mt-1">Multi-Tenant Hal Otomasyon Portalı</p>
             </div>
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1 uppercase">Kullanıcı Adı</label>
-                    <input type="text" id="login-username" required class="w-full bg-slate-800 border border-slate-600 text-white rounded-xl p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Örn: mehmet">
+                    <input type="text" id="login-username" required class="w-full bg-slate-800 border border-slate-600 text-white rounded-xl p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Kullanıcı adınız">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs font-bold text-slate-300 uppercase">Şifre</label>
                         <button type="button" onclick="openForgotPasswordModal()" class="text-xs font-bold text-emerald-400 hover:underline">Şifremi Unuttum?</button>
                     </div>
-                    <input type="password" id="login-password" required class="w-full bg-slate-800 border border-slate-600 text-white rounded-xl p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••">
+                    <div class="relative">
+                        <input type="password" id="login-password" required class="w-full bg-slate-800 border border-slate-600 text-white rounded-xl p-3 pr-10 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••">
+                        <button type="button" onclick="togglePasswordVisibility('login-password', 'eye-login')" class="absolute right-3 top-3.5 text-slate-400 hover:text-white">
+                            <i id="eye-login" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit" id="btn-login-submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-3.5 rounded-xl shadow-lg transition text-sm">
                     SİSTEME GİRİŞ YAP
                 </button>
             </form>
-
-            <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 space-y-1">
-                <p class="font-bold text-slate-300">Giriş Bilgisi:</p>
-                <p>• <strong>Yönetici (Admin):</strong> admin / admin123</p>
-            </div>
         </div>
 
+        <!-- WHATSAPP ÜYE OL BUTONU -->
         <div class="fixed bottom-6 left-6 z-50">
             <button onclick="openRegisterModal()" class="pulse-btn bg-emerald-500 hover:bg-emerald-600 text-slate-950 p-4 rounded-full shadow-2xl flex items-center justify-center gap-2 font-black text-xs transition">
                 <i class="fa-brands fa-whatsapp text-2xl text-slate-950"></i>
@@ -86,7 +87,27 @@
         </div>
     </div>
 
-    <!-- REGISTER MODAL -->
+    <!-- ÜYELİK SÜRESİ DOLDU (EXPIRED) EKRANI MODALI -->
+    <div id="expired-modal" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center border border-slate-200 animate-bounce-short">
+            <div class="text-6xl mb-4">😔</div>
+            <h2 class="text-2xl font-black text-slate-900 mb-2 uppercase tracking-wide">ÜYELİĞİNİZ SONA ERMİŞTİR</h2>
+            <p class="text-sm text-slate-600 font-medium mb-6 leading-relaxed">
+                Değerli kullanıcımız, sistem kullanım süreniz dolmuştur.<br>
+                Bizimle çalışmaya devam etmek ve lisansınızı yenilemek için lütfen yönetici ile iletişime geçiniz.
+            </p>
+            <div class="space-y-3">
+                <button onclick="contactAdminExpired()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> YÖNETİCİ İLE İLETİŞİME GEÇ
+                </button>
+                <button onclick="closeExpiredModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs">
+                    Giriş Ekranına Dön
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTER (YENİ ÜYELİK) MODALI -->
     <div id="register-modal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-200">
             <div class="bg-emerald-100 text-emerald-700 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3">
@@ -119,7 +140,29 @@
         </div>
     </div>
 
-    <!-- PIN MODAL -->
+    <!-- ŞİFREMİ UNUTTUM & WHATSAPP DESTEK MODALI -->
+    <div id="forgot-modal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-200">
+            <div class="bg-emerald-100 text-emerald-700 w-12 h-12 rounded-full flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-brands fa-whatsapp text-2xl"></i>
+            </div>
+            <h3 class="font-black text-slate-900 text-base">Şifre Sıfırlama Desteği</h3>
+            <p class="text-xs text-slate-500 mb-4">Kullanıcı adınızı yazıp doğrudan Sistem Yöneticisine WhatsApp üzerinden sıfırlama talebi gönderebilirsiniz.</p>
+
+            <div class="space-y-3 mb-4">
+                <input type="text" id="forgot-username" placeholder="Kullanıcı Adınız" class="w-full bg-slate-50 border border-slate-300 p-3 text-xs font-bold rounded-xl text-center outline-none">
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="sendWhatsAppReset()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp İle Bildir
+                </button>
+                <button onclick="closeForgotModal()" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs">Vazgeç</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN ŞİFRE MODALI -->
     <div id="pin-modal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl text-center border border-slate-200">
             <div class="bg-amber-100 text-amber-700 w-12 h-12 rounded-full flex items-center justify-center text-xl mx-auto mb-3">
@@ -136,17 +179,17 @@
             </div>
 
             <div class="grid grid-cols-3 gap-2 mb-4">
-                <button onclick="pressPinNum(1)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">1</button>
-                <button onclick="pressPinNum(2)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">2</button>
-                <button onclick="pressPinNum(3)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">3</button>
-                <button onclick="pressPinNum(4)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">4</button>
-                <button onclick="pressPinNum(5)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">5</button>
-                <button onclick="pressPinNum(6)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">6</button>
-                <button onclick="pressPinNum(7)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">7</button>
-                <button onclick="pressPinNum(8)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">8</button>
-                <button onclick="pressPinNum(9)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">9</button>
+                <button onclick="pressPinNum(1)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">1</button>
+                <button onclick="pressPinNum(2)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">2</button>
+                <button onclick="pressPinNum(3)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">3</button>
+                <button onclick="pressPinNum(4)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">4</button>
+                <button onclick="pressPinNum(5)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">5</button>
+                <button onclick="pressPinNum(6)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">6</button>
+                <button onclick="pressPinNum(7)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">7</button>
+                <button onclick="pressPinNum(8)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">8</button>
+                <button onclick="pressPinNum(9)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">9</button>
                 <button onclick="clearPin()" class="bg-red-100 text-red-700 font-bold text-xs py-3 rounded-xl">Sil</button>
-                <button onclick="pressPinNum(0)" class="bg-slate-100 hover:bg-slate-200 font-extrabold text-lg py-3 rounded-xl text-slate-800">0</button>
+                <button onclick="pressPinNum(0)" class="bg-slate-100 hover:bg-slate-200 active:bg-slate-300 font-extrabold text-lg py-3 rounded-xl text-slate-800">0</button>
                 <button onclick="closePinModal()" class="bg-slate-200 text-slate-700 font-bold text-xs py-3 rounded-xl">İptal</button>
             </div>
         </div>
@@ -221,73 +264,107 @@
 
         <!-- ================= ADMIN YÖNETİM PANELİ ================= -->
         <section id="sec-admin-panel" class="tab-content hidden space-y-6">
-            <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-md border border-slate-800">
-                <h3 class="font-black text-amber-400 text-base mb-1 flex items-center gap-2">
-                    <i class="fa-solid fa-user-lock text-lg"></i> Admin Panel Güvenliği & Şifre Değiştir
+            <!-- Sıfırlama İstekleri Bildirim Kutusu -->
+            <div id="admin-reset-requests-box" class="hidden bg-amber-50 border border-amber-300 p-4 rounded-2xl shadow-sm">
+                <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2 mb-2">
+                    <i class="fa-solid fa-bell text-amber-600"></i> Bekleyen Şifre Sıfırlama İstekleri
                 </h3>
-                <p class="text-xs text-slate-400 mb-4">Sistem yöneticisi giriş şifrenizi ve PIN kodunuzu buradan değiştirebilirsiniz.</p>
-                <form onsubmit="handleUpdateAdminCredentials(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Yeni Admin Giriş Şifresi</label>
-                        <input type="password" id="admin-own-pass" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 p-2.5 text-xs rounded-xl text-white outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-300 mb-1">Yeni Admin PIN Kodu (4 Hane)</label>
-                        <input type="text" id="admin-own-pin" maxlength="4" required placeholder="1234" class="w-full bg-slate-800 border border-slate-700 p-2.5 text-xs font-bold text-center rounded-xl text-amber-400 outline-none">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-2.5 rounded-xl text-xs transition">
-                            Admin Şifresini Kaydet
-                        </button>
-                    </div>
-                </form>
+                <div id="admin-reset-requests-list" class="space-y-2 text-xs">
+                    <!-- JS doldurur -->
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Yeni Kullanıcı Tanımla -->
-                <div class="lg:col-span-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus text-amber-600"></i> Yeni Halci Hesabı ve Süre Tanımla
-                    </h3>
-                    <form onsubmit="handleCreateUser(event)" class="space-y-3">
+                <!-- Sol: Yeni Kullanıcı Tanımla & Admin Şifre/WhatsApp Ayarları -->
+                <div class="lg:col-span-4 space-y-6">
+                    <!-- 1. Yeni Müşteri Hesabı Açma -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus text-amber-600"></i> Yeni Halci Hesabı ve Süre Tanımla
+                        </h3>
+                        <form onsubmit="handleCreateUser(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Kullanıcı Adı</label>
+                                <input type="text" id="admin-new-username" placeholder="Örn: yilmaz" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Giriş Şifresi</label>
+                                <div class="relative">
+                                    <input type="password" id="admin-new-password" placeholder="••••••••" required class="w-full border p-2.5 pr-8 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                                    <button type="button" onclick="togglePasswordVisibility('admin-new-password', 'eye-admin-new')" class="absolute right-2.5 top-2.5 text-slate-400">
+                                        <i id="eye-admin-new" class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">İşletme Adı</label>
+                                <input type="text" id="admin-new-fullname" placeholder="Örn: Yılmaz Tarım Hal" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Hassas Sayfa PIN Kodu (4 Hane)</label>
+                                <input type="text" id="admin-new-pin" maxlength="4" value="1234" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">İlk Lisans Süresi (Kullandırım Ay)</label>
+                                <select id="admin-new-months" class="w-full border p-2.5 text-xs rounded-xl font-bold bg-slate-50 outline-none">
+                                    <option value="1">1 Ay (30 Gün)</option>
+                                    <option value="2" selected>2 Ay (60 Gün)</option>
+                                    <option value="3">3 Ay (90 Gün)</option>
+                                    <option value="6">6 Ay (180 Gün)</option>
+                                    <option value="12">1 Yıl (365 Gün)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                                Kullanıcıyı ve Süreyi Kaydet
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 2. Admin Kendi Giriş Şifresi & WhatsApp Numarası Değiştirme -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Kullanıcı Adı</label>
-                            <input type="text" id="admin-new-username" placeholder="Örn: yilmaz" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                            <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-user-shield text-emerald-600"></i> Admin Kendi Şifresini Değiştir
+                            </h3>
+                            <form onsubmit="handleUpdateAdminSelfInfo(event)" class="space-y-2.5">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Yeni Admin Şifresi</label>
+                                    <div class="relative">
+                                        <input type="password" id="admin-self-password" required class="w-full border p-2 pr-8 text-xs rounded-lg outline-none" placeholder="••••••••">
+                                        <button type="button" onclick="togglePasswordVisibility('admin-self-password', 'eye-admin-self')" class="absolute right-2 top-2 text-slate-400">
+                                            <i id="eye-admin-self" class="fa-solid fa-eye text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-lg text-xs">
+                                    Admin Şifresini Güncelle
+                                </button>
+                            </form>
                         </div>
+
+                        <hr>
+
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Giriş Şifresi</label>
-                            <input type="password" id="admin-new-password" placeholder="••••••••" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                            <h3 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i> Sistem WhatsApp Destek Hattı
+                            </h3>
+                            <p class="text-[11px] text-slate-500 mb-2">Başvuru ve şifre sıfırlama mesajlarının yönlendirileceği telefon numarası:</p>
+                            <form onsubmit="handleSaveWhatsappPhone(event)" class="space-y-2">
+                                <input type="text" id="admin-whatsapp-phone" required placeholder="905320000000" class="w-full border p-2 text-xs font-bold rounded-lg outline-none">
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs">
+                                    Numarayı Kaydet
+                                </button>
+                            </form>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">İşletme Adı</label>
-                            <input type="text" id="admin-new-fullname" placeholder="Örn: Yılmaz Tarım Hal" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Hassas Sayfa PIN Kodu (4 Hane)</label>
-                            <input type="text" id="admin-new-pin" maxlength="4" value="1234" required class="w-full border p-2.5 text-xs rounded-xl outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">İlk Lisans Süresi (Kullandırım Ay)</label>
-                            <select id="admin-new-months" class="w-full border p-2.5 text-xs rounded-xl font-bold bg-slate-50 outline-none">
-                                <option value="1">1 Ay (30 Gün)</option>
-                                <option value="2" selected>2 Ay (60 Gün)</option>
-                                <option value="3">3 Ay (90 Gün)</option>
-                                <option value="6">6 Ay (180 Gün)</option>
-                                <option value="12">1 Yıl (365 Gün)</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition">
-                            Kullanıcıyı ve Süreyi Kaydet
-                        </button>
-                    </form>
+                    </div>
                 </div>
 
-                <!-- Kayıtlı Kullanıcılar -->
+                <!-- Sağ: Kayıtlı Müşteriler, Süre Ekle/Eksilt, Sil & Uzaktan Giriş -->
                 <div class="lg:col-span-8 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-users-gear text-slate-700"></i> Müşteri Lisans & Süre Yönetimi
+                        <i class="fa-solid fa-users-gear text-slate-700"></i> Müşteri Lisans, Süre & Kullanıcı Yönetimi
                     </h3>
-                    <p class="text-xs text-slate-500 mb-4">Kullanıcıların kalan gün sürelerini takip edebilir, ödeme yaptıkça sürelerini uzatabilirsiniz.</p>
+                    <p class="text-xs text-slate-500 mb-4">Süre ekleyebilir, yanlış verilen günleri eksiltebilir veya kullanıcıyı veri tabanından tamamen silebilirsiniz.</p>
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-left">
                             <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
@@ -296,7 +373,7 @@
                                     <th class="p-2.5">Giriş / PIN</th>
                                     <th class="p-2.5">Kalan Süre (Gün)</th>
                                     <th class="p-2.5">İşletme Adı</th>
-                                    <th class="p-2.5 text-right">Süre Uzat & Aksiyon</th>
+                                    <th class="p-2.5 text-right">Süre Ayarı & Aksiyon</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-users-table-body" class="divide-y divide-slate-200">
@@ -306,11 +383,49 @@
                     </div>
                 </div>
             </div>
+
+            <!-- MÜŞTERİYE ÖZEL A4 MEKTUP BAŞLIK & ŞART YÖNETİCİSİ -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-blue-600"></i> Kullanıcıya Özel A4 Mektup Ayarları
+                </h3>
+                <p class="text-xs text-slate-500 mb-4">Her müşterinizin A4 çıktısındaki firma adı, tel nosu ve alt açıklama metnini buradan özelleştirebilirsiniz.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Düzenlenecek Müşteri</label>
+                        <select id="admin-mektup-user-select" onchange="loadUserMektupSettings()" class="w-full border p-2.5 text-xs rounded-xl font-bold bg-slate-50 outline-none">
+                            <!-- JS Doldurur -->
+                        </select>
+                    </div>
+                </div>
+
+                <form onsubmit="handleSaveUserMektupSettings(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">A4 Mektup Üst Başlığı</label>
+                        <input type="text" id="admin-user-a4-header" class="w-full border p-2.5 text-xs rounded-xl outline-none" placeholder="Örn: KAŞ / ANTALYA HALİ NO: 42">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">İletişim Telefon Numarası</label>
+                        <input type="text" id="admin-user-a4-phone" class="w-full border p-2.5 text-xs rounded-xl outline-none" placeholder="Örn: Tel: 0532 111 22 33">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">A4 Mektup Altındaki Şartlar / Açıklama Metni</label>
+                        <textarea id="admin-user-a4-terms" rows="2" class="w-full border p-2.5 text-xs rounded-xl outline-none" placeholder="Örn: * Kamyon kantar tartımları düşülmüştür."></textarea>
+                    </div>
+                    <div class="md:col-span-2 text-right">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs">
+                            Seçili Kullanıcının Mektup Ayarlarını Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
         </section>
 
-        <!-- KULLANICI ÖZEL AYARLAR -->
+        <!-- ================= KULLANICI ÖZEL AYARLAR & TÜCCAR YÖNETİMİ ================= -->
         <section id="sec-user-ayarlar" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Şifre ve PIN Değiştirme Formu -->
                 <div class="lg:col-span-5 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-5">
                     <div>
                         <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center gap-2">
@@ -318,8 +433,31 @@
                         </h3>
                         <form onsubmit="handleChangeUserPassword(event)" class="space-y-3">
                             <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Mevcut (Eski) Şifreniz</label>
+                                <div class="relative">
+                                    <input type="password" id="user-old-pass" required class="w-full border p-2.5 pr-8 text-xs rounded-xl outline-none" placeholder="Eski şifreniz">
+                                    <button type="button" onclick="togglePasswordVisibility('user-old-pass', 'eye-user-old')" class="absolute right-2.5 top-2.5 text-slate-400">
+                                        <i id="eye-user-old" class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
                                 <label class="block text-xs font-bold text-slate-600 mb-1">Yeni Giriş Şifresi</label>
-                                <input type="password" id="user-new-pass" required class="w-full border p-2.5 text-xs rounded-xl outline-none" placeholder="••••••••">
+                                <div class="relative">
+                                    <input type="password" id="user-new-pass" required class="w-full border p-2.5 pr-8 text-xs rounded-xl outline-none" placeholder="••••••••">
+                                    <button type="button" onclick="togglePasswordVisibility('user-new-pass', 'eye-user-new')" class="absolute right-2.5 top-2.5 text-slate-400">
+                                        <i id="eye-user-new" class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Yeni Şifre (Tekrar)</label>
+                                <div class="relative">
+                                    <input type="password" id="user-new-pass-confirm" required class="w-full border p-2.5 pr-8 text-xs rounded-xl outline-none" placeholder="••••••••">
+                                    <button type="button" onclick="togglePasswordVisibility('user-new-pass-confirm', 'eye-user-new-confirm')" class="absolute right-2.5 top-2.5 text-slate-400">
+                                        <i id="eye-user-new-confirm" class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                </div>
                             </div>
                             <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs">
                                 Şifreyi Güncelle
@@ -338,6 +476,10 @@
                                 <label class="block text-xs font-bold text-slate-600 mb-1">Yeni 4 Haneli Sayısal PIN Kodu</label>
                                 <input type="text" id="user-new-pin" maxlength="4" required class="w-full border p-2.5 text-xs font-bold text-center rounded-xl outline-none" placeholder="1234">
                             </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Yeni PIN Kodu (Tekrar)</label>
+                                <input type="text" id="user-new-pin-confirm" maxlength="4" required class="w-full border p-2.5 text-xs font-bold text-center rounded-xl outline-none" placeholder="1234">
+                            </div>
                             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs">
                                 PIN Kodunu Güncelle
                             </button>
@@ -345,6 +487,7 @@
                     </div>
                 </div>
 
+                <!-- Tüccar Tanımları -->
                 <div class="lg:col-span-7 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">
                         <i class="fa-solid fa-building-user text-blue-600"></i> Tüccar / Firma Kayıtları
@@ -361,7 +504,7 @@
             </div>
         </section>
 
-        <!-- MAL ALIM FİŞ KESME -->
+        <!-- ================= 1. MAL ALIM (FİŞ KESME) EKRANI ================= -->
         <section id="sec-mal-alim" class="tab-content block">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 <div class="lg:col-span-7 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
@@ -483,7 +626,7 @@
             </div>
         </section>
 
-        <!-- MÜSTAHSİL CARİ -->
+        <!-- ================= 2. MÜSTAHSİL CARİ HESABI (KİLİTSİZ) ================= -->
         <section id="sec-mustahsil-cari" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <div class="lg:col-span-5 space-y-4">
@@ -525,6 +668,7 @@
                         <h3 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
                             <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Bekleyen Alış Fiyatlandırmaları
                         </h3>
+                        <p class="text-[11px] text-slate-500 mb-3">Müstahsile vereceğiniz alış kg fiyatını yazın.</p>
                         <div class="overflow-x-auto -mx-4 sm:mx-0">
                             <table class="w-full text-xs sm:text-sm text-left min-w-[450px]">
                                 <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
@@ -536,7 +680,29 @@
                                         <th class="p-2.5 text-right">Alacak</th>
                                     </tr>
                                 </thead>
-                                <tbody id="mustahsil-bekleyen-body" class="divide-y divide-slate-200"></tbody>
+                                <tbody id="mustahsil-bekleyen-body" class="divide-y divide-slate-200">
+                                    <!-- JS doldurur -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i> Yapılan Ödeme Geçmişi
+                        </h3>
+                        <div class="overflow-x-auto -mx-4 sm:mx-0">
+                            <table class="w-full text-xs text-left min-w-[400px]">
+                                <thead class="bg-emerald-50 text-emerald-800 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-2.5">Tarih</th>
+                                        <th class="p-2.5">Açıklama</th>
+                                        <th class="p-2.5 text-right">Ödenen Tutar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mustahsil-kapali-body" class="divide-y divide-slate-200">
+                                    <!-- JS doldurur -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -544,7 +710,7 @@
             </div>
         </section>
 
-        <!-- TANIMLAMALAR -->
+        <!-- ================= 3. TANIMLAMALAR (KİLİTSİZ) ================= -->
         <section id="sec-tanimlar" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
@@ -564,6 +730,7 @@
                     </h3>
                     <form onsubmit="handleAddMustahsil(event)" class="space-y-2 mb-3">
                         <input type="text" id="def-mustahsil-name" placeholder="Müstahsil Adı" required class="w-full border p-2 text-xs rounded-lg outline-none">
+                        <input type="tel" id="def-mustahsil-phone" placeholder="Telefon No" class="w-full border p-2 text-xs rounded-lg outline-none">
                         <button type="submit" class="w-full bg-slate-800 text-white font-bold py-1.5 rounded-lg text-xs">Ekle</button>
                     </form>
                     <ul id="list-mustahsil" class="divide-y text-xs max-h-48 overflow-y-auto"></ul>
@@ -583,7 +750,7 @@
             </div>
         </section>
 
-        <!-- PARTİ & MEKTUP KESME -->
+        <!-- ================= 4. PARTİ & MEKTUP KESME EKRANI (PIN KİLİTLİ) ================= -->
         <section id="sec-mektup-parti" class="tab-content hidden space-y-4">
             <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-100">
@@ -591,6 +758,7 @@
                         <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
                             <i class="fa-solid fa-envelope-open-text text-amber-600"></i> Parti Yönetimi & Mektup Fiyatlandırma
                         </h2>
+                        <p class="text-xs text-slate-500">Tüccar satış fiyatlarını yazıp A4 formatında resmi mektubunuzu kesin.</p>
                     </div>
                     <div class="w-full sm:w-auto">
                         <select id="mektup-tuccar-select" onchange="renderMektupTable()" class="w-full sm:w-48 bg-slate-50 border border-slate-300 text-xs sm:text-sm rounded-xl p-2.5 font-medium outline-none">
@@ -612,26 +780,28 @@
                                 <th class="p-2.5 text-center">Durum</th>
                             </tr>
                         </thead>
-                        <tbody id="mektup-table-body" class="divide-y divide-slate-200"></tbody>
+                        <tbody id="mektup-table-body" class="divide-y divide-slate-200">
+                            <!-- JS doldurur -->
+                        </tbody>
                     </table>
                 </div>
 
                 <div class="mt-4 p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <div>
+                    <div class="text-center sm:text-left">
                         <div class="text-[11px] font-bold text-amber-800 uppercase">Seçili Parti Mektup Özeti</div>
                         <div class="text-xs sm:text-sm text-amber-900 mt-0.5">
                             Toplam Net Kilo: <strong id="mektup-sum-kilo">0 Kg</strong> | 
                             Mektup Tutar: <strong id="mektup-sum-tuccar" class="text-emerald-700 text-base">0 TL</strong>
                         </div>
                     </div>
-                    <button onclick="kesMektubAndPrint()" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-2.5 rounded-xl shadow transition text-xs sm:text-sm flex items-center justify-center gap-2">
+                    <button onclick="kesMektubAndPrint()" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold px-5 py-2.5 rounded-xl shadow transition text-xs sm:text-sm flex items-center justify-center gap-2">
                         <i class="fa-solid fa-file-invoice-dollar"></i> Mektubu Kes, A4 Yazdır & Sonraki Partiye Geç
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- TÜCCAR CARİ -->
+        <!-- ================= 5. TÜCCAR CARİ HESABI & ARŞİV DÜZELTME (PIN KİLİTLİ) ================= -->
         <section id="sec-tuccar-cari" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <div class="lg:col-span-5 space-y-4">
@@ -661,7 +831,7 @@
                                 <label class="block text-xs font-bold text-slate-600 mb-1">Açıklama / Dekont</label>
                                 <input type="text" id="tuccar-odeme-aciklama" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm outline-none" placeholder="Örn: Banka / Havale">
                             </div>
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-2.5 rounded-xl transition text-sm">
                                 Tahsilatı Kaydet
                             </button>
                         </form>
@@ -671,15 +841,39 @@
                 <div class="lg:col-span-7 space-y-4">
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                         <h3 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
-                            <i class="fa-solid fa-box-archive text-amber-600"></i> Kesilen Parti Mektupları
+                            <i class="fa-solid fa-box-archive text-amber-600"></i> Kesilen Parti Mektupları (Düzeltme & A4 Detay)
                         </h3>
-                        <div id="tuccar-mektup-arsiv-list" class="space-y-2 max-h-72 overflow-y-auto"></div>
+                        <p class="text-[11px] text-slate-500 mb-3">Yanlış kesilen mektupların fiyatlarını güncelleyebilir veya iptal edebilirsiniz.</p>
+                        <div id="tuccar-mektup-arsiv-list" class="space-y-2 max-h-72 overflow-y-auto">
+                            <!-- JS doldurur -->
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-slate-600"></i> Cari Bakiye Hareketleri
+                        </h3>
+                        <div class="overflow-x-auto -mx-4 sm:mx-0">
+                            <table class="w-full text-xs sm:text-sm text-left min-w-[400px]">
+                                <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-2.5">Tarih</th>
+                                        <th class="p-2.5">Tür</th>
+                                        <th class="p-2.5">Açıklama</th>
+                                        <th class="p-2.5 text-right">Tutar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tuccar-hareket-body" class="divide-y divide-slate-200">
+                                    <!-- JS doldurur -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- KÂR ZARAR -->
+        <!-- ================= 6. KÂR / ZARAR ANALİZİ (PIN KİLİTLİ) ================= -->
         <section id="sec-kar-zarar" class="tab-content hidden space-y-4">
             <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h2 class="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -704,37 +898,105 @@
 
     </main>
 
-    <!-- A4 MODAL -->
+    <!-- TAM EKRAN A4 MEKTUP MODALI -->
     <div id="a4-mektup-modal" class="fixed inset-0 bg-slate-900/80 hidden z-50 overflow-y-auto p-2 sm:p-6">
         <div class="max-w-4xl mx-auto space-y-4">
             <div class="flex justify-between items-center bg-slate-800 text-white p-3 rounded-xl no-print">
-                <button onclick="closeA4Modal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-xs font-bold">
-                    ← Geri Dön
+                <button onclick="closeA4Modal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> ← Geri Dön
                 </button>
-                <button onclick="printA4Mektup()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-xs font-bold">
+                <span class="font-bold text-sm text-amber-400">A4 Resmi Mektup Döküm Sayfası</span>
+                <button onclick="printA4Mektup()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-xs font-bold flex items-center gap-2 shadow">
                     <i class="fa-solid fa-print"></i> A4 Yazdır
                 </button>
             </div>
-            <div id="a4-mektup-print-area" class="a4-page rounded-xl shadow-2xl"></div>
+            <div id="a4-mektup-print-area" class="a4-page rounded-xl shadow-2xl">
+                <!-- JS İçeriği Doldurur -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MEKTUP DÜZELTME MODALI -->
+    <div id="mektup-edit-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center p-3 no-print">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-200 mb-3">
+                <h3 id="edit-modal-title" class="font-bold text-slate-800">Mektup Fiyatlarını Düzelt</h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            <div id="edit-modal-items" class="space-y-3 mb-4"></div>
+            <div class="flex gap-2">
+                <button onclick="saveMektupEdits()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-sm">
+                    Değişiklikleri Kaydet & Cariye Yansıt
+                </button>
+                <button onclick="closeEditModal()" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-sm">Vazgeç</button>
+            </div>
         </div>
     </div>
 
     <div id="receipt-print-area" class="hidden"></div>
 
-    <!-- SCRIPT & SUPABASE BAGLANTISI -->
+    <!-- SİSTEM SCRIPT MANTIĞI & SUPABASE ENTEGRASYONU -->
     <script>
-        // SENIN SUPABASE BİLGİLERİN ENTEGRE EDİLDİ[cite: 3, 4]
+        // SUPABASE İSTEMCİ TANIMI
         const SUPABASE_URL = 'https://pmgkqpdectfqbsttjmfb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ2txcGRlY3RmcWJzdHRqbWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNTA4NDksImV4cCI6MjA1NTkyNjg0OX0.sb_publishable_aRI67gz9bl8luqAbdlM3fQ_k8mWzMda';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ2txcGRlY3RmcWJzdHRqbWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzMjg2MzcsImV4cCI6MjEwNjkwNDYzN30.mybEcWLrSd5P_IaX6LiiHSJa7Fhncmg3mFIPS45vTpE';
+        
+        let _supabase = null;
+        try {
+            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch(e) {}
 
-        const ADMIN_WHATSAPP_PHONE = '905320000000';
+        const GLOBAL_USERS_KEY = 'HAL_SAAS_USERS_V6';
+        const RESET_REQUESTS_KEY = 'HAL_SAAS_RESETS_V6';
+        const WHATSAPP_PHONE_KEY = 'HAL_SAAS_WA_PHONE_V6';
+
+        const defaultUsers = [
+            { 
+                username: 'admin', password: 'admin123', pin: '1234', fullname: 'Sistem Yöneticisi', isAdmin: true, 
+                expiresAt: new Date(2099, 11, 31).toISOString(),
+                headerText: 'HAL OTOMASYON MERKEZİ', phoneText: '0532 000 00 00', termsText: '* Bu mektup resmi hal belgesi yerine geçer.' 
+            },
+            { 
+                username: 'mehmet', password: '1234', pin: '1234', fullname: 'Mehmet Halcilik', isAdmin: false, 
+                expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+                headerText: 'KAŞ / ANTALYA HALİ NO: 42', phoneText: 'Tel: 0532 111 22 33', termsText: '* Kamyon kantar tartımları düşülmüştür.' 
+            },
+            { 
+                username: 'ahmet', password: '1234', pin: '1234', fullname: 'Ahmet Ticaret Hal', isAdmin: false, 
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                headerText: 'DEMRE / ANTALYA HALİ NO: 18', phoneText: 'Tel: 0544 555 66 77', termsText: '* Fire ve dara oranı düşülmüştür.' 
+            }
+        ];
+
         let currentUser = null;
         let realAdminUser = null;
-        let state = { urunler: ['Domates', 'Salatalık', 'Biber'], mustahsiller: [], tuccarlar: ['Ege Gıda', 'Akdeniz Halat'], tuccarPartileri: {}, kasalar: [{ name: 'Plastik Kasa', dara: 2.0 }], alimlar: [], tuccarOdemeler: [], mustahsilOdemeler: [], kesilenMektuplar: [] };
+        let state = {};
+        let currentEditingMektupId = null;
         let pendingTabId = null;
         let currentEnteredPin = "";
+
         const protectedTabs = ['mektup-parti', 'tuccar-cari', 'kar-zarar', 'user-ayarlar'];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initGlobalUsers();
+            if(!localStorage.getItem(WHATSAPP_PHONE_KEY)) {
+                localStorage.setItem(WHATSAPP_PHONE_KEY, '905320000000');
+            }
+        });
+
+        function getAdminWhatsappPhone() {
+            return localStorage.getItem(WHATSAPP_PHONE_KEY) || '905320000000';
+        }
+
+        function initGlobalUsers() {
+            if(!localStorage.getItem(GLOBAL_USERS_KEY)) {
+                localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(defaultUsers));
+            }
+        }
+
+        function getUsers() {
+            return JSON.parse(localStorage.getItem(GLOBAL_USERS_KEY)) || defaultUsers;
+        }
 
         function calculateDaysLeft(expiresAtStr) {
             if(!expiresAtStr) return 0;
@@ -743,35 +1005,98 @@
             return days > 0 ? days : 0;
         }
 
+        // ŞİFRE GÖSTER / GİZLE (EYE TOGGLE)
+        function togglePasswordVisibility(inputId, eyeIconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(eyeIconId);
+            if(!input || !icon) return;
+
+            if(input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
             const uInput = document.getElementById('login-username').value.trim().toLowerCase();
             const pInput = document.getElementById('login-password').value;
 
-            // Supabase'den Kullanıcıyı Doğrula
-            const { data: users, error } = await _supabase.from('users').select('*').eq('username', uInput).eq('password', pInput);
+            const btn = document.getElementById('btn-login-submit');
+            if(btn) { btn.innerText = 'Giriş Yapılıyor...'; btn.disabled = true; }
 
-            if(error || !users || users.length === 0) {
-                alert('Kullanıcı adı veya şifre hatalı!');
-                return;
-            }
+            try {
+                // 1. SUPABASE CANLI KONTROL
+                if (_supabase) {
+                    const { data: dbUsers } = await _supabase.from('users').select('*').ilike('username', uInput).eq('password', pInput);
+                    if (dbUsers && dbUsers.length > 0) {
+                        const dbUser = dbUsers[0];
+                        currentUser = {
+                            username: dbUser.username,
+                            password: dbUser.password,
+                            pin: dbUser.pin || '1234',
+                            fullname: dbUser.fullname || dbUser.username,
+                            isAdmin: dbUser.is_admin || false,
+                            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+                            headerText: 'KAŞ / ANTALYA HALİ NO: 42',
+                            phoneText: 'Tel: 0532 000 00 00',
+                            termsText: '* Bu mektup resmi hal belgesidir.'
+                        };
+                        realAdminUser = currentUser.isAdmin ? currentUser : null;
+                        startUserSession();
+                        return;
+                    }
+                }
 
-            const found = users[0];
+                // 2. YEREL YEDEK KONTROL
+                const users = getUsers();
+                const found = users.find(u => u.username.toLowerCase() === uInput && u.password === pInput);
 
-            if(!found.is_admin) {
-                const daysLeft = calculateDaysLeft(found.expires_at);
-                if(daysLeft <= 0) {
-                    alert('Abonelik süreniz dolmuştur! Lütfen yöneticinizle iletişime geçiniz.');
+                if(!found) {
+                    alert('Kullanıcı adı veya şifre hatalı!');
                     return;
                 }
-            }
 
-            currentUser = found;
-            realAdminUser = found.is_admin ? found : null;
-            startUserSession();
+                if(!found.isAdmin) {
+                    const daysLeft = calculateDaysLeft(found.expiresAt);
+                    if(daysLeft <= 0) {
+                        showExpiredModal();
+                        return;
+                    }
+                }
+
+                currentUser = found;
+                realAdminUser = found.isAdmin ? found : null;
+                startUserSession();
+            } catch(err) {
+                console.error("Giriş Hatası:", err);
+            } finally {
+                if(btn) { btn.innerText = 'SİSTEME GİRİŞ YAP'; btn.disabled = false; }
+            }
         }
 
-        async function startUserSession() {
+        function showExpiredModal() {
+            document.getElementById('expired-modal').classList.remove('hidden');
+        }
+
+        function closeExpiredModal() {
+            document.getElementById('expired-modal').classList.add('hidden');
+        }
+
+        function contactAdminExpired() {
+            const uInput = document.getElementById('login-username').value.trim();
+            const phoneNum = getAdminWhatsappPhone();
+            const msg = encodeURIComponent(`Merhaba, '${uInput}' kullanıcı adlı Hal Hesap üyeliğimin süresi sona erdi. Lisansımı yenilemek ve uzatmak istiyorum.`);
+            window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
+            closeExpiredModal();
+        }
+
+        function startUserSession() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-header').classList.remove('hidden');
             document.getElementById('app-main').classList.remove('hidden');
@@ -779,17 +1104,17 @@
             document.getElementById('user-welcome-text').innerText = `İşletme: ${currentUser.fullname} (${currentUser.username})`;
 
             const daysBadge = document.getElementById('user-days-left-badge');
-            if(!currentUser.is_admin) {
-                const daysLeft = calculateDaysLeft(currentUser.expires_at);
+            if(!currentUser.isAdmin) {
+                const daysLeft = calculateDaysLeft(currentUser.expiresAt);
                 daysBadge.innerText = `Kalan Süre: ${daysLeft} Gün`;
                 daysBadge.classList.remove('hidden');
             } else {
                 daysBadge.classList.add('hidden');
             }
 
-            await fetchUserDataFromSupabase();
+            loadUserState();
 
-            if(currentUser.is_admin) {
+            if(currentUser.isAdmin) {
                 document.querySelectorAll('.user-tab').forEach(el => el.classList.add('hidden'));
                 document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('hidden'));
                 document.getElementById('btn-back-to-admin').classList.add('hidden');
@@ -798,42 +1123,22 @@
             } else {
                 document.querySelectorAll('.user-tab').forEach(el => el.classList.remove('hidden'));
                 document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
-                if(realAdminUser && realAdminUser.is_admin) {
+
+                if(realAdminUser && realAdminUser.isAdmin) {
                     document.getElementById('btn-back-to-admin').classList.remove('hidden');
                 } else {
                     document.getElementById('btn-back-to-admin').classList.add('hidden');
                 }
+
                 switchTab('mal-alim');
             }
 
             populateSelects();
+            renderTanimListeleri();
             updateAutoParti();
             calculateNetKilo();
-        }
-
-        async function fetchUserDataFromSupabase() {
-            if(!currentUser) return;
-            const { data: alimlar } = await _supabase.from('alimlar').select('*').eq('user_id', currentUser.id);
-            if(alimlar) state.alimlar = alimlar;
             renderKarZarar();
-        }
-
-        async function saveAlimToSupabase(newAlim) {
-            await _supabase.from('alimlar').insert([{
-                id: newAlim.id,
-                user_id: currentUser.id,
-                tarih: newAlim.tarih,
-                tuccar: newAlim.tuccar,
-                parti: newAlim.parti,
-                mustahsil: newAlim.mustahsil,
-                urun: newAlim.urun,
-                kasa_name: newAlim.kasaName,
-                kasa_adet: newAlim.kasaAdet,
-                total_dara: newAlim.totalDara,
-                brut: newAlim.brut,
-                net: newAlim.net,
-                mustahsil_fiyat: 0, tuccar_fiyat: 0, mektup_kesildi: false
-            }]);
+            renderSettingsTuccarList();
         }
 
         function returnToAdminPanel() {
@@ -851,23 +1156,85 @@
             document.getElementById('app-main').classList.add('hidden');
         }
 
+        function getUserStoreKey() {
+            return `HAL_DATA_USER_${currentUser.username.toUpperCase()}`;
+        }
+
+        function loadUserState() {
+            const storeKey = getUserStoreKey();
+            const data = localStorage.getItem(storeKey);
+            if(data) {
+                state = JSON.parse(data);
+            } else {
+                state = {
+                    urunler: ['Domates', 'Salatalık', 'Sivri Biber', 'Kapya Biber', 'Patlıcan'],
+                    mustahsiller: [
+                        { name: 'Ahmet Dayı', phone: '0532 111 22 33' },
+                        { name: 'Mehmet Yılmaz', phone: '0544 555 66 77' }
+                    ],
+                    tuccarlar: ['Aydın Ticaret', 'Ege Gıda', 'Akdeniz Halat'],
+                    tuccarPartileri: {},
+                    kasalar: [
+                        { name: 'Siyah Plastik Kasa', dara: 2.0 },
+                        { name: 'Tahta Kasa Küçük', dara: 1.5 }
+                    ],
+                    alimlar: [], tuccarOdemeler: [], mustahsilOdemeler: [], kesilenMektuplar: []
+                };
+            }
+        }
+
+        function saveState() {
+            if(!currentUser) return;
+            const storeKey = getUserStoreKey();
+            localStorage.setItem(storeKey, JSON.stringify(state));
+            renderKarZarar();
+        }
+
+        // REGISTER & WHATSAPP
         function openRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
         function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
         function sendWhatsAppRegister() {
-            const uname = document.getElementById('reg-username').value.trim();
-            const fullname = document.getElementById('reg-fullname').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            if(!uname || !fullname) { alert('Lütfen bilgileri doldurun!'); return; }
-            const msg = encodeURIComponent(`Merhaba, Hal Hesap otomasyonuna üye olmak istiyorum.\n• Kullanıcı Adı: ${uname}\n• İşletme: ${fullname}\n• Tel: ${phone}`);
-            window.open(`https://wa.me/${ADMIN_WHATSAPP_PHONE}?text=${msg}`, '_blank');
+            const u = document.getElementById('reg-username').value;
+            const f = document.getElementById('reg-fullname').value;
+            const p = document.getElementById('reg-phone').value;
+            const phoneNum = getAdminWhatsappPhone();
+            const msg = encodeURIComponent(`Merhaba, yeni Hal Hesap üyeliği açmak istiyorum.\n\nKullanıcı Adı: ${u}\nİşletme Adı: ${f}\nTel: ${p}`);
+            window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
             closeRegisterModal();
         }
 
+        // ŞİFREMİ UNUTTUM & WHATSAPP
+        function openForgotPasswordModal() {
+            document.getElementById('forgot-modal').classList.remove('hidden');
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgot-modal').classList.add('hidden');
+        }
+
+        function sendWhatsAppReset() {
+            const uname = document.getElementById('forgot-username').value.trim();
+            if(!uname) { alert('Lütfen kullanıcı adınızı giriniz!'); return; }
+
+            let resets = JSON.parse(localStorage.getItem(RESET_REQUESTS_KEY)) || [];
+            resets.push({ id: Date.now(), username: uname, date: new Date().toLocaleString('tr-TR') });
+            localStorage.setItem(RESET_REQUESTS_KEY, JSON.stringify(resets));
+
+            const phoneNum = getAdminWhatsappPhone();
+            const msg = encodeURIComponent(`Merhaba, Hal Hesap otomasyonu için kullanıcı adım: '${uname}'. Şifremi sıfırlamak istiyorum.`);
+            window.open(`https://wa.me/${phoneNum}?text=${msg}`, '_blank');
+
+            closeForgotModal();
+            alert('WhatsApp destek hattı yönlendirildi ve Admin paneline sıfırlama talebi düşürüldü.');
+        }
+
+        // MENÜ ERİŞİM KONTROLÜ & PIN MODAL YÖNETİMİ
         function requestTabAccess(tabId) {
-            if((realAdminUser && realAdminUser.is_admin) || !protectedTabs.includes(tabId)) {
+            if((realAdminUser && realAdminUser.isAdmin) || !protectedTabs.includes(tabId)) {
                 switchTab(tabId);
                 return;
             }
+
             pendingTabId = tabId;
             currentEnteredPin = "";
             updatePinDigits();
@@ -878,14 +1245,26 @@
             if(currentEnteredPin.length < 4) {
                 currentEnteredPin += num;
                 updatePinDigits();
-                if(currentEnteredPin.length === 4) setTimeout(verifyPin, 100);
+
+                if(currentEnteredPin.length === 4) {
+                    setTimeout(verifyPin, 100);
+                }
             }
         }
 
-        function clearPin() { currentEnteredPin = ""; updatePinDigits(); }
+        function clearPin() {
+            currentEnteredPin = "";
+            updatePinDigits();
+        }
+
         function updatePinDigits() {
             for(let i = 1; i <= 4; i++) {
-                document.getElementById(`pin-digit-${i}`).value = i <= currentEnteredPin.length ? "•" : "";
+                const el = document.getElementById(`pin-digit-${i}`);
+                if(i <= currentEnteredPin.length) {
+                    el.value = "•";
+                } else {
+                    el.value = "";
+                }
             }
         }
 
@@ -894,15 +1273,22 @@
             if(currentEnteredPin === userPin) {
                 const targetTab = pendingTabId;
                 closePinModal();
-                if(targetTab) switchTab(targetTab);
+                if(targetTab) {
+                    switchTab(targetTab);
+                }
             } else {
                 alert('Hatalı PIN Kodu!');
                 clearPin();
             }
         }
 
-        function closePinModal() { document.getElementById('pin-modal').classList.add('hidden'); pendingTabId = null; clearPin(); }
+        function closePinModal() {
+            document.getElementById('pin-modal').classList.add('hidden');
+            pendingTabId = null;
+            clearPin();
+        }
 
+        // SEKME GEÇİŞİ
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => {
@@ -915,55 +1301,305 @@
 
             const activeBtn = document.getElementById('tab-' + tabId);
             if(activeBtn) {
-                if(tabId === 'admin-panel') activeBtn.classList.add('bg-amber-600', 'text-white', 'shadow');
-                else activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow');
+                if(tabId === 'admin-panel') {
+                    activeBtn.classList.add('bg-amber-600', 'text-white', 'shadow');
+                } else {
+                    activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow');
+                }
                 activeBtn.classList.remove('text-slate-300', 'bg-slate-800');
             }
 
             if(tabId === 'mektup-parti') renderMektupTable();
             if(tabId === 'tuccar-cari') renderTuccarCariDetails();
             if(tabId === 'mustahsil-cari') renderMustahsilCariDetails();
+            if(tabId === 'kar-zarar') renderKarZarar();
             if(tabId === 'admin-panel') renderAdminPanel();
+            if(tabId === 'user-ayarlar') renderSettingsTuccarList();
         }
 
-        async function renderAdminPanel() {
-            const { data: users } = await _supabase.from('users').select('*');
+        // KULLANICI KENDİ ŞİFRE & PIN DEĞİŞTİRME (ESKİ ŞİFRE VE TEKRAR KONTROLLÜ)
+        function handleChangeUserPassword(e) {
+            e.preventDefault();
+            const oldPass = document.getElementById('user-old-pass').value;
+            const newPass = document.getElementById('user-new-pass').value;
+            const newPassConfirm = document.getElementById('user-new-pass-confirm').value;
+
+            if(!oldPass || !newPass || !newPassConfirm) { alert('Lütfen tüm alanları doldurunuz!'); return; }
+
+            if(oldPass !== currentUser.password) {
+                alert('Mevcut (eski) şifrenizi yanlış girdiniz!');
+                return;
+            }
+
+            if(newPass !== newPassConfirm) {
+                alert('Yeni şifreler birbirleriyle eşleşmiyor!');
+                return;
+            }
+
+            const users = getUsers();
+            const found = users.find(u => u.username === currentUser.username);
+            if(found) {
+                found.password = newPass;
+                currentUser.password = newPass;
+                localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+                document.getElementById('user-old-pass').value = '';
+                document.getElementById('user-new-pass').value = '';
+                document.getElementById('user-new-pass-confirm').value = '';
+                alert('Giriş şifreniz başarıyla güncellendi!');
+            }
+        }
+
+        function handleChangeUserPin(e) {
+            e.preventDefault();
+            const newPin = document.getElementById('user-new-pin').value;
+            const newPinConfirm = document.getElementById('user-new-pin-confirm').value;
+
+            if(newPin.length !== 4) { alert('PIN Kodu 4 haneli sayı olmalıdır!'); return; }
+            if(newPin !== newPinConfirm) { alert('Girilen PIN kodları eşleşmiyor!'); return; }
+
+            const users = getUsers();
+            const found = users.find(u => u.username === currentUser.username);
+            if(found) {
+                found.pin = newPin;
+                currentUser.pin = newPin;
+                localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+                document.getElementById('user-new-pin').value = '';
+                document.getElementById('user-new-pin-confirm').value = '';
+                alert('PIN Kodunuz başarıyla güncellendi!');
+            }
+        }
+
+        // TÜCCAR YÖNETİMİ
+        function handleAddTuccarInSettings(e) {
+            e.preventDefault();
+            const name = document.getElementById('settings-tuccar-name').value;
+            if(name && !state.tuccarlar.includes(name)) {
+                state.tuccarlar.push(name);
+                saveState(); populateSelects(); renderSettingsTuccarList();
+                document.getElementById('settings-tuccar-name').value = '';
+            }
+        }
+
+        function renderSettingsTuccarList() {
+            const list = document.getElementById('settings-list-tuccar');
+            if(!list || !state.tuccarlar) return;
+            list.innerHTML = state.tuccarlar.map((t, i) => 
+                `<li class="py-2 flex justify-between items-center font-medium"><span>${t}</span><button onclick="deleteTanim('tuccarlar', ${i})" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i> Sil</button></li>`
+            ).join('');
+        }
+
+        // ADMIN YÖNETİM PANELİ İŞLEMLERİ (SÜRE UZATMA / DÜŞÜRME, SİLME, ŞİFRE & WA AYARI DAHİL)
+        function renderAdminPanel() {
+            const users = getUsers();
             const tbody = document.getElementById('admin-users-table-body');
             tbody.innerHTML = '';
 
-            if(!users) return;
+            const select = document.getElementById('admin-mektup-user-select');
+            select.innerHTML = '';
+
+            document.getElementById('admin-whatsapp-phone').value = getAdminWhatsappPhone();
 
             users.forEach((u, idx) => {
-                if(u.is_admin) return;
-                const daysLeft = calculateDaysLeft(u.expires_at);
-                const daysBadgeClass = daysLeft > 10 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800';
+                if(u.isAdmin) return;
+
+                select.innerHTML += `<option value="${u.username}">${u.fullname} (${u.username})</option>`;
+
+                const daysLeft = calculateDaysLeft(u.expiresAt);
+                const daysBadgeClass = daysLeft > 10 ? 'bg-emerald-100 text-emerald-800' : (daysLeft > 0 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800');
 
                 tbody.innerHTML += `
                     <tr>
-                        <td class="p-2.5 font-bold">${u.username}</td>
-                        <td class="p-2.5 text-xs">${u.password} (PIN: ${u.pin || '1234'})</td>
-                        <td class="p-2.5"><span class="${daysBadgeClass} font-black text-xs px-2.5 py-1 rounded-full">${daysLeft} Gün Kaldı</span></td>
-                        <td class="p-2.5 font-semibold">${u.fullname}</td>
-                        <td class="p-2.5 text-right space-x-1">
-                            <button onclick="extendUserDays('${u.id}', 30)" class="bg-amber-500 text-slate-900 font-bold px-2 py-1 rounded text-[10px]">+30 Gün</button>
-                            <button onclick="loginAsUser('${u.username}')" class="bg-blue-600 text-white font-bold px-2 py-1 rounded text-[10px]">Giriş Yap</button>
+                        <td class="p-2.5">
+                            <input type="text" id="edit-uname-${idx}" value="${u.username}" class="border p-1 rounded text-xs font-bold w-20">
+                        </td>
+                        <td class="p-2.5 space-y-1">
+                            <div class="relative">
+                                <input type="password" id="edit-pass-${idx}" value="${u.password}" class="border p-1 pr-6 rounded text-[11px] w-24 block" title="Şifre">
+                                <button type="button" onclick="togglePasswordVisibility('edit-pass-${idx}', 'eye-tbl-${idx}')" class="absolute right-1 top-1 text-slate-400">
+                                    <i id="eye-tbl-${idx}" class="fa-solid fa-eye text-[10px]"></i>
+                                </button>
+                            </div>
+                            <input type="text" id="edit-pin-${idx}" maxlength="4" value="${u.pin || '1234'}" class="border p-1 rounded text-[11px] font-bold text-center w-24 block" title="PIN">
+                        </td>
+                        <td class="p-2.5">
+                            <span class="${daysBadgeClass} font-black text-xs px-2.5 py-1 rounded-full inline-block mb-1">
+                                ${daysLeft} Gün Kaldı
+                            </span>
+                            <div class="grid grid-cols-2 gap-1 w-32">
+                                <button onclick="extendUserDays(${idx}, 30)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 text-[9px] font-bold px-1 py-0.5 rounded">+30 Gün</button>
+                                <button onclick="extendUserDays(${idx}, 60)" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[9px] font-bold px-1 py-0.5 rounded">+60 Gün</button>
+                                <button onclick="extendUserDays(${idx}, -30)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 text-[9px] font-bold px-1 py-0.5 rounded">-30 Gün</button>
+                                <button onclick="extendUserDays(${idx}, -60)" class="bg-red-200 hover:bg-red-300 text-red-900 text-[9px] font-bold px-1 py-0.5 rounded">-60 Gün</button>
+                            </div>
+                        </td>
+                        <td class="p-2.5 font-semibold text-slate-700">${u.fullname}</td>
+                        <td class="p-2.5 text-right space-y-1">
+                            <button onclick="saveUserChanges(${idx})" class="bg-emerald-600 text-white font-bold px-2 py-1 rounded text-[10px] hover:bg-emerald-700 block w-full">
+                                Bilgileri Kaydet
+                            </button>
+                            <button onclick="loginAsUser('${u.username}')" class="bg-blue-600 text-white font-bold px-2 py-1 rounded text-[10px] hover:bg-blue-700 block w-full">
+                                Hesabına Giriş Yap
+                            </button>
+                            <button onclick="deleteUserAccount(${idx}, '${u.username}')" class="bg-red-600 text-white font-bold px-2 py-1 rounded text-[10px] hover:bg-red-700 block w-full">
+                                <i class="fa-solid fa-trash-can"></i> Kullanıcıyı Sil
+                            </button>
                         </td>
                     </tr>
                 `;
             });
+
+            loadUserMektupSettings();
+
+            const resets = JSON.parse(localStorage.getItem(RESET_REQUESTS_KEY)) || [];
+            const reqBox = document.getElementById('admin-reset-requests-box');
+            const reqList = document.getElementById('admin-reset-requests-list');
+
+            if(resets.length > 0) {
+                reqBox.classList.remove('hidden');
+                reqList.innerHTML = '';
+                resets.forEach((r, i) => {
+                    reqList.innerHTML += `
+                        <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border">
+                            <span><strong>${r.username}</strong> (${r.date})</span>
+                            <button onclick="approvePasswordReset(${i}, '${r.username}')" class="bg-amber-600 text-white font-bold px-3 py-1 rounded">
+                                Şifreyi '1234' Yap & Onayla
+                            </button>
+                        </div>
+                    `;
+                });
+            } else {
+                reqBox.classList.add('hidden');
+            }
         }
 
-        async function extendUserDays(userId, addDays) {
-            const { data: user } = await _supabase.from('users').select('*').eq('id', userId).single();
-            if(user) {
-                let currentExp = new Date(user.expires_at);
-                if(currentExp < new Date()) currentExp = new Date();
-                currentExp.setDate(currentExp.getDate() + addDays);
+        function handleUpdateAdminSelfInfo(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('admin-self-password').value;
 
-                await _supabase.from('users').update({ expires_at: currentExp.toISOString() }).eq('id', userId);
-                alert('Abonelik süresi uzatıldı!');
-                renderAdminPanel();
+            if(!newPass) { alert('Lütfen geçerli bir şifre giriniz!'); return; }
+
+            const users = getUsers();
+            const admin = users.find(u => u.isAdmin);
+            if(admin) {
+                admin.password = newPass;
+                if(currentUser && currentUser.isAdmin) {
+                    currentUser.password = newPass;
+                }
+                localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+                document.getElementById('admin-self-password').value = '';
+                alert('Admin giriş şifreniz başarıyla güncellendi!');
             }
+        }
+
+        function handleSaveWhatsappPhone(e) {
+            e.preventDefault();
+            const phone = document.getElementById('admin-whatsapp-phone').value.trim();
+            if(!phone) return;
+            localStorage.setItem(WHATSAPP_PHONE_KEY, phone);
+            alert('Sistem WhatsApp destek numarası başarıyla güncellendi!');
+        }
+
+        function extendUserDays(idx, changeDays) {
+            const users = getUsers();
+            const user = users[idx];
+            if(user) {
+                let currentExp = new Date(user.expiresAt);
+                if(currentExp < new Date() && changeDays > 0) {
+                    currentExp = new Date();
+                }
+                currentExp.setDate(currentExp.getDate() + changeDays);
+                user.expiresAt = currentExp.toISOString();
+
+                localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+                renderAdminPanel();
+                const sign = changeDays > 0 ? '+' : '';
+                alert(`'${user.fullname}' kullanıcısının süresine ${sign}${changeDays} Gün uygulandı!`);
+            }
+        }
+
+        async function deleteUserAccount(idx, username) {
+            if(!confirm(`'${username}' kullanıcısını sistemden ve veri tabanından tamamen silmek istediğinizden emin misiniz?`)) return;
+
+            // 1. Supabase Veri Tabanından Sil
+            try {
+                if(_supabase) {
+                    await _supabase.from('users').delete().ilike('username', username);
+                }
+            } catch(e) {
+                console.error("Supabase Silme Hatası:", e);
+            }
+
+            // 2. Yerel Depodan Sil
+            const users = getUsers();
+            users.splice(idx, 1);
+            localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+
+            // 3. Kullanıcı Verisini Temizle
+            localStorage.removeItem(`HAL_DATA_USER_${username.toUpperCase()}`);
+
+            renderAdminPanel();
+            alert(`'${username}' kullanıcısı ve veri tabanı kaydı başarıyla silindi!`);
+        }
+
+        function loadUserMektupSettings() {
+            const selectedUname = document.getElementById('admin-mektup-user-select').value;
+            const users = getUsers();
+            const u = users.find(x => x.username === selectedUname);
+
+            if(u) {
+                document.getElementById('admin-user-a4-header').value = u.headerText || '';
+                document.getElementById('admin-user-a4-phone').value = u.phoneText || '';
+                document.getElementById('admin-user-a4-terms').value = u.termsText || '';
+            }
+        }
+
+        function handleSaveUserMektupSettings(e) {
+            e.preventDefault();
+            const selectedUname = document.getElementById('admin-mektup-user-select').value;
+            const users = getUsers();
+            const u = users.find(x => x.username === selectedUname);
+
+            if(u) {
+                u.headerText = document.getElementById('admin-user-a4-header').value;
+                u.phoneText = document.getElementById('admin-user-a4-phone').value;
+                u.termsText = document.getElementById('admin-user-a4-terms').value;
+
+                localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+                alert(`'${u.fullname}' için A4 Mektup ayarları özel olarak kaydedildi!`);
+            }
+        }
+
+        function approvePasswordReset(index, username) {
+            const users = getUsers();
+            const found = users.find(u => u.username === username);
+            if(found) {
+                found.password = '1234';
+                localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+                
+                let resets = JSON.parse(localStorage.getItem(RESET_REQUESTS_KEY)) || [];
+                resets.splice(index, 1);
+                localStorage.setItem(RESET_REQUESTS_KEY, JSON.stringify(resets));
+
+                renderAdminPanel();
+                alert(`'${username}' kullanıcısının şifresi '1234' olarak sıfırlandı. Müşteriye WhatsApp'tan iletebilirsiniz.`);
+            }
+        }
+
+        function saveUserChanges(idx) {
+            const users = getUsers();
+            const newUname = document.getElementById(`edit-uname-${idx}`).value.trim().toLowerCase();
+            const newPass = document.getElementById(`edit-pass-${idx}`).value;
+            const newPin = document.getElementById(`edit-pin-${idx}`).value;
+
+            if(!newUname || !newPass || !newPin) { alert('Tüm alanları doldurunuz!'); return; }
+
+            users[idx].username = newUname;
+            users[idx].password = newPass;
+            users[idx].pin = newPin;
+
+            localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+            renderAdminPanel();
+            alert('Kullanıcı bilgileri ve PIN şifresi başarıyla kaydedildi!');
         }
 
         async function handleCreateUser(e) {
@@ -974,55 +1610,87 @@
             const pin = document.getElementById('admin-new-pin').value || '1234';
             const months = parseInt(document.getElementById('admin-new-months').value) || 2;
 
+            // 1. Supabase'e Ekle
+            try {
+                if (_supabase) {
+                    await _supabase.from('users').insert([{ username, password, pin, fullname, is_admin: false }]);
+                }
+            } catch(err) {}
+
+            // 2. Yerel Listeye Ekle
+            const users = getUsers();
+            if(users.some(u => u.username.toLowerCase() === username)) {
+                alert('Bu kullanıcı adı zaten mevcut!');
+                return;
+            }
+
             const expDate = new Date();
             expDate.setDate(expDate.getDate() + (months * 30));
 
-            const { error } = await _supabase.from('users').insert([{
-                username, password, pin, fullname, is_admin: false,
-                expires_at: expDate.toISOString(),
-                header_text: `${fullname.toUpperCase()} - HAL NO: 1`
-            }]);
+            users.push({
+                username, password, pin, fullname, isAdmin: false,
+                expiresAt: expDate.toISOString(),
+                headerText: `${fullname.toUpperCase()} - HAL NO: 1`,
+                phoneText: 'Tel: 05xx xxx xx xx',
+                termsText: '* Bu mektup resmi hal belgesidir.'
+            });
 
-            if(error) alert('Hata: ' + error.message);
-            else { alert('Yeni kullanıcı Supabase veritabanına kaydedildi!'); renderAdminPanel(); }
+            localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(users));
+            renderAdminPanel();
+            alert(`'${fullname}' kullanıcısı ${months} Aylık abonelik süresiyle oluşturuldu!`);
         }
 
-        async function loginAsUser(targetUsername) {
-            const { data: users } = await _supabase.from('users').select('*').eq('username', targetUsername);
-            if(users && users.length > 0) {
-                currentUser = users[0];
+        function loginAsUser(targetUsername) {
+            const users = getUsers();
+            const found = users.find(u => u.username === targetUsername);
+            if(found) {
+                currentUser = found;
                 startUserSession();
-                alert(`'${currentUser.fullname}' hesabına bağlandınız.`);
+                alert(`'${found.fullname}' kullanıcısının paneline bağlandınız.`);
             }
         }
 
+        // KULLANICI İŞLEMLERİ
         function populateSelects() {
             const tuccarSelects = ['alim-tuccar', 'mektup-tuccar-select', 'cari-tuccar-select'];
             tuccarSelects.forEach(id => {
                 const el = document.getElementById(id);
                 if(!el) return;
-                el.innerHTML = '<option value="">Tüccar Seçiniz...</option>';
-                state.tuccarlar.forEach(t => el.innerHTML += `<option value="${t}">${t}</option>`);
+                const val = el.value;
+                el.innerHTML = '<option value="">' + (id.includes('select') ? 'Tüccar Seçin...' : 'Tüccar Seçiniz...') + '</option>';
+                if(state.tuccarlar) state.tuccarlar.forEach(t => el.innerHTML += `<option value="${t}">${t}</option>`);
+                el.value = val;
             });
 
             const mustahsilSelects = ['alim-mustahsil', 'cari-mustahsil-select'];
             mustahsilSelects.forEach(id => {
                 const el = document.getElementById(id);
                 if(!el) return;
+                const val = el.value;
                 el.innerHTML = '<option value="">Müstahsil Seçiniz...</option>';
-                state.mustahsiller.forEach(m => el.innerHTML += `<option value="${m.name || m}">${m.name || m}</option>`);
+                if(state.mustahsiller) state.mustahsiller.forEach(m => {
+                    const name = typeof m === 'object' ? m.name : m;
+                    el.innerHTML += `<option value="${name}">${name}</option>`;
+                });
+                el.value = val;
             });
 
             const urunSelect = document.getElementById('alim-urun');
             if(urunSelect) {
+                const val = urunSelect.value;
                 urunSelect.innerHTML = '<option value="">Ürün Seçiniz...</option>';
-                state.urunler.forEach(u => urunSelect.innerHTML += `<option value="${u}">${u}</option>`);
+                if(state.urunler) state.urunler.forEach(u => urunSelect.innerHTML += `<option value="${u}">${u}</option>`);
+                urunSelect.value = val || (state.urunler ? state.urunler[0] : '');
             }
 
             const kasaSelect = document.getElementById('alim-kasa');
             if(kasaSelect) {
+                const val = kasaSelect.value;
                 kasaSelect.innerHTML = '<option value="">Kasa Seç...</option>';
-                state.kasalar.forEach((k, idx) => kasaSelect.innerHTML += `<option value="${idx}">${k.name} (${k.dara} Kg)</option>`);
+                if(state.kasalar) state.kasalar.forEach((k, idx) => {
+                    kasaSelect.innerHTML += `<option value="${idx}">${k.name} (${k.dara} Kg)</option>`;
+                });
+                kasaSelect.value = val;
             }
         }
 
@@ -1030,26 +1698,37 @@
             const tuccar = document.getElementById('alim-tuccar').value;
             const display = document.getElementById('alim-parti-display');
             if(!tuccar) { display.value = "Önce Tüccar Seçin"; return; }
-            display.value = `1. Parti (Aktif)`;
+            const currentParti = (state.tuccarPartileri && state.tuccarPartileri[tuccar]) || 1;
+            display.value = `${currentParti}. Parti (Aktif)`;
         }
 
         function calculateNetKilo() {
             const kasaIdx = document.getElementById('alim-kasa').value;
             const adet = parseFloat(document.getElementById('alim-kasa-adet').value) || 0;
             const brut = parseFloat(document.getElementById('alim-brut-kilo').value) || 0;
-            let singleDara = (kasaIdx !== "" && state.kasalar[kasaIdx]) ? state.kasalar[kasaIdx].dara : 0;
+
+            let singleDara = 0;
+            if(kasaIdx !== "" && state.kasalar && state.kasalar[kasaIdx]) singleDara = state.kasalar[kasaIdx].dara;
+
             const totalDara = singleDara * adet;
             const net = Math.max(0, brut - totalDara);
 
             document.getElementById('alim-toplam-dara').value = totalDara.toFixed(1);
             document.getElementById('alim-net-kilo').value = net.toFixed(1);
 
+            document.getElementById('rec-header-text').innerText = currentUser ? (currentUser.headerText || 'KAŞ / ANTALYA HALİ NO: 42') : '';
+
+            const tuccar = document.getElementById('alim-tuccar').value || '---';
+            const parti = document.getElementById('alim-parti-display').value || '---';
+            const mustahsil = document.getElementById('alim-mustahsil').value || '---';
+            const urun = document.getElementById('alim-urun').value || '---';
+
             document.getElementById('rec-tarih').innerText = new Date().toLocaleString('tr-TR');
             document.getElementById('rec-no').innerText = Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('rec-tuccar').innerText = document.getElementById('alim-tuccar').value || '---';
-            document.getElementById('rec-parti').innerText = document.getElementById('alim-parti-display').value || '---';
-            document.getElementById('rec-mustahsil').innerText = document.getElementById('alim-mustahsil').value || '---';
-            document.getElementById('rec-urun').innerText = document.getElementById('alim-urun').value || '---';
+            document.getElementById('rec-tuccar').innerText = tuccar;
+            document.getElementById('rec-parti').innerText = parti;
+            document.getElementById('rec-mustahsil').innerText = mustahsil;
+            document.getElementById('rec-urun').innerText = urun;
             document.getElementById('rec-kasa-detay').innerText = `${adet} Ad (${totalDara} Kg Dara)`;
             document.getElementById('rec-brut').innerText = brut + ' Kg';
             document.getElementById('rec-dara').innerText = totalDara + ' Kg';
@@ -1057,7 +1736,7 @@
             document.getElementById('rec-net-total').innerText = net.toFixed(1) + ' Kg';
         }
 
-        async function handleAlimKaydet(e) {
+        function handleAlimKaydet(e) {
             e.preventDefault();
             const tuccar = document.getElementById('alim-tuccar').value;
             const mustahsil = document.getElementById('alim-mustahsil').value;
@@ -1068,18 +1747,22 @@
             const totalDara = parseFloat(document.getElementById('alim-toplam-dara').value);
             const net = parseFloat(document.getElementById('alim-net-kilo').value);
 
-            if(!tuccar || !mustahsil || !urun) { alert('Tüm alanları doldurunuz!'); return; }
+            if(!tuccar || !mustahsil || !urun) { alert('Lütfen tüm seçimleri yapınız!'); return; }
+
+            const currentPartiNo = (state.tuccarPartileri && state.tuccarPartileri[tuccar]) || 1;
+            const partiStr = `${currentPartiNo}. Parti`;
 
             const newAlim = {
                 id: Date.now(),
                 tarih: new Date().toLocaleString('tr-TR'),
-                tuccar, parti: '1. Parti', mustahsil, urun,
+                tuccar, parti: partiStr, mustahsil, urun,
                 kasaName: state.kasalar[kasaIdx]?.name || '',
-                kasaAdet, totalDara, brut, net
+                kasaAdet, totalDara, brut, net,
+                mustahsilFiyat: 0, tuccarFiyat: 0, mektupKesildi: false
             };
 
             state.alimlar.push(newAlim);
-            await saveAlimToSupabase(newAlim);
+            saveState();
 
             const printContainer = document.getElementById('receipt-print-area');
             printContainer.innerHTML = document.querySelector('.thermal-receipt').innerHTML;
@@ -1087,38 +1770,498 @@
             document.body.classList.add('print-receipt');
             document.body.classList.remove('print-a4');
             window.print();
-            alert('Alım kaydedildi ve Buluta Senkronize Edildi!');
+            alert('Alım kaydedildi ve Fiş basıldı!');
         }
 
         function renderMektupTable() {
-            const tuccar = document.getElementById('mektup-tuccar-select').value;
+            const tuccarSelect = document.getElementById('mektup-tuccar-select');
+            const selectedTuccar = tuccarSelect.value;
             const tbody = document.getElementById('mektup-table-body');
             tbody.innerHTML = '';
-            if(!tuccar) return;
 
-            const filtered = state.alimlar.filter(a => a.tuccar === tuccar);
-            let sumKilo = 0;
+            if(!selectedTuccar) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-slate-400">Lütfen yukarıdan bir Tüccar seçiniz.</td></tr>';
+                document.getElementById('mektup-sum-kilo').innerText = '0 Kg';
+                document.getElementById('mektup-sum-tuccar').innerText = '0 TL';
+                return;
+            }
+
+            const currentPartiNo = (state.tuccarPartileri && state.tuccarPartileri[selectedTuccar]) || 1;
+            const partiStr = `${currentPartiNo}. Parti`;
+
+            const filtered = state.alimlar.filter(a => a.tuccar === selectedTuccar && a.parti === partiStr && !a.mektupKesildi);
+
+            let sumKilo = 0; let sumTuccar = 0;
 
             filtered.forEach(item => {
                 sumKilo += item.net;
+                const tTut = item.net * item.tuccarFiyat;
+                sumTuccar += tTut;
+
                 tbody.innerHTML += `
-                    <tr>
+                    <tr class="hover:bg-slate-50">
                         <td class="p-2.5 text-[11px]">${item.tarih}</td>
                         <td class="p-2.5 font-medium">${item.mustahsil}</td>
-                        <td class="p-2.5 font-semibold">${item.urun}</td>
+                        <td class="p-2.5 font-semibold text-slate-700">${item.urun}</td>
                         <td class="p-2.5 font-bold text-emerald-700 text-right">${item.net} Kg</td>
-                        <td class="p-2.5"><input type="number" step="0.1" placeholder="0 TL" class="w-24 border p-1 text-xs rounded font-bold"></td>
-                        <td class="p-2.5 text-right font-bold">0 TL</td>
+                        <td class="p-2.5">
+                            <input type="number" step="0.1" value="${item.tuccarFiyat || ''}" placeholder="0 TL" onchange="updateRowPrice(${item.id}, 'tuccarFiyat', this.value)" class="w-24 border p-1 text-xs rounded font-bold text-amber-900 bg-amber-50 outline-none">
+                        </td>
+                        <td class="p-2.5 text-right font-bold text-slate-900">${tTut.toLocaleString('tr-TR')} TL</td>
                         <td class="p-2.5 text-center"><span class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Açık</span></td>
                     </tr>
                 `;
             });
+
             document.getElementById('mektup-sum-kilo').innerText = sumKilo.toFixed(1) + ' Kg';
+            document.getElementById('mektup-sum-tuccar').innerText = sumTuccar.toLocaleString('tr-TR') + ' TL';
         }
 
-        function renderTuccarCariDetails() {}
-        function renderMustahsilCariDetails() {}
-        function renderKarZarar() {}
+        function updateRowPrice(id, key, val) {
+            const item = state.alimlar.find(a => a.id === id);
+            if(item) {
+                item[key] = parseFloat(val) || 0;
+                saveState();
+                renderMektupTable();
+            }
+        }
+
+        function kesMektubAndPrint() {
+            const selectedTuccar = document.getElementById('mektup-tuccar-select').value;
+            if(!selectedTuccar) { alert('Lütfen Tüccar seçiniz!'); return; }
+
+            const currentPartiNo = (state.tuccarPartileri && state.tuccarPartileri[selectedTuccar]) || 1;
+            const partiStr = `${currentPartiNo}. Parti`;
+
+            const items = state.alimlar.filter(a => a.tuccar === selectedTuccar && a.parti === partiStr && !a.mektupKesildi);
+
+            if(items.length === 0) {
+                alert('Bu partide kesilecek mal alımı bulunamadı!');
+                return;
+            }
+
+            let toplamKilo = 0; let toplamTutar = 0;
+
+            items.forEach(a => {
+                a.mektupKesildi = true;
+                toplamKilo += a.net;
+                toplamTutar += (a.net * a.tuccarFiyat);
+            });
+
+            const mektupObj = {
+                id: Date.now(),
+                tarih: new Date().toLocaleString('tr-TR'),
+                tuccar: selectedTuccar,
+                parti: partiStr,
+                items: JSON.parse(JSON.stringify(items)),
+                toplamKilo, toplamTutar
+            };
+
+            state.kesilenMektuplar.push(mektupObj);
+            if(!state.tuccarPartileri) state.tuccarPartileri = {};
+            state.tuccarPartileri[selectedTuccar] = currentPartiNo + 1;
+
+            saveState();
+            openA4MektupModal(mektupObj.id);
+            renderMektupTable();
+        }
+
+        function openA4MektupModal(mektupId) {
+            const mektup = state.kesilenMektuplar.find(m => m.id === mektupId);
+            if(!mektup) return;
+
+            const area = document.getElementById('a4-mektup-print-area');
+            let rowsHtml = '';
+
+            mektup.items.forEach((it, idx) => {
+                const tutar = it.net * it.tuccarFiyat;
+                rowsHtml += `
+                    <tr class="border-b border-slate-200">
+                        <td class="py-3 px-2 text-center text-slate-500 font-bold">${idx + 1}</td>
+                        <td class="py-3 px-2 font-semibold text-slate-800">${it.mustahsil}</td>
+                        <td class="py-3 px-2 font-medium text-slate-700">${it.urun}</td>
+                        <td class="py-3 px-2 text-center">${it.kasaAdet} Ad (${it.kasaName})</td>
+                        <td class="py-3 px-2 text-right font-bold text-slate-900">${it.brut} Kg</td>
+                        <td class="py-3 px-2 text-right text-slate-600">${it.totalDara} Kg</td>
+                        <td class="py-3 px-2 text-right font-extrabold text-emerald-800">${it.net} Kg</td>
+                        <td class="py-3 px-2 text-right font-bold text-amber-900">${it.tuccarFiyat ? it.tuccarFiyat + ' TL' : '0 TL'}</td>
+                        <td class="py-3 px-2 text-right font-black text-slate-900">${tutar.toLocaleString('tr-TR')} TL</td>
+                    </tr>
+                `;
+            });
+
+            area.innerHTML = `
+                <div class="flex justify-between items-start border-b-2 border-slate-800 pb-5 mb-6">
+                    <div>
+                        <h1 class="text-2xl font-black text-slate-900 tracking-wider">HAL HESAP OTOMASYONU</h1>
+                        <p class="text-xs text-slate-600 font-semibold mt-1">${currentUser.headerText || 'KAŞ / ANTALYA HALİ NO: 42'}</p>
+                        <p class="text-xs text-slate-500">${currentUser.phoneText || 'Tel: 0532 000 00 00'} - Resmi Mektup Dökümü</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="inline-block bg-slate-900 text-amber-400 font-black px-3 py-1.5 rounded-lg text-sm mb-1 uppercase">
+                            ${mektup.tuccar}
+                        </div>
+                        <p class="text-sm font-extrabold text-slate-800">${mektup.parti}</p>
+                        <p class="text-xs text-slate-500">Tarih: ${mektup.tarih}</p>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Parti Sevk ve Alım Listesi Detayı</h3>
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px]">
+                            <tr>
+                                <th class="p-2 text-center">#</th>
+                                <th class="p-2">Müstahsil</th>
+                                <th class="p-2">Ürün</th>
+                                <th class="p-2 text-center">Kasa Adet</th>
+                                <th class="p-2 text-right">Brüt Kg</th>
+                                <th class="p-2 text-right">Dara Kg</th>
+                                <th class="p-2 text-right">Net Kg</th>
+                                <th class="p-2 text-right">Satış Fiyat</th>
+                                <th class="p-2 text-right">Toplam Tutar</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 pt-4 border-t-2 border-slate-800">
+                    <div class="text-xs space-y-1 text-slate-600">
+                        <p class="font-bold text-slate-800">AÇIKLAMA VE ŞARTLAR:</p>
+                        <p>${currentUser.termsText || '* Bu belge resmi hal mektubu yerine geçer.'}</p>
+                        <p class="pt-6 font-bold text-slate-800">Teslim Eden / Hal Sorumlusu Imza</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-right space-y-2">
+                        <div class="text-xs text-slate-600">Toplam Parti Net Kilo: <strong class="text-slate-900 text-sm">${mektup.toplamKilo.toFixed(1)} Kg</strong></div>
+                        <div class="text-lg font-black text-emerald-800 border-t border-slate-300 pt-2">
+                            MEKTUP TOPLAM TUTARI: ${mektup.toplamTutar.toLocaleString('tr-TR')} TL
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('a4-mektup-modal').classList.remove('hidden');
+        }
+
+        function closeA4Modal() {
+            document.getElementById('a4-mektup-modal').classList.add('hidden');
+        }
+
+        function printA4Mektup() {
+            document.body.classList.add('print-a4');
+            document.body.classList.remove('print-receipt');
+            window.print();
+        }
+
+        function openEditMektupModal(mektupId) {
+            currentEditingMektupId = mektupId;
+            const mektup = state.kesilenMektuplar.find(m => m.id === mektupId);
+            if(!mektup) return;
+
+            document.getElementById('edit-modal-title').innerText = `${mektup.tuccar} - ${mektup.parti} Fiyatlarını Düzelt`;
+            const container = document.getElementById('edit-modal-items');
+            container.innerHTML = '';
+
+            mektup.items.forEach((it, idx) => {
+                container.innerHTML += `
+                    <div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <strong class="text-slate-800">${it.mustahsil} - ${it.urun}</strong>
+                            <span class="text-slate-500 block">${it.net} Kg</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="font-bold">Satış TL:</label>
+                            <input type="number" step="0.1" id="edit-price-input-${idx}" value="${it.tuccarFiyat || 0}" class="w-24 border p-1.5 rounded font-bold text-slate-900 text-center outline-none">
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('mektup-edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('mektup-edit-modal').classList.add('hidden');
+            currentEditingMektupId = null;
+        }
+
+        function saveMektupEdits() {
+            if(!currentEditingMektupId) return;
+            const mektup = state.kesilenMektuplar.find(m => m.id === currentEditingMektupId);
+            if(!mektup) return;
+
+            let yeniToplamTutar = 0;
+
+            mektup.items.forEach((it, idx) => {
+                const inputVal = parseFloat(document.getElementById(`edit-price-input-${idx}`).value) || 0;
+                it.tuccarFiyat = inputVal;
+                yeniToplamTutar += (it.net * inputVal);
+
+                const origAlim = state.alimlar.find(a => a.id === it.id);
+                if(origAlim) origAlim.tuccarFiyat = inputVal;
+            });
+
+            mektup.toplamTutar = yeniToplamTutar;
+            saveState();
+            closeEditModal();
+            renderTuccarCariDetails();
+            alert('Mektup fiyatları güncellendi!');
+        }
+
+        function cancelMektup(mektupId) {
+            if(confirm('Bu mektubu iptal etmek istediğinizden emin misiniz?')) {
+                const idx = state.kesilenMektuplar.findIndex(m => m.id === mektupId);
+                if(idx !== -1) {
+                    const mektup = state.kesilenMektuplar[idx];
+                    mektup.items.forEach(it => {
+                        const orig = state.alimlar.find(a => a.id === it.id);
+                        if(orig) orig.mektupKesildi = false;
+                    });
+                    state.kesilenMektuplar.splice(idx, 1);
+                    saveState();
+                    renderTuccarCariDetails();
+                    alert('Mektup iptal edildi!');
+                }
+            }
+        }
+
+        function renderTuccarCariDetails() {
+            const tuccar = document.getElementById('cari-tuccar-select').value;
+            const hareketBody = document.getElementById('tuccar-hareket-body');
+            const arsivList = document.getElementById('tuccar-mektup-arsiv-list');
+            hareketBody.innerHTML = ''; arsivList.innerHTML = '';
+
+            if(!tuccar) {
+                document.getElementById('tuccar-bakiye-val').innerText = '0 TL';
+                return;
+            }
+
+            const mektuplar = (state.kesilenMektuplar || []).filter(m => m.tuccar === tuccar);
+            let toplamMektupTutar = mektuplar.reduce((acc, m) => acc + m.toplamTutar, 0);
+
+            const odemeler = (state.tuccarOdemeler || []).filter(o => o.tuccar === tuccar);
+            let toplamOdeme = odemeler.reduce((acc, o) => acc + o.tutar, 0);
+
+            const bakiye = toplamMektupTutar - toplamOdeme;
+            document.getElementById('tuccar-bakiye-val').innerText = bakiye.toLocaleString('tr-TR') + ' TL';
+
+            mektuplar.forEach(m => {
+                arsivList.innerHTML += `
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <strong class="text-slate-800 text-sm">${m.parti}</strong>
+                            <span class="text-slate-500 block text-[10px]">${m.tarih} (${m.toplamKilo.toFixed(1)} Kg)</span>
+                        </div>
+                        <div class="text-right">
+                            <strong class="text-emerald-700 text-sm block">${m.toplamTutar.toLocaleString('tr-TR')} TL</strong>
+                            <div class="flex gap-2 mt-1">
+                                <button onclick="openA4MektupModal(${m.id})" class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded">
+                                    <i class="fa-solid fa-file-pdf"></i> A4 Göster
+                                </button>
+                                <button onclick="openEditMektupModal(${m.id})" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">
+                                    <i class="fa-solid fa-pen"></i> Düzelt
+                                </button>
+                                <button onclick="cancelMektup(${m.id})" class="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded">
+                                    İptal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            mektuplar.forEach(m => {
+                hareketBody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 text-[11px]">${m.tarih}</td>
+                        <td class="p-2.5"><span class="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded font-bold">MEKTUP</span></td>
+                        <td class="p-2.5 text-[11px]">${m.parti} (${m.toplamKilo.toFixed(1)} Kg)</td>
+                        <td class="p-2.5 text-right font-bold text-blue-900">${m.toplamTutar.toLocaleString('tr-TR')} TL</td>
+                    </tr>
+                `;
+            });
+
+            odemeler.forEach(o => {
+                hareketBody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 text-[11px]">${o.tarih}</td>
+                        <td class="p-2.5"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.5 rounded font-bold">TAHSİLAT</span></td>
+                        <td class="p-2.5 text-[11px]">${o.aciklama}</td>
+                        <td class="p-2.5 text-right font-bold text-emerald-700">-${o.tutar.toLocaleString('tr-TR')} TL</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function handleTuccarOdeme(e) {
+            e.preventDefault();
+            const tuccar = document.getElementById('cari-tuccar-select').value;
+            const tutar = parseFloat(document.getElementById('tuccar-odeme-tutar').value);
+            const aciklama = document.getElementById('tuccar-odeme-aciklama').value || 'Gelen Havale/Elden';
+
+            if(!tuccar) { alert('Lütfen Tüccar seçiniz!'); return; }
+
+            if(!state.tuccarOdemeler) state.tuccarOdemeler = [];
+            state.tuccarOdemeler.push({ id: Date.now(), tarih: new Date().toLocaleString('tr-TR'), tuccar, tutar, aciklama });
+
+            saveState();
+            renderTuccarCariDetails();
+            document.getElementById('tuccar-odeme-tutar').value = '';
+            document.getElementById('tuccar-odeme-aciklama').value = '';
+            alert('Tahsilat kaydedildi!');
+        }
+
+        function renderMustahsilCariDetails() {
+            const mustahsil = document.getElementById('cari-mustahsil-select').value;
+            const bekleyenBody = document.getElementById('mustahsil-bekleyen-body');
+            const kapaliBody = document.getElementById('mustahsil-kapali-body');
+            bekleyenBody.innerHTML = ''; kapaliBody.innerHTML = '';
+
+            if(!mustahsil) {
+                document.getElementById('mustahsil-bakiye-val').innerText = '0 TL';
+                return;
+            }
+
+            const alimlar = (state.alimlar || []).filter(a => a.mustahsil === mustahsil);
+            let toplamAlacak = alimlar.reduce((acc, a) => acc + (a.net * a.mustahsilFiyat), 0);
+
+            const odemeler = (state.mustahsilOdemeler || []).filter(o => o.mustahsil === mustahsil);
+            let toplamOdeme = odemeler.reduce((acc, o) => acc + o.tutar, 0);
+
+            const bakiye = toplamAlacak - toplamOdeme;
+            document.getElementById('mustahsil-bakiye-val').innerText = bakiye.toLocaleString('tr-TR') + ' TL';
+
+            alimlar.forEach(a => {
+                const tutar = a.net * a.mustahsilFiyat;
+                bekleyenBody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 text-[11px]">${a.tarih}</td>
+                        <td class="p-2.5 text-[11px]">
+                            <strong class="text-slate-800">${a.urun}</strong>
+                            <span class="text-slate-500 block text-[10px]">${a.tuccar} (${a.parti})</span>
+                        </td>
+                        <td class="p-2.5 text-right font-bold text-slate-700">${a.net} Kg</td>
+                        <td class="p-2.5">
+                            <input type="number" step="0.1" value="${a.mustahsilFiyat || ''}" placeholder="0 TL" onchange="updateMustahsilPrice(${a.id}, this.value)" class="w-20 border p-1 text-xs rounded font-bold text-purple-900 bg-purple-50 outline-none">
+                        </td>
+                        <td class="p-2.5 text-right font-bold text-purple-900">${tutar.toLocaleString('tr-TR')} TL</td>
+                    </tr>
+                `;
+            });
+
+            odemeler.forEach(o => {
+                kapaliBody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 text-[11px]">${o.tarih}</td>
+                        <td class="p-2.5 text-[11px] font-bold text-emerald-800">${o.aciklama}</td>
+                        <td class="p-2.5 text-right font-bold text-emerald-700">${o.tutar.toLocaleString('tr-TR')} TL</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateMustahsilPrice(id, val) {
+            const item = state.alimlar.find(a => a.id === id);
+            if(item) {
+                item.mustahsilFiyat = parseFloat(val) || 0;
+                saveState();
+                renderMustahsilCariDetails();
+            }
+        }
+
+        function handleMustahsilOdeme(e) {
+            e.preventDefault();
+            const mustahsil = document.getElementById('cari-mustahsil-select').value;
+            const tutar = parseFloat(document.getElementById('mustahsil-odeme-tutar').value);
+            const aciklama = document.getElementById('mustahsil-odeme-aciklama').value || 'Elden / Nakit Ödeme';
+
+            if(!mustahsil) { alert('Lütfen Müstahsil seçiniz!'); return; }
+
+            if(!state.mustahsilOdemeler) state.mustahsilOdemeler = [];
+            state.mustahsilOdemeler.push({ id: Date.now(), tarih: new Date().toLocaleString('tr-TR'), mustahsil, tutar, aciklama });
+
+            saveState();
+            renderMustahsilCariDetails();
+            document.getElementById('mustahsil-odeme-tutar').value = '';
+            document.getElementById('mustahsil-odeme-aciklama').value = '';
+            alert('Müstahsil Ödemesi kaydedildi!');
+        }
+
+        function renderKarZarar() {
+            let totalTuccarCiro = 0; let totalMustahsilMaliyet = 0;
+            if(state.kesilenMektuplar) state.kesilenMektuplar.forEach(m => totalTuccarCiro += m.toplamTutar);
+            if(state.alimlar) state.alimlar.forEach(a => totalMustahsilMaliyet += (a.net * a.mustahsilFiyat));
+
+            const netKar = totalTuccarCiro - totalMustahsilMaliyet;
+            document.getElementById('summary-tuccar-ciro').innerText = totalTuccarCiro.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('summary-mustahsil-maliyet').innerText = totalMustahsilMaliyet.toLocaleString('tr-TR') + ' TL';
+            document.getElementById('summary-net-kar').innerText = netKar.toLocaleString('tr-TR') + ' TL';
+        }
+
+        // TANIMLAMALAR
+        function handleAddUrun(e) {
+            e.preventDefault();
+            const name = document.getElementById('def-urun-name').value;
+            if(name && !state.urunler.includes(name)) {
+                state.urunler.push(name);
+                saveState(); populateSelects(); renderTanimListeleri();
+                document.getElementById('def-urun-name').value = '';
+            }
+        }
+
+        function handleAddMustahsil(e) {
+            e.preventDefault();
+            const name = document.getElementById('def-mustahsil-name').value;
+            const phone = document.getElementById('def-mustahsil-phone').value || '';
+            if(name) {
+                state.mustahsiller.push({ name, phone });
+                saveState(); populateSelects(); renderTanimListeleri();
+                document.getElementById('def-mustahsil-name').value = '';
+                document.getElementById('def-mustahsil-phone').value = '';
+            }
+        }
+
+        function handleAddKasa(e) {
+            e.preventDefault();
+            const name = document.getElementById('def-kasa-name').value;
+            const dara = parseFloat(document.getElementById('def-kasa-dara').value);
+            if(name && !isNaN(dara)) {
+                state.kasalar.push({ name, dara });
+                saveState(); populateSelects(); renderTanimListeleri();
+                document.getElementById('def-kasa-name').value = '';
+                document.getElementById('def-kasa-dara').value = '';
+            }
+        }
+
+        function deleteTanim(type, idx) {
+            if(confirm('Bu tanımı silmek istediğinizden emin misiniz?')) {
+                state[type].splice(idx, 1);
+                saveState(); populateSelects(); renderTanimListeleri(); renderSettingsTuccarList();
+            }
+        }
+
+        function renderTanimListeleri() {
+            if(state.urunler) {
+                document.getElementById('list-urun').innerHTML = state.urunler.map((u, i) => 
+                    `<li class="py-1 flex justify-between items-center"><span>${u}</span><button onclick="deleteTanim('urunler', ${i})" class="text-red-600"><i class="fa-solid fa-trash"></i></button></li>`
+                ).join('');
+            }
+
+            if(state.mustahsiller) {
+                document.getElementById('list-mustahsil').innerHTML = state.mustahsiller.map((m, i) => {
+                    const name = typeof m === 'object' ? m.name : m;
+                    const phone = (typeof m === 'object' && m.phone) ? ` (${m.phone})` : '';
+                    return `<li class="py-1 flex justify-between items-center"><span>${name}<small class="text-slate-400">${phone}</small></span><button onclick="deleteTanim('mustahsiller', ${i})" class="text-red-600"><i class="fa-solid fa-trash"></i></button></li>`;
+                }).join('');
+            }
+
+            if(state.kasalar) {
+                document.getElementById('list-kasa').innerHTML = state.kasalar.map((k, i) => 
+                    `<li class="py-1 flex justify-between items-center"><span>${k.name} (${k.dara} Kg)</span><button onclick="deleteTanim('kasalar', ${i})" class="text-red-600"><i class="fa-solid fa-trash"></i></button></li>`
+                ).join('');
+            }
+        }
     </script>
 </body>
 </html>
